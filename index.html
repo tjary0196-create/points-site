@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة النقاط — اربح وانت قاعد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E0D0F;
+    --bg-soft: #171517;
+    --card: #1C1A1D;
+    --gold: #D4A24C;
+    --gold-soft: rgba(212,162,76,0.14);
+    --text: #F2EFE9;
+    --text-dim: #ADA9A4;
+    --green: #3FA66A;
+    --red: #B4543A;
+    --hairline: rgba(242,239,233,0.08);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: radial-gradient(circle at 50% -10%, #221c14 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: 'Tajawal', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3,.display{ font-family:'Cairo', sans-serif; }
+  a{ color:inherit; text-decoration:none; }
+  .container{ max-width: 480px; margin: 0 auto; padding: 0 18px; }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 18px 0;
+    max-width: 480px; margin: 0 auto;
+  }
+  .brand{ display:flex; align-items:center; gap:8px; font-family:'Cairo'; font-weight:900; font-size:18px; }
+  .brand .coin{
+    width:22px; height:22px; border-radius:50%;
+    background: conic-gradient(from 180deg, var(--gold), #f1cf8a, var(--gold));
+    box-shadow: 0 0 12px rgba(212,162,76,0.55);
+  }
+  .pill{
+    font-size:12px; color:var(--text-dim); border:1px solid var(--hairline);
+    padding:6px 12px; border-radius:999px;
+  }
+
+  /* ---------- LOGIN SCREEN ---------- */
+  #login-screen{ padding: 60px 18px 40px; text-align:center; }
+  .hero-coin{
+    width:120px; height:120px; margin:0 auto 28px; position:relative;
+  }
+  .hero-coin svg{ width:100%; height:100%; }
+  .hero-title{
+    font-size: 30px; font-weight:900; line-height:1.35; margin-bottom:10px;
+  }
+  .hero-title span{ color: var(--gold); }
+  .hero-sub{ color: var(--text-dim); font-size:15px; line-height:1.7; margin-bottom:34px; }
+  #telegram-login-container{ display:flex; justify-content:center; margin-bottom: 18px; }
+  .trust-row{
+    display:flex; justify-content:center; gap:18px; margin-top: 28px;
+    color: var(--text-dim); font-size:12.5px;
+  }
+  .trust-row span{ display:flex; align-items:center; gap:6px; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block; }
+
+  /* ---------- DASHBOARD ---------- */
+  #dashboard{ display:none; padding: 14px 18px 100px; }
+
+  .balance-card{
+    background: linear-gradient(155deg, var(--card), #14110f 120%);
+    border: 1px solid var(--hairline);
+    border-radius: 24px;
+    padding: 26px 22px;
+    margin: 14px 0 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .balance-card::before{
+    content:""; position:absolute; inset:-40% -10% auto auto; width:220px; height:220px;
+    background: radial-gradient(circle, var(--gold-soft), transparent 70%);
+  }
+  .balance-label{ color: var(--text-dim); font-size:13px; margin-bottom:6px; }
+  .balance-value{
+    font-family:'Cairo'; font-weight:900; font-size:46px; display:flex; align-items:baseline; gap:8px;
+  }
+  .balance-value small{ font-size:16px; color:var(--gold); font-weight:700; }
+  .balance-meta{
+    display:flex; justify-content:space-between; margin-top:18px; padding-top:16px;
+    border-top:1px dashed var(--hairline); font-size:13px; color:var(--text-dim);
+  }
+  .balance-meta b{ color: var(--text); display:block; font-size:15px; font-family:'Cairo'; }
+
+  .section-title{
+    font-family:'Cairo'; font-weight:800; font-size:16px; margin: 26px 0 12px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .section-title small{ font-family:'Tajawal'; font-weight:400; color:var(--text-dim); font-size:12.5px; }
+
+  .task-card{
+    background: var(--card); border:1px solid var(--hairline); border-radius:16px;
+    padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:10px;
+  }
+  .task-icon{
+    width:40px; height:40px; border-radius:12px; background:var(--gold-soft);
+    display:flex; align-items:center; justify-content:center; color:var(--gold); font-size:18px; flex-shrink:0;
+  }
+  .task-info{ flex:1; }
+  .task-info .t-name{ font-weight:700; font-size:14.5px; margin-bottom:2px; }
+  .task-info .t-points{ font-size:12.5px; color:var(--gold); }
+  .task-btn{
+    background: var(--gold); color:#1A140A; font-weight:800; font-size:13px;
+    padding:9px 16px; border-radius:10px; border:none; cursor:pointer; white-space:nowrap;
+  }
+  .task-btn.done{ background:transparent; color:var(--green); border:1px solid var(--green); }
+  .task-progress-wrap{
+    display:flex; align-items:center; justify-content:space-between; margin-top:10px; margin-bottom:18px;
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .progress-bar{
+    height:6px; background:var(--hairline); border-radius:99px; overflow:hidden; margin-top:8px;
+  }
+  .progress-fill{ height:100%; background: linear-gradient(90deg, var(--gold), #f1cf8a); width:0%; transition: width .5s; }
+
+  .ref-card{
+    background: var(--card); border:1px solid var(--hairline); border-radius:16px; padding:16px;
+  }
+  .ref-link-row{
+    display:flex; gap:8px; margin-top:10px;
+  }
+  .ref-link-row input{
+    flex:1; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text-dim);
+    border-radius:10px; padding:10px 12px; font-size:12.5px; direction:ltr; text-align:left;
+  }
+  .ref-link-row button{
+    background:var(--gold); border:none; color:#1A140A; font-weight:800; border-radius:10px; padding:0 16px; font-size:13px; cursor:pointer;
+  }
+  .ref-stats{ display:flex; gap:14px; margin-top:14px; }
+  .ref-stat{ flex:1; background:var(--bg-soft); border-radius:12px; padding:10px; text-align:center; }
+  .ref-stat b{ display:block; font-family:'Cairo'; font-size:18px; color:var(--gold); }
+  .ref-stat span{ font-size:11.5px; color:var(--text-dim); }
+
+  .lb-row{
+    display:flex; align-items:center; gap:12px; padding:10px 4px; border-bottom:1px solid var(--hairline);
+  }
+  .lb-rank{ width:26px; font-family:'Cairo'; font-weight:800; color:var(--text-dim); text-align:center; }
+  .lb-rank.top{ color:var(--gold); }
+  .lb-name{ flex:1; font-size:14px; }
+  .lb-points{ font-size:13px; color:var(--gold); font-weight:700; }
+  .lb-self{ background:var(--gold-soft); border-radius:12px; }
+
+  .bottom-nav{
+    position:fixed; bottom:0; left:0; right:0;
+    background: rgba(14,13,15,0.92); backdrop-filter: blur(10px);
+    border-top:1px solid var(--hairline);
+    display:flex; justify-content:center;
+  }
+  .bottom-nav-inner{
+    max-width:480px; width:100%; display:flex; justify-content:space-around; padding:10px 8px 14px;
+  }
+  .nav-item{
+    display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--text-dim); font-size:11px;
+    background:none; border:none; cursor:pointer; flex:1;
+  }
+  .nav-item.active{ color: var(--gold); }
+  .nav-item .ic{ font-size:18px; }
+
+  .view{ display:none; }
+  .view.active{ display:block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .profile-card{ text-align:center; padding:24px; }
+  .avatar{
+    width:74px; height:74px; border-radius:50%; margin:0 auto 12px;
+    background: linear-gradient(135deg, var(--gold), #8a6422); display:flex; align-items:center; justify-content:center;
+    font-family:'Cairo'; font-weight:900; font-size:26px; color:#1A140A;
+  }
+  .empty-state{ text-align:center; color:var(--text-dim); font-size:13.5px; padding:30px 10px; }
+
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="coin"></span> منصة النقاط</div>
+  <div class="pill" id="status-pill">غير متصل</div>
+</div>
+
+<!-- ================= LOGIN SCREEN ================= -->
+<section id="login-screen" class="container">
+  <div class="hero-coin">
+    <svg viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="56" fill="none" stroke="#D4A24C" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
+      <circle cx="60" cy="60" r="42" fill="#1C1A1D" stroke="#D4A24C" stroke-width="2"/>
+      <text x="60" y="70" text-anchor="middle" font-family="Cairo" font-size="30" font-weight="900" fill="#D4A24C">₪</text>
+    </svg>
+  </div>
+  <h1 class="hero-title">حوّل وقتك الفاضي<br><span>لنقاط حقيقية</span></h1>
+  <p class="hero-sub">سجّل دخولك بتلغرام بثانية، أنجز مهام يومية بسيطة، واطلع بالمتصدرين. كل نقطة بترصد فوراً على حسابك.</p>
+
+  <div id="telegram-login-container">
+    <!-- Telegram Login Widget يُحقن هنا بـ JS -->
+  </div>
+
+  <div class="trust-row">
+    <span><i class="dot"></i> تسجيل آمن عبر تلغرام</span>
+    <span><i class="dot"></i> بدون كلمة سر</span>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<div id="dashboard">
+  <div class="container">
+
+    <!-- VIEW: HOME -->
+    <div class="view active" id="view-home">
+      <div class="balance-card">
+        <div class="balance-label">رصيدك الحالي</div>
+        <div class="balance-value"><span id="user-points">0</span><small>نقطة</small></div>
+        <div class="balance-meta">
+          <div>الترتيب<b id="user-rank">—</b></div>
+          <div>مهام اليوم<b id="tasks-done">0 / 20</b></div>
+          <div>إحالاتي<b id="ref-count">0</b></div>
+        </div>
+      </div>
+
+      <div class="section-title">المهام اليومية <small id="tasks-remaining"></small></div>
+      <div class="progress-bar"><div class="progress-fill" id="tasks-progress"></div></div>
+      <div id="tasks-list" style="margin-top:14px;">
+        <div class="empty-state">جاري تحميل المهام…</div>
+      </div>
+    </div>
+
+    <!-- VIEW: LEADERBOARD -->
+    <div class="view" id="view-leaderboard">
+      <div class="section-title">المتصدرين هذا الشهر <small id="month-days-left"></small></div>
+      <div id="leaderboard-list" class="task-card" style="flex-direction:column; align-items:stretch;">
+        <div class="empty-state">جاري تحميل الترتيب…</div>
+      </div>
+    </div>
+
+    <!-- VIEW: REFERRAL -->
+    <div class="view" id="view-referral">
+      <div class="section-title">رابط الإحالة</div>
+      <div class="ref-card">
+        <p style="color:var(--text-dim); font-size:13.5px; line-height:1.7;">شارك رابطك مع أصدقائك. كل صديق ينضم وينجز أول مهمة، بتاخذ <b style="color:var(--gold)">10 نقاط</b> فوراً.</p>
+        <div class="ref-link-row">
+          <input id="ref-link-input" readonly value="">
+          <button onclick="copyRefLink()">نسخ</button>
+        </div>
+        <div class="ref-stats">
+          <div class="ref-stat"><b id="ref-total">0</b><span>إحالات ناجحة</span></div>
+          <div class="ref-stat"><b id="ref-earned">0</b><span>نقاط من الإحالة</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: PROFILE -->
+    <div class="view" id="view-profile">
+      <div class="section-title">حسابي</div>
+      <div class="ref-card profile-card">
+        <div class="avatar" id="avatar-initial">؟</div>
+        <h3 id="profile-name" style="font-family:'Cairo';">—</h3>
+        <p style="color:var(--text-dim); font-size:13px; margin-top:4px;" id="profile-phone">—</p>
+        <div class="ref-stats" style="margin-top:20px;">
+          <div class="ref-stat"><b id="profile-points">0</b><span>نقطة</span></div>
+          <div class="ref-stat"><b id="profile-rank">—</b><span>ترتيبي</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= BOTTOM NAV ================= -->
+<nav class="bottom-nav" id="bottom-nav" style="display:none;">
+  <div class="bottom-nav-inner">
+    <button class="nav-item active" data-view="view-home"><span class="ic">🏠</span>الرئيسية</button>
+    <button class="nav-item" data-view="view-leaderboard"><span class="ic">🏆</span>المتصدرين</button>
+    <button class="nav-item" data-view="view-referral"><span class="ic">👥</span>الإحالة</button>
+    <button class="nav-item" data-view="view-profile"><span class="ic">👤</span>حسابي</button>
+  </div>
+</nav>
+
+<!-- ================= FIREBASE ================= -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, signInWithCustomToken, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, updateDoc, increment,
+    collection, query, orderBy, limit, getDocs, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getFunctions, httpsCallable
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+
+  // ⚠️ نفس بيانات Firebase اللي عندك من Project Settings
+  const firebaseConfig = {
+    apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
+    authDomain: "my-websit-2e275.firebaseapp.com",
+    projectId: "my-websit-2e275",
+    storageBucket: "my-websit-2e275.firebasestorage.app",
+    messagingSenderId: "1079052257822",
+    appId: "1:1079052257822:web:d3ef2e2d59d9ba40fc3c0f",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const functions = getFunctions(app);
+
+  // -------- 1) تحميل Telegram Login Widget --------
+  const TELEGRAM_BOT_USERNAME = "YourBotUsername"; // 🔧 غيّرها لاسم بوتك بدون @
+
+  const tgScript = document.createElement("script");
+  tgScript.async = true;
+  tgScript.src = "https://telegram.org/js/telegram-widget.js?22";
+  tgScript.setAttribute("data-telegram-login", TELEGRAM_BOT_USERNAME);
+  tgScript.setAttribute("data-size", "large");
+  tgScript.setAttribute("data-radius", "12");
+  tgScript.setAttribute("data-onauth", "onTelegramAuth(user)");
+  tgScript.setAttribute("data-request-access", "write");
+  document.getElementById("telegram-login-container").appendChild(tgScript);
+
+  // -------- 2) عند نجاح تسجيل الدخول بتلغرام --------
+  window.onTelegramAuth = async function(tgUser) {
+    document.getElementById("status-pill").textContent = "جاري تسجيل الدخول…";
+    try {
+      // استدعاء Cloud Function اللي تتحقق من توقيع تلغرام وترجع Firebase custom token
+      const verifyTelegramLogin = httpsCallable(functions, "verifyTelegramLogin");
+      const result = await verifyTelegramLogin(tgUser);
+      const { token } = result.data;
+      await signInWithCustomToken(auth, token);
+    } catch (err) {
+      console.error(err);
+      document.getElementById("status-pill").textContent = "فشل تسجيل الدخول";
+      alert("تعذر تسجيل الدخول، حاول مرة ثانية. (" + err.message + ")");
+    }
+  };
+
+  // -------- 3) عند تغيّر حالة المصادقة --------
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      document.getElementById("bottom-nav").style.display = "flex";
+      document.getElementById("status-pill").textContent = "متصل ✓";
+      await loadUserData(user.uid);
+      await loadTasks(user.uid);
+      await loadLeaderboard(user.uid);
+    } else {
+      document.getElementById("login-screen").style.display = "block";
+      document.getElementById("dashboard").style.display = "none";
+      document.getElementById("bottom-nav").style.display = "none";
+      document.getElementById("status-pill").textContent = "غير متصل";
+    }
+  });
+
+  // -------- 4) تحميل بيانات المستخدم --------
+  async function loadUserData(uid) {
+    const userRef = doc(db, "users", uid);
+    onSnapshot(userRef, (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      document.getElementById("user-points").textContent = data.points ?? 0;
+      document.getElementById("tasks-done").textContent = `${data.tasksDoneToday ?? 0} / 20`;
+      document.getElementById("ref-count").textContent = data.referralCount ?? 0;
+      document.getElementById("profile-name").textContent = data.name ?? "—";
+      document.getElementById("profile-phone").textContent = data.phone ?? "غير مسجل";
+      document.getElementById("profile-points").textContent = data.points ?? 0;
+      document.getElementById("avatar-initial").textContent = (data.name ?? "؟").charAt(0);
+      document.getElementById("ref-link-input").value = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=ref_${uid}`;
+      document.getElementById("ref-total").textContent = data.referralCount ?? 0;
+      document.getElementById("ref-earned").textContent = (data.referralCount ?? 0) * 10;
+      const progress = Math.min(100, ((data.tasksDoneToday ?? 0) / 20) * 100);
+      document.getElementById("tasks-progress").style.width = progress + "%";
+      document.getElementById("tasks-remaining").textContent = `${20 - (data.tasksDoneToday ?? 0)} متبقية`;
+    });
+  }
+
+  // -------- 5) تحميل المهام اليومية --------
+  async function loadTasks(uid) {
+    const tasksSnap = await getDocs(collection(db, "dailyTasks"));
+    const list = document.getElementById("tasks-list");
+    if (tasksSnap.empty) {
+      list.innerHTML = `<div class="empty-state">ما في مهام حالياً، تابعنا قريباً 👀</div>`;
+      return;
+    }
+    list.innerHTML = "";
+    tasksSnap.forEach((docSnap) => {
+      const t = docSnap.data();
+      const card = document.createElement("div");
+      card.className = "task-card";
+      card.innerHTML = `
+        <div class="task-icon">📋</div>
+        <div class="task-info">
+          <div class="t-name">${t.title ?? "مهمة"}</div>
+          <div class="t-points">+${t.points ?? 5} نقاط</div>
+        </div>
+        <button class="task-btn">إنجاز</button>
+      `;
+      card.querySelector("button").addEventListener("click", async (e) => {
+        e.target.textContent = "تم ✓";
+        e.target.classList.add("done");
+        e.target.disabled = true;
+        await updateDoc(doc(db, "users", uid), {
+          points: increment(t.points ?? 5),
+          tasksDoneToday: increment(1)
+        });
+      });
+      list.appendChild(card);
+    });
+  }
+
+  // -------- 6) تحميل المتصدرين --------
+  async function loadLeaderboard(uid) {
+    const q = query(collection(db, "users"), orderBy("points", "desc"), limit(10));
+    const snap = await getDocs(q);
+    const list = document.getElementById("leaderboard-list");
+    list.innerHTML = "";
+    let rank = 1;
+    snap.forEach((docSnap) => {
+      const d = docSnap.data();
+      const row = document.createElement("div");
+      row.className = "lb-row" + (docSnap.id === uid ? " lb-self" : "");
+      row.innerHTML = `
+        <div class="lb-rank ${rank <= 3 ? "top" : ""}">${rank}</div>
+        <div class="lb-name">${d.name ?? "مستخدم"}</div>
+        <div class="lb-points">${d.points ?? 0}</div>
+      `;
+      list.appendChild(row);
+      rank++;
+    });
+    if (snap.empty) list.innerHTML = `<div class="empty-state">لا يوجد متصدرين بعد، كن الأول!</div>`;
+  }
+
+  // -------- 7) نسخ رابط الإحالة --------
+  window.copyRefLink = function() {
+    const input = document.getElementById("ref-link-input");
+    navigator.clipboard.writeText(input.value);
+    const btn = document.querySelector(".ref-link-row button");
+    const original = btn.textContent;
+    btn.textContent = "تم!";
+    setTimeout(() => (btn.textContent = original), 1500);
+  };
+
+  // -------- 8) التنقل بين الشاشات --------
+  document.querySelectorAll(".nav-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.view).classList.add("active");
+    });
+  });
+</script>
+</body>
+</html>
