@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منصة النقاط — اربح وانت قاعد</title>
+<title>المتجر — شحن ألعاب واشتراكات</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -47,138 +47,135 @@
     font-size:12px; color:var(--text-dim); border:1px solid var(--hairline);
     padding:6px 12px; border-radius:999px;
   }
+  .cart-btn{
+    position:relative; width:38px; height:38px; border-radius:12px; background:var(--card);
+    border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center;
+    font-size:17px; cursor:pointer;
+  }
+  .cart-badge{
+    position:absolute; top:-6px; left:-6px; background:var(--gold); color:#1A140A;
+    font-size:10.5px; font-weight:800; border-radius:50%; width:18px; height:18px;
+    display:flex; align-items:center; justify-content:center;
+  }
 
   /* ---------- LOGIN SCREEN ---------- */
   #login-screen{ padding: 60px 18px 40px; text-align:center; }
-  .hero-coin{
-    width:120px; height:120px; margin:0 auto 28px; position:relative;
-  }
+  .hero-coin{ width:120px; height:120px; margin:0 auto 28px; position:relative; }
   .hero-coin svg{ width:100%; height:100%; }
-  .hero-title{
-    font-size: 30px; font-weight:900; line-height:1.35; margin-bottom:10px;
-  }
+  .hero-title{ font-size: 30px; font-weight:900; line-height:1.35; margin-bottom:10px; }
   .hero-title span{ color: var(--gold); }
   .hero-sub{ color: var(--text-dim); font-size:15px; line-height:1.7; margin-bottom:34px; }
-  #telegram-login-container{ display:flex; justify-content:center; margin-bottom: 18px; }
-  .trust-row{
-    display:flex; justify-content:center; gap:18px; margin-top: 28px;
-    color: var(--text-dim); font-size:12.5px;
+
+  .google-btn{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    background:#fff; color:#1A140A; font-weight:700; font-size:15px;
+    padding:13px 22px; border-radius:12px; border:none; cursor:pointer;
+    margin: 0 auto; width:100%; max-width:300px;
   }
+  .google-btn svg{ width:20px; height:20px; }
+
+  .trust-row{ display:flex; justify-content:center; gap:18px; margin-top: 28px; color: var(--text-dim); font-size:12.5px; }
   .trust-row span{ display:flex; align-items:center; gap:6px; }
   .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block; }
 
-  /* ---------- DASHBOARD ---------- */
-  #dashboard{ display:none; padding: 14px 18px 100px; }
-
-  .balance-card{
-    background: linear-gradient(155deg, var(--card), #14110f 120%);
-    border: 1px solid var(--hairline);
-    border-radius: 24px;
-    padding: 26px 22px;
-    margin: 14px 0 18px;
-    position: relative;
-    overflow: hidden;
-  }
-  .balance-card::before{
-    content:""; position:absolute; inset:-40% -10% auto auto; width:220px; height:220px;
-    background: radial-gradient(circle, var(--gold-soft), transparent 70%);
-  }
-  .balance-label{ color: var(--text-dim); font-size:13px; margin-bottom:6px; }
-  .balance-value{
-    font-family:'Cairo'; font-weight:900; font-size:46px; display:flex; align-items:baseline; gap:8px;
-  }
-  .balance-value small{ font-size:16px; color:var(--gold); font-weight:700; }
-  .balance-meta{
-    display:flex; justify-content:space-between; margin-top:18px; padding-top:16px;
-    border-top:1px dashed var(--hairline); font-size:13px; color:var(--text-dim);
-  }
-  .balance-meta b{ color: var(--text); display:block; font-size:15px; font-family:'Cairo'; }
+  /* ---------- APP ---------- */
+  #app{ display:none; padding: 14px 18px 100px; }
 
   .section-title{
-    font-family:'Cairo'; font-weight:800; font-size:16px; margin: 26px 0 12px;
+    font-family:'Cairo'; font-weight:800; font-size:16px; margin: 22px 0 12px;
     display:flex; align-items:center; justify-content:space-between;
   }
   .section-title small{ font-family:'Tajawal'; font-weight:400; color:var(--text-dim); font-size:12.5px; }
 
-  .task-card{
-    background: var(--card); border:1px solid var(--hairline); border-radius:16px;
-    padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:10px;
+  .cat-row{ display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; margin-bottom:6px; }
+  .cat-chip{
+    flex-shrink:0; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim);
+    padding:8px 16px; border-radius:999px; font-size:13px; cursor:pointer; white-space:nowrap;
   }
-  .task-icon{
-    width:40px; height:40px; border-radius:12px; background:var(--gold-soft);
-    display:flex; align-items:center; justify-content:center; color:var(--gold); font-size:18px; flex-shrink:0;
-  }
-  .task-info{ flex:1; }
-  .task-info .t-name{ font-weight:700; font-size:14.5px; margin-bottom:2px; }
-  .task-info .t-points{ font-size:12.5px; color:var(--gold); }
-  .task-btn{
-    background: var(--gold); color:#1A140A; font-weight:800; font-size:13px;
-    padding:9px 16px; border-radius:10px; border:none; cursor:pointer; white-space:nowrap;
-  }
-  .task-btn.done{ background:transparent; color:var(--green); border:1px solid var(--green); }
-  .task-progress-wrap{
-    display:flex; align-items:center; justify-content:space-between; margin-top:10px; margin-bottom:18px;
-    font-size:12.5px; color:var(--text-dim);
-  }
-  .progress-bar{
-    height:6px; background:var(--hairline); border-radius:99px; overflow:hidden; margin-top:8px;
-  }
-  .progress-fill{ height:100%; background: linear-gradient(90deg, var(--gold), #f1cf8a); width:0%; transition: width .5s; }
+  .cat-chip.active{ background:var(--gold); color:#1A140A; border-color:var(--gold); font-weight:700; }
 
-  .ref-card{
-    background: var(--card); border:1px solid var(--hairline); border-radius:16px; padding:16px;
+  .product-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+  .product-card{
+    background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:14px;
+    display:flex; flex-direction:column; gap:8px;
   }
-  .ref-link-row{
-    display:flex; gap:8px; margin-top:10px;
+  .product-icon{
+    width:44px; height:44px; border-radius:12px; background:var(--gold-soft);
+    display:flex; align-items:center; justify-content:center; font-size:20px;
   }
-  .ref-link-row input{
-    flex:1; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text-dim);
-    border-radius:10px; padding:10px 12px; font-size:12.5px; direction:ltr; text-align:left;
+  .product-name{ font-weight:700; font-size:13.5px; line-height:1.4; }
+  .product-price{ color:var(--gold); font-weight:800; font-family:'Cairo'; font-size:15px; }
+  .product-btn{
+    background:var(--gold-soft); color:var(--gold); border:none; border-radius:10px;
+    padding:8px; font-weight:800; font-size:13px; cursor:pointer; margin-top:4px;
   }
-  .ref-link-row button{
-    background:var(--gold); border:none; color:#1A140A; font-weight:800; border-radius:10px; padding:0 16px; font-size:13px; cursor:pointer;
-  }
-  .ref-stats{ display:flex; gap:14px; margin-top:14px; }
-  .ref-stat{ flex:1; background:var(--bg-soft); border-radius:12px; padding:10px; text-align:center; }
-  .ref-stat b{ display:block; font-family:'Cairo'; font-size:18px; color:var(--gold); }
-  .ref-stat span{ font-size:11.5px; color:var(--text-dim); }
 
-  .lb-row{
-    display:flex; align-items:center; gap:12px; padding:10px 4px; border-bottom:1px solid var(--hairline);
+  .view{ display:none; }
+  .view.active{ display:block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* CART / CHECKOUT */
+  .cart-item{
+    display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--hairline);
+    border-radius:14px; padding:12px; margin-bottom:10px;
   }
-  .lb-rank{ width:26px; font-family:'Cairo'; font-weight:800; color:var(--text-dim); text-align:center; }
-  .lb-rank.top{ color:var(--gold); }
-  .lb-name{ flex:1; font-size:14px; }
-  .lb-points{ font-size:13px; color:var(--gold); font-weight:700; }
-  .lb-self{ background:var(--gold-soft); border-radius:12px; }
+  .cart-item-info{ flex:1; }
+  .cart-item-name{ font-weight:700; font-size:13.5px; }
+  .cart-item-price{ color:var(--gold); font-size:12.5px; margin-top:2px; }
+  .qty-control{ display:flex; align-items:center; gap:8px; }
+  .qty-control button{
+    width:26px; height:26px; border-radius:8px; border:1px solid var(--hairline); background:var(--bg-soft);
+    color:var(--text); font-size:14px; cursor:pointer;
+  }
+  .remove-btn{ color:var(--red); font-size:12px; background:none; border:none; cursor:pointer; }
+
+  .summary-card{
+    background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:16px; margin-top:18px;
+  }
+  .summary-row{ display:flex; justify-content:space-between; font-size:13.5px; color:var(--text-dim); padding:6px 0; }
+  .summary-row.total{ color:var(--text); font-weight:800; font-family:'Cairo'; font-size:17px; border-top:1px dashed var(--hairline); margin-top:6px; padding-top:12px; }
+  .summary-row.total span:last-child{ color:var(--gold); }
+
+  .field{ margin-top:14px; }
+  .field label{ font-size:13px; color:var(--text-dim); display:block; margin-bottom:6px; }
+  .field input{
+    width:100%; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text);
+    border-radius:10px; padding:11px 12px; font-size:14px;
+  }
+  .primary-btn{
+    width:100%; background: linear-gradient(135deg, var(--gold), #b9883e); color:#1A140A; font-weight:800;
+    font-size:15px; padding:14px; border:none; border-radius:14px; cursor:pointer; margin-top:18px;
+  }
+  .primary-btn:disabled{ opacity:0.5; }
+
+  .payment-box{
+    background: var(--gold-soft); border:1px solid var(--gold); border-radius:14px; padding:16px; margin-top:16px;
+    font-size:13.5px; line-height:1.8;
+  }
+  .payment-box b{ color:var(--gold); }
+
+  .order-card{
+    background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:14px; margin-bottom:10px;
+  }
+  .order-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .status-badge{ font-size:11.5px; padding:4px 10px; border-radius:999px; font-weight:700; }
+  .status-pending{ background:rgba(212,162,76,0.18); color:var(--gold); }
+  .status-confirmed{ background:rgba(63,166,106,0.18); color:var(--green); }
+  .status-rejected{ background:rgba(180,84,58,0.18); color:var(--red); }
+
+  .empty-state{ text-align:center; color:var(--text-dim); font-size:13.5px; padding:30px 10px; }
 
   .bottom-nav{
-    position:fixed; bottom:0; left:0; right:0;
-    background: rgba(14,13,15,0.92); backdrop-filter: blur(10px);
-    border-top:1px solid var(--hairline);
-    display:flex; justify-content:center;
+    position:fixed; bottom:0; left:0; right:0; background: rgba(14,13,15,0.92); backdrop-filter: blur(10px);
+    border-top:1px solid var(--hairline); display:flex; justify-content:center;
   }
-  .bottom-nav-inner{
-    max-width:480px; width:100%; display:flex; justify-content:space-around; padding:10px 8px 14px;
-  }
+  .bottom-nav-inner{ max-width:480px; width:100%; display:flex; justify-content:space-around; padding:10px 8px 14px; }
   .nav-item{
     display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--text-dim); font-size:11px;
     background:none; border:none; cursor:pointer; flex:1;
   }
   .nav-item.active{ color: var(--gold); }
   .nav-item .ic{ font-size:18px; }
-
-  .view{ display:none; }
-  .view.active{ display:block; animation: fadeIn .25s ease; }
-  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-
-  .profile-card{ text-align:center; padding:24px; }
-  .avatar{
-    width:74px; height:74px; border-radius:50%; margin:0 auto 12px;
-    background: linear-gradient(135deg, var(--gold), #8a6422); display:flex; align-items:center; justify-content:center;
-    font-family:'Cairo'; font-weight:900; font-size:26px; color:#1A140A;
-  }
-  .empty-state{ text-align:center; color:var(--text-dim); font-size:13.5px; padding:30px 10px; }
 
   :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
   @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
@@ -187,8 +184,13 @@
 <body>
 
 <div class="topbar">
-  <div class="brand"><span class="coin"></span> منصة النقاط</div>
-  <div class="pill" id="status-pill">غير متصل</div>
+  <div class="brand"><span class="coin"></span> المتجر</div>
+  <div style="display:flex; gap:10px; align-items:center;">
+    <div class="pill" id="status-pill">غير متصل</div>
+    <button class="cart-btn" id="cart-trigger" style="display:none;">
+      🛒 <span class="cart-badge" id="cart-count">0</span>
+    </button>
+  </div>
 </div>
 
 <!-- ================= LOGIN SCREEN ================= -->
@@ -200,78 +202,72 @@
       <text x="60" y="70" text-anchor="middle" font-family="Cairo" font-size="30" font-weight="900" fill="#D4A24C">₪</text>
     </svg>
   </div>
-  <h1 class="hero-title">حوّل وقتك الفاضي<br><span>لنقاط حقيقية</span></h1>
-  <p class="hero-sub">سجّل دخولك بتلغرام بثانية، أنجز مهام يومية بسيطة، واطلع بالمتصدرين. كل نقطة بترصد فوراً على حسابك.</p>
+  <h1 class="hero-title">شحن ألعابك<br><span>وكل اشتراكاتك بمكان واحد</span></h1>
+  <p class="hero-sub">سجّل دخولك بحساب جوجل بثانية، تصفح المنتجات، وأكمل طلبك بسهولة وأمان.</p>
 
-  <div id="telegram-login-container">
-    <!-- Telegram Login Widget يُحقن هنا بـ JS -->
-  </div>
+  <button class="google-btn" id="google-login-btn">
+    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25c0-1.5-.2-3-.9-4.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 18.9 13 24 13c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5c-7.8 0-14.5 4.5-17.7 11.2z"/><path fill="#4CAF50" d="M24 45.5c5.1 0 9.8-1.9 13.3-5l-6.1-5.2C29.3 36.7 26.8 37.5 24 37.5c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5C9.4 41 16.1 45.5 24 45.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.5l6.1 5.2C40.9 35.9 44.5 31 44.5 25c0-1.5-.2-3-.9-4.5z"/></svg>
+    تسجيل الدخول بحساب جوجل
+  </button>
 
   <div class="trust-row">
-    <span><i class="dot"></i> تسجيل آمن عبر تلغرام</span>
+    <span><i class="dot"></i> تسجيل آمن عبر جوجل</span>
     <span><i class="dot"></i> بدون كلمة سر</span>
   </div>
 </section>
 
-<!-- ================= DASHBOARD ================= -->
-<div id="dashboard">
+<!-- ================= APP ================= -->
+<div id="app">
   <div class="container">
 
-    <!-- VIEW: HOME -->
+    <!-- VIEW: HOME / PRODUCTS -->
     <div class="view active" id="view-home">
-      <div class="balance-card">
-        <div class="balance-label">رصيدك الحالي</div>
-        <div class="balance-value"><span id="user-points">0</span><small>نقطة</small></div>
-        <div class="balance-meta">
-          <div>الترتيب<b id="user-rank">—</b></div>
-          <div>مهام اليوم<b id="tasks-done">0 / 20</b></div>
-          <div>إحالاتي<b id="ref-count">0</b></div>
-        </div>
-      </div>
+      <div class="section-title">التصنيفات</div>
+      <div class="cat-row" id="cat-row"></div>
 
-      <div class="section-title">المهام اليومية <small id="tasks-remaining"></small></div>
-      <div class="progress-bar"><div class="progress-fill" id="tasks-progress"></div></div>
-      <div id="tasks-list" style="margin-top:14px;">
-        <div class="empty-state">جاري تحميل المهام…</div>
+      <div class="section-title">المنتجات <small id="product-count"></small></div>
+      <div class="product-grid" id="product-grid">
+        <div class="empty-state" style="grid-column:1/-1;">جاري تحميل المنتجات…</div>
       </div>
     </div>
 
-    <!-- VIEW: LEADERBOARD -->
-    <div class="view" id="view-leaderboard">
-      <div class="section-title">المتصدرين هذا الشهر <small id="month-days-left"></small></div>
-      <div id="leaderboard-list" class="task-card" style="flex-direction:column; align-items:stretch;">
-        <div class="empty-state">جاري تحميل الترتيب…</div>
+    <!-- VIEW: CART -->
+    <div class="view" id="view-cart">
+      <div class="section-title">سلتي</div>
+      <div id="cart-list"><div class="empty-state">سلتك فاضية</div></div>
+      <div class="summary-card" id="cart-summary" style="display:none;">
+        <div class="summary-row"><span>عدد المنتجات</span><span id="cart-items-count">0</span></div>
+        <div class="summary-row total"><span>الإجمالي</span><span id="cart-total">0 $</span></div>
       </div>
+      <button class="primary-btn" id="checkout-btn" style="display:none;">إتمام الطلب</button>
     </div>
 
-    <!-- VIEW: REFERRAL -->
-    <div class="view" id="view-referral">
-      <div class="section-title">رابط الإحالة</div>
-      <div class="ref-card">
-        <p style="color:var(--text-dim); font-size:13.5px; line-height:1.7;">شارك رابطك مع أصدقائك. كل صديق ينضم وينجز أول مهمة، بتاخذ <b style="color:var(--gold)">10 نقاط</b> فوراً.</p>
-        <div class="ref-link-row">
-          <input id="ref-link-input" readonly value="">
-          <button onclick="copyRefLink()">نسخ</button>
-        </div>
-        <div class="ref-stats">
-          <div class="ref-stat"><b id="ref-total">0</b><span>إحالات ناجحة</span></div>
-          <div class="ref-stat"><b id="ref-earned">0</b><span>نقاط من الإحالة</span></div>
-        </div>
+    <!-- VIEW: CHECKOUT -->
+    <div class="view" id="view-checkout">
+      <div class="section-title">إتمام الطلب</div>
+      <div class="field">
+        <label>معرّفك باللعبة / حسابك (ID, username..)</label>
+        <input type="text" id="checkout-game-id" placeholder="مثال: 123456789">
       </div>
+      <div class="field">
+        <label>رقم واتساب أو تلغرام للتواصل</label>
+        <input type="text" id="checkout-contact" placeholder="مثال: +9639xxxxxxxx">
+      </div>
+      <div class="summary-card">
+        <div class="summary-row total"><span>المطلوب دفعه</span><span id="checkout-total">0 $</span></div>
+      </div>
+      <div class="payment-box">
+        <b>طريقة الدفع:</b><br>
+        حوّل المبلغ عبر <b>سيريتل كاش / USDT</b> ثم اضغط "تأكيد الطلب".<br>
+        رح يصير طلبك <b>"قيد المراجعة"</b> وبيتأكد يدوياً من الأدمن خلال وقت قصير بعد استلام التحويل.
+      </div>
+      <button class="primary-btn" id="confirm-order-btn">تأكيد الطلب</button>
     </div>
 
-    <!-- VIEW: PROFILE -->
-    <div class="view" id="view-profile">
-      <div class="section-title">حسابي</div>
-      <div class="ref-card profile-card">
-        <div class="avatar" id="avatar-initial">؟</div>
-        <h3 id="profile-name" style="font-family:'Cairo';">—</h3>
-        <p style="color:var(--text-dim); font-size:13px; margin-top:4px;" id="profile-phone">—</p>
-        <div class="ref-stats" style="margin-top:20px;">
-          <div class="ref-stat"><b id="profile-points">0</b><span>نقطة</span></div>
-          <div class="ref-stat"><b id="profile-rank">—</b><span>ترتيبي</span></div>
-        </div>
-      </div>
+    <!-- VIEW: ORDERS -->
+    <div class="view" id="view-orders">
+      <div class="section-title">طلباتي</div>
+      <div id="orders-list"><div class="empty-state">ما عندك طلبات بعد</div></div>
     </div>
 
   </div>
@@ -280,10 +276,9 @@
 <!-- ================= BOTTOM NAV ================= -->
 <nav class="bottom-nav" id="bottom-nav" style="display:none;">
   <div class="bottom-nav-inner">
-    <button class="nav-item active" data-view="view-home"><span class="ic">🏠</span>الرئيسية</button>
-    <button class="nav-item" data-view="view-leaderboard"><span class="ic">🏆</span>المتصدرين</button>
-    <button class="nav-item" data-view="view-referral"><span class="ic">👥</span>الإحالة</button>
-    <button class="nav-item" data-view="view-profile"><span class="ic">👤</span>حسابي</button>
+    <button class="nav-item active" data-view="view-home"><span class="ic">🛍️</span>المتجر</button>
+    <button class="nav-item" data-view="view-cart"><span class="ic">🛒</span>السلة</button>
+    <button class="nav-item" data-view="view-orders"><span class="ic">📦</span>طلباتي</button>
   </div>
 </nav>
 
@@ -291,17 +286,15 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
-    getAuth, signInWithCustomToken, onAuthStateChanged
+    getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+    getRedirectResult, onAuthStateChanged, signOut
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
-    getFirestore, doc, getDoc, setDoc, updateDoc, increment,
-    collection, query, orderBy, limit, getDocs, onSnapshot
+    getFirestore, collection, getDocs, addDoc, query, where, orderBy,
+    onSnapshot, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import {
-    getFunctions, httpsCallable
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
-  // ⚠️ نفس بيانات Firebase اللي عندك من Project Settings
+  // ⚠️ نفس بيانات Firebase تبعك من Project Settings
   const firebaseConfig = {
     apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
     authDomain: "my-websit-2e275.firebaseapp.com",
@@ -314,151 +307,261 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const functions = getFunctions(app);
+  const provider = new GoogleAuthProvider();
 
-  // -------- 1) تحميل Telegram Login Widget --------
-  const TELEGRAM_BOT_USERNAME = "YourBotUsername"; // 🔧 غيّرها لاسم بوتك بدون @
+  let currentUser = null;
+  let cart = []; // [{id, name, price, qty, icon}]
+  let allProducts = [];
+  let activeCategory = "الكل";
 
-  const tgScript = document.createElement("script");
-  tgScript.async = true;
-  tgScript.src = "https://telegram.org/js/telegram-widget.js?22";
-  tgScript.setAttribute("data-telegram-login", TELEGRAM_BOT_USERNAME);
-  tgScript.setAttribute("data-size", "large");
-  tgScript.setAttribute("data-radius", "12");
-  tgScript.setAttribute("data-onauth", "onTelegramAuth(user)");
-  tgScript.setAttribute("data-request-access", "write");
-  document.getElementById("telegram-login-container").appendChild(tgScript);
-
-  // -------- 2) عند نجاح تسجيل الدخول بتلغرام --------
-  window.onTelegramAuth = async function(tgUser) {
+  // -------- تسجيل الدخول بجوجل --------
+  document.getElementById("google-login-btn").addEventListener("click", async () => {
     document.getElementById("status-pill").textContent = "جاري تسجيل الدخول…";
     try {
-      // استدعاء Cloud Function اللي تتحقق من توقيع تلغرام وترجع Firebase custom token
-      const verifyTelegramLogin = httpsCallable(functions, "verifyTelegramLogin");
-      const result = await verifyTelegramLogin(tgUser);
-      const { token } = result.data;
-      await signInWithCustomToken(auth, token);
+      await signInWithPopup(auth, provider);
     } catch (err) {
       console.error(err);
-      document.getElementById("status-pill").textContent = "فشل تسجيل الدخول";
-      alert("تعذر تسجيل الدخول، حاول مرة ثانية. (" + err.message + ")");
+      // popup قد يُحظر على بعض المتصفحات بالموبايل، نجرب redirect كحل بديل
+      if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+        await signInWithRedirect(auth, provider);
+      } else {
+        alert("تعذر تسجيل الدخول: " + err.message);
+        document.getElementById("status-pill").textContent = "غير متصل";
+      }
     }
-  };
+  });
 
-  // -------- 3) عند تغيّر حالة المصادقة --------
   onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
     if (user) {
       document.getElementById("login-screen").style.display = "none";
-      document.getElementById("dashboard").style.display = "block";
+      document.getElementById("app").style.display = "block";
       document.getElementById("bottom-nav").style.display = "flex";
-      document.getElementById("status-pill").textContent = "متصل ✓";
-      await loadUserData(user.uid);
-      await loadTasks(user.uid);
-      await loadLeaderboard(user.uid);
+      document.getElementById("cart-trigger").style.display = "flex";
+      document.getElementById("status-pill").textContent = user.displayName || "متصل ✓";
+      await loadProducts();
+      loadOrders();
     } else {
       document.getElementById("login-screen").style.display = "block";
-      document.getElementById("dashboard").style.display = "none";
+      document.getElementById("app").style.display = "none";
       document.getElementById("bottom-nav").style.display = "none";
+      document.getElementById("cart-trigger").style.display = "none";
       document.getElementById("status-pill").textContent = "غير متصل";
     }
   });
 
-  // -------- 4) تحميل بيانات المستخدم --------
-  async function loadUserData(uid) {
-    const userRef = doc(db, "users", uid);
-    onSnapshot(userRef, (snap) => {
-      if (!snap.exists()) return;
-      const data = snap.data();
-      document.getElementById("user-points").textContent = data.points ?? 0;
-      document.getElementById("tasks-done").textContent = `${data.tasksDoneToday ?? 0} / 20`;
-      document.getElementById("ref-count").textContent = data.referralCount ?? 0;
-      document.getElementById("profile-name").textContent = data.name ?? "—";
-      document.getElementById("profile-phone").textContent = data.phone ?? "غير مسجل";
-      document.getElementById("profile-points").textContent = data.points ?? 0;
-      document.getElementById("avatar-initial").textContent = (data.name ?? "؟").charAt(0);
-      document.getElementById("ref-link-input").value = `https://t.me/${TELEGRAM_BOT_USERNAME}?start=ref_${uid}`;
-      document.getElementById("ref-total").textContent = data.referralCount ?? 0;
-      document.getElementById("ref-earned").textContent = (data.referralCount ?? 0) * 10;
-      const progress = Math.min(100, ((data.tasksDoneToday ?? 0) / 20) * 100);
-      document.getElementById("tasks-progress").style.width = progress + "%";
-      document.getElementById("tasks-remaining").textContent = `${20 - (data.tasksDoneToday ?? 0)} متبقية`;
-    });
-  }
+  // -------- تحميل المنتجات --------
+  async function loadProducts() {
+    const snap = await getDocs(collection(db, "products"));
+    allProducts = [];
+    snap.forEach((d) => allProducts.push({ id: d.id, ...d.data() }));
 
-  // -------- 5) تحميل المهام اليومية --------
-  async function loadTasks(uid) {
-    const tasksSnap = await getDocs(collection(db, "dailyTasks"));
-    const list = document.getElementById("tasks-list");
-    if (tasksSnap.empty) {
-      list.innerHTML = `<div class="empty-state">ما في مهام حالياً، تابعنا قريباً 👀</div>`;
+    if (allProducts.length === 0) {
+      document.getElementById("product-grid").innerHTML =
+        `<div class="empty-state" style="grid-column:1/-1;">ما في منتجات بعد، أضفها من Firestore (collection "products")</div>`;
       return;
     }
-    list.innerHTML = "";
-    tasksSnap.forEach((docSnap) => {
-      const t = docSnap.data();
-      const card = document.createElement("div");
-      card.className = "task-card";
-      card.innerHTML = `
-        <div class="task-icon">📋</div>
-        <div class="task-info">
-          <div class="t-name">${t.title ?? "مهمة"}</div>
-          <div class="t-points">+${t.points ?? 5} نقاط</div>
-        </div>
-        <button class="task-btn">إنجاز</button>
-      `;
-      card.querySelector("button").addEventListener("click", async (e) => {
-        e.target.textContent = "تم ✓";
-        e.target.classList.add("done");
-        e.target.disabled = true;
-        await updateDoc(doc(db, "users", uid), {
-          points: increment(t.points ?? 5),
-          tasksDoneToday: increment(1)
-        });
+
+    const categories = ["الكل", ...new Set(allProducts.map((p) => p.category || "عام"))];
+    const catRow = document.getElementById("cat-row");
+    catRow.innerHTML = "";
+    categories.forEach((cat) => {
+      const chip = document.createElement("button");
+      chip.className = "cat-chip" + (cat === activeCategory ? " active" : "");
+      chip.textContent = cat;
+      chip.addEventListener("click", () => {
+        activeCategory = cat;
+        document.querySelectorAll(".cat-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        renderProducts();
       });
-      list.appendChild(card);
+      catRow.appendChild(chip);
     });
+
+    renderProducts();
   }
 
-  // -------- 6) تحميل المتصدرين --------
-  async function loadLeaderboard(uid) {
-    const q = query(collection(db, "users"), orderBy("points", "desc"), limit(10));
-    const snap = await getDocs(q);
-    const list = document.getElementById("leaderboard-list");
-    list.innerHTML = "";
-    let rank = 1;
-    snap.forEach((docSnap) => {
-      const d = docSnap.data();
-      const row = document.createElement("div");
-      row.className = "lb-row" + (docSnap.id === uid ? " lb-self" : "");
-      row.innerHTML = `
-        <div class="lb-rank ${rank <= 3 ? "top" : ""}">${rank}</div>
-        <div class="lb-name">${d.name ?? "مستخدم"}</div>
-        <div class="lb-points">${d.points ?? 0}</div>
+  function renderProducts() {
+    const grid = document.getElementById("product-grid");
+    const filtered = activeCategory === "الكل"
+      ? allProducts
+      : allProducts.filter((p) => (p.category || "عام") === activeCategory);
+
+    document.getElementById("product-count").textContent = `(${filtered.length})`;
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">ما في منتجات بهذا التصنيف</div>`;
+      return;
+    }
+
+    grid.innerHTML = "";
+    filtered.forEach((p) => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <div class="product-icon">${p.icon || "🎮"}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">${p.price} $</div>
+        <button class="product-btn">أضف للسلة</button>
       `;
-      list.appendChild(row);
-      rank++;
+      card.querySelector("button").addEventListener("click", () => addToCart(p));
+      grid.appendChild(card);
     });
-    if (snap.empty) list.innerHTML = `<div class="empty-state">لا يوجد متصدرين بعد، كن الأول!</div>`;
   }
 
-  // -------- 7) نسخ رابط الإحالة --------
-  window.copyRefLink = function() {
-    const input = document.getElementById("ref-link-input");
-    navigator.clipboard.writeText(input.value);
-    const btn = document.querySelector(".ref-link-row button");
-    const original = btn.textContent;
-    btn.textContent = "تم!";
-    setTimeout(() => (btn.textContent = original), 1500);
-  };
+  // -------- السلة --------
+  function addToCart(product) {
+    const existing = cart.find((c) => c.id === product.id);
+    if (existing) existing.qty += 1;
+    else cart.push({ id: product.id, name: product.name, price: product.price, icon: product.icon || "🎮", qty: 1 });
+    updateCartUI();
+    const btn = document.querySelector(`.product-card button`);
+  }
 
-  // -------- 8) التنقل بين الشاشات --------
-  document.querySelectorAll(".nav-item").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("active"));
-      document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(btn.dataset.view).classList.add("active");
+  function updateCartUI() {
+    const totalQty = cart.reduce((sum, c) => sum + c.qty, 0);
+    document.getElementById("cart-count").textContent = totalQty;
+
+    const list = document.getElementById("cart-list");
+    const summary = document.getElementById("cart-summary");
+    const checkoutBtn = document.getElementById("checkout-btn");
+
+    if (cart.length === 0) {
+      list.innerHTML = `<div class="empty-state">سلتك فاضية</div>`;
+      summary.style.display = "none";
+      checkoutBtn.style.display = "none";
+      return;
+    }
+
+    list.innerHTML = "";
+    let total = 0;
+    cart.forEach((item) => {
+      total += item.price * item.qty;
+      const row = document.createElement("div");
+      row.className = "cart-item";
+      row.innerHTML = `
+        <div style="font-size:24px;">${item.icon}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">${item.price} $ × ${item.qty}</div>
+        </div>
+        <div class="qty-control">
+          <button data-action="dec">−</button>
+          <span>${item.qty}</span>
+          <button data-action="inc">+</button>
+        </div>
+      `;
+      row.querySelector('[data-action="inc"]').addEventListener("click", () => { item.qty++; updateCartUI(); });
+      row.querySelector('[data-action="dec"]').addEventListener("click", () => {
+        item.qty--;
+        if (item.qty <= 0) cart = cart.filter((c) => c.id !== item.id);
+        updateCartUI();
+      });
+      list.appendChild(row);
     });
+
+    document.getElementById("cart-items-count").textContent = totalQty;
+    document.getElementById("cart-total").textContent = total.toFixed(2) + " $";
+    summary.style.display = "block";
+    checkoutBtn.style.display = "block";
+  }
+
+  document.getElementById("cart-trigger").addEventListener("click", () => switchView("view-cart"));
+
+  document.getElementById("checkout-btn").addEventListener("click", () => {
+    const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
+    document.getElementById("checkout-total").textContent = total.toFixed(2) + " $";
+    switchView("view-checkout");
+  });
+
+  // -------- تأكيد الطلب --------
+  document.getElementById("confirm-order-btn").addEventListener("click", async () => {
+    const gameId = document.getElementById("checkout-game-id").value.trim();
+    const contact = document.getElementById("checkout-contact").value.trim();
+
+    if (!gameId || !contact) {
+      alert("الرجاء تعبئة كل الحقول");
+      return;
+    }
+    if (cart.length === 0) {
+      alert("سلتك فاضية");
+      return;
+    }
+
+    const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
+    const btn = document.getElementById("confirm-order-btn");
+    btn.disabled = true;
+    btn.textContent = "جاري إرسال الطلب…";
+
+    try {
+      await addDoc(collection(db, "orders"), {
+        uid: currentUser.uid,
+        userName: currentUser.displayName,
+        userEmail: currentUser.email,
+        items: cart,
+        total: total,
+        gameId: gameId,
+        contact: contact,
+        status: "pending", // pending | confirmed | rejected
+        createdAt: serverTimestamp(),
+      });
+
+      cart = [];
+      updateCartUI();
+      document.getElementById("checkout-game-id").value = "";
+      document.getElementById("checkout-contact").value = "";
+      alert("تم إرسال طلبك بنجاح! بيصير قيد المراجعة لحد ما يتأكد الدفع.");
+      switchView("view-orders");
+    } catch (err) {
+      console.error(err);
+      alert("حدث خطأ: " + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "تأكيد الطلب";
+    }
+  });
+
+  // -------- طلباتي --------
+  function loadOrders() {
+    const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snap) => {
+      const list = document.getElementById("orders-list");
+      if (snap.empty) {
+        list.innerHTML = `<div class="empty-state">ما عندك طلبات بعد</div>`;
+        return;
+      }
+      list.innerHTML = "";
+      snap.forEach((docSnap) => {
+        const o = docSnap.data();
+        const statusText = { pending: "قيد المراجعة", confirmed: "مؤكد ✓", rejected: "مرفوض" }[o.status] || "قيد المراجعة";
+        const statusClass = { pending: "status-pending", confirmed: "status-confirmed", rejected: "status-rejected" }[o.status] || "status-pending";
+        const itemsSummary = o.items.map((i) => `${i.name} ×${i.qty}`).join(" — ");
+        const card = document.createElement("div");
+        card.className = "order-card";
+        card.innerHTML = `
+          <div class="order-row">
+            <span style="font-weight:700; font-size:13.5px;">طلب #${docSnap.id.slice(0, 6)}</span>
+            <span class="status-badge ${statusClass}">${statusText}</span>
+          </div>
+          <div style="color:var(--text-dim); font-size:12.5px; margin-bottom:4px;">${itemsSummary}</div>
+          <div style="color:var(--gold); font-weight:700; font-size:14px;">${o.total} $</div>
+        `;
+        list.appendChild(card);
+      });
+    });
+  }
+
+  // -------- التنقل --------
+  function switchView(viewId) {
+    document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
+    const navBtn = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+    if (navBtn) navBtn.classList.add("active");
+    document.getElementById(viewId).classList.add("active");
+  }
+
+  document.querySelectorAll(".nav-item").forEach((btn) => {
+    btn.addEventListener("click", () => switchView(btn.dataset.view));
   });
 </script>
 </body>
