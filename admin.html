@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم — المتجر</title>
+<title>لوحة التحكم — Digital Syria Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -21,11 +21,15 @@
   h1,h2,h3,.display{ font-family:'Cairo', sans-serif; }
   .container{ max-width: 600px; margin: 0 auto; padding: 0 16px 100px; }
   .topbar{ display:flex; align-items:center; justify-content:space-between; padding:18px 16px; max-width:600px; margin:0 auto; }
-  .brand{ display:flex; align-items:center; gap:8px; font-family:'Cairo'; font-weight:900; font-size:17px; }
+  .brand{ display:flex; align-items:center; gap:8px; font-family:'Cairo'; font-weight:900; font-size:16px; }
   .brand .coin{ width:20px; height:20px; border-radius:50%; background: conic-gradient(from 180deg, var(--gold), #f1cf8a, var(--gold)); box-shadow: 0 0 10px rgba(212,162,76,0.5); }
   .pill{ font-size:11.5px; color:var(--text-dim); border:1px solid var(--hairline); padding:5px 11px; border-radius:999px; }
 
-  #login-screen{ padding: 80px 18px; text-align:center; }
+  #splash{ position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; }
+  #splash .coin{ width:50px; height:50px; border-radius:50%; background: conic-gradient(from 180deg, var(--gold), #f1cf8a, var(--gold)); box-shadow:0 0 18px rgba(212,162,76,0.6); animation: spin 1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  #login-screen{ display:none; padding: 80px 18px; text-align:center; }
   .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#1A140A; font-weight:700; font-size:15px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; margin:24px auto 0; width:100%; max-width:300px; }
   .google-btn svg{ width:20px; height:20px; }
 
@@ -54,8 +58,8 @@
   .card-info{ flex:1; min-width:0; }
   .card-info .t-name{ font-weight:700; font-size:14px; }
   .card-info .t-meta{ font-size:12px; color:var(--text-dim); margin-top:2px; }
-  .card-actions{ display:flex; gap:6px; margin-top:10px; }
-  .icon-btn{ flex:1; border:1px solid var(--hairline); background:var(--bg-soft); color:var(--text); border-radius:9px; padding:8px; font-size:12.5px; cursor:pointer; }
+  .card-actions{ display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+  .icon-btn{ flex:1; min-width:90px; border:1px solid var(--hairline); background:var(--bg-soft); color:var(--text); border-radius:9px; padding:8px; font-size:12.5px; cursor:pointer; }
   .icon-btn.danger{ color:var(--red); border-color:rgba(180,84,58,0.3); }
   .icon-btn.success{ color:var(--green); border-color:rgba(63,166,106,0.3); }
   .icon-btn.gold{ color:var(--gold); border-color:rgba(212,162,76,0.3); }
@@ -70,6 +74,11 @@
   .field input, .field textarea, .field select{ width:100%; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text); border-radius:10px; padding:10px 12px; font-size:13.5px; font-family:'Tajawal'; }
   .field textarea{ resize:vertical; min-height:70px; }
 
+  .file-drop{ border:1.5px dashed var(--hairline); border-radius:12px; padding:14px; text-align:center; font-size:12.5px; color:var(--text-dim); cursor:pointer; }
+  .file-drop input{ display:none; }
+  .file-preview{ margin-top:10px; width:80px; height:80px; border-radius:10px; overflow:hidden; border:1px solid var(--hairline); }
+  .file-preview img{ width:100%; height:100%; object-fit:cover; display:block; }
+
   .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:flex-end; justify-content:center; z-index:50; }
   .modal-backdrop.active{ display:flex; }
   .modal{ background:var(--bg); border:1px solid var(--hairline); border-radius:24px 24px 0 0; padding:22px 18px 30px; width:100%; max-width:600px; max-height:85vh; overflow-y:auto; }
@@ -81,18 +90,21 @@
   .empty-state{ text-align:center; color:var(--text-dim); font-size:13px; padding:24px 10px; }
   .hint{ font-size:12px; color:var(--text-dim); line-height:1.7; margin-top:4px; }
   .order-items-list{ font-size:12px; color:var(--text-dim); margin-top:6px; line-height:1.6; }
+  .receipt-thumb{ width:60px; height:60px; border-radius:8px; object-fit:cover; margin-top:6px; cursor:pointer; }
 </style>
 </head>
 <body>
 
+<div id="splash"><div class="coin"></div></div>
+
 <div class="topbar">
-  <div class="brand"><span class="coin"></span> لوحة التحكم</div>
+  <div class="brand"><span class="coin"></span> لوحة Digital Syria Store</div>
   <div class="pill" id="status-pill">غير متصل</div>
 </div>
 
 <!-- ===== LOGIN ===== -->
 <section id="login-screen" class="container">
-  <h1 style="font-size:24px; font-weight:900;">دخول الأدمن فقط</h1>
+  <h1 style="font-size:22px; font-weight:900;">دخول الأدمن فقط</h1>
   <p class="hint" style="text-align:center; margin-top:10px;">سجّل دخولك بنفس حساب جوجل المسجّل كأدمن بقاعدة البيانات.</p>
   <button class="google-btn" id="google-login-btn">
     <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25c0-1.5-.2-3-.9-4.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 18.9 13 24 13c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5c-7.8 0-14.5 4.5-17.7 11.2z"/><path fill="#4CAF50" d="M24 45.5c5.1 0 9.8-1.9 13.3-5l-6.1-5.2C29.3 36.7 26.8 37.5 24 37.5c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5C9.4 41 16.1 45.5 24 45.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.5l6.1 5.2C40.9 35.9 44.5 31 44.5 25c0-1.5-.2-3-.9-4.5z"/></svg>
@@ -107,8 +119,9 @@
     <button class="tab active" data-panel="panel-overview">نظرة عامة</button>
     <button class="tab" data-panel="panel-orders">الطلبات</button>
     <button class="tab" data-panel="panel-products">المنتجات</button>
-    <button class="tab" data-panel="panel-payment">محفظة الدفع</button>
-    <button class="tab" data-panel="panel-api">إعدادات API</button>
+    <button class="tab" data-panel="panel-wallet">المحفظة</button>
+    <button class="tab" data-panel="panel-topups">طلبات الشحن</button>
+    <button class="tab" data-panel="panel-payment">طرق الدفع</button>
   </div>
 
   <div class="container">
@@ -137,10 +150,23 @@
       <div id="products-list"><div class="empty-state">جاري التحميل…</div></div>
     </div>
 
+    <!-- WALLET -->
+    <div class="panel" id="panel-wallet">
+      <div class="section-title">رصيد المستخدمين</div>
+      <p class="hint">تقدر تضيف أو تخصم رصيد يدوياً من أي مستخدم.</p>
+      <div id="users-list" style="margin-top:14px;"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <!-- TOPUPS -->
+    <div class="panel" id="panel-topups">
+      <div class="section-title">طلبات شحن الرصيد</div>
+      <div id="topups-list"><div class="empty-state">لا يوجد طلبات بعد</div></div>
+    </div>
+
     <!-- PAYMENT -->
     <div class="panel" id="panel-payment">
-      <div class="section-title">محفظة الدفع</div>
-      <p class="hint">هاي البيانات بتظهر مباشرة بصفحة إتمام الطلب عند المستخدم. أي تعديل هون بينعكس فوراً.</p>
+      <div class="section-title">طرق الدفع</div>
+      <p class="hint">هاي البيانات بتظهر بصفحة إتمام الطلب وطلب شحن الرصيد عند المستخدم. أي تعديل هون بينعكس فوراً.</p>
       <div class="field" style="margin-top:14px;">
         <label>رقم سيريتل كاش / MTN كاش</label>
         <input type="text" id="pay-cash">
@@ -151,28 +177,9 @@
       </div>
       <div class="field">
         <label>تعليمات إضافية للمستخدم</label>
-        <textarea id="pay-instructions" placeholder="مثال: بعد التحويل أرسل صورة الإيصال للأدمن عبر واتساب..."></textarea>
+        <textarea id="pay-instructions" placeholder="مثال: بعد التحويل أرسل صورة الإيصال للأدمن عبر تلغرام..."></textarea>
       </div>
-      <button class="primary-btn" id="save-payment-btn">حفظ التغييرات</button>
-    </div>
-
-    <!-- API SETTINGS -->
-    <div class="panel" id="panel-api">
-      <div class="section-title">ربط مصدر API خارجي</div>
-      <p class="hint">هاد القسم لتخزين بيانات API مزوّد خدمة (مثل Action Cash). البيانات بتُخزن هون، لكن الجلب الفعلي للمنتجات من الـ API الخارجي بحاجة Cloud Function منفصلة (موضح بالـ README) لأسباب أمان (CORS + حماية المفتاح).</p>
-      <div class="field" style="margin-top:14px;">
-        <label>اسم المزوّد</label>
-        <input type="text" id="api-provider" placeholder="مثال: Action Cash">
-      </div>
-      <div class="field">
-        <label>رابط API الأساسي (Base URL)</label>
-        <input type="text" id="api-baseurl" placeholder="https://example.com/api">
-      </div>
-      <div class="field">
-        <label>مفتاح API</label>
-        <input type="text" id="api-key" placeholder="API Key">
-      </div>
-      <button class="primary-btn" id="save-api-btn">حفظ إعدادات API</button>
+      <button class="primary-btn" id="save-payment-btn" style="width:100%;">حفظ التغييرات</button>
     </div>
 
   </div>
@@ -186,13 +193,44 @@
     <div class="field"><label>اسم المنتج</label><input type="text" id="p-name"></div>
     <div class="field"><label>السعر ($)</label><input type="number" id="p-price" step="0.01"></div>
     <div class="field"><label>التصنيف</label><input type="text" id="p-category" placeholder="مثال: شحن ألعاب"></div>
-    <div class="field"><label>رابط صورة المنتج (اختياري)</label><input type="text" id="p-image" placeholder="https://..."></div>
-    <div class="field"><label>إيموجي (لو ما في صورة)</label><input type="text" id="p-icon" placeholder="🎮"></div>
+    <div class="field">
+      <label>صورة المنتج (من جهازك)</label>
+      <div class="file-drop" id="p-image-drop">📷 اضغط لاختيار صورة من جهازك</div>
+      <input type="file" id="p-image-input" accept="image/*">
+      <div class="file-preview" id="p-image-preview" style="display:none;"><img id="p-image-preview-img"></div>
+    </div>
+    <div class="field"><label>إيموجي (لو ما حابب ترفع صورة)</label><input type="text" id="p-icon" placeholder="🎮"></div>
     <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="p-desc"></textarea></div>
     <div class="modal-btn-row">
       <button class="secondary-btn" id="product-cancel-btn">إلغاء</button>
       <button class="primary-btn" id="product-save-btn">حفظ</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== WALLET ADJUST MODAL ===== -->
+<div class="modal-backdrop" id="wallet-modal-backdrop">
+  <div class="modal">
+    <h3>تعديل رصيد <span id="wallet-modal-user"></span></h3>
+    <input type="hidden" id="wallet-edit-uid">
+    <p class="hint">الرصيد الحالي: <b id="wallet-current-balance" style="color:var(--gold);">0 $</b></p>
+    <div class="field" style="margin-top:12px;">
+      <label>المبلغ</label>
+      <input type="number" id="wallet-amount" step="0.01" placeholder="مثال: 10">
+    </div>
+    <div class="modal-btn-row">
+      <button class="secondary-btn" id="wallet-deduct-btn" style="color:var(--red);">خصم −</button>
+      <button class="primary-btn" id="wallet-add-btn">إضافة +</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RECEIPT VIEW MODAL ===== -->
+<div class="modal-backdrop" id="receipt-modal-backdrop">
+  <div class="modal" style="text-align:center;">
+    <h3>صورة الإيصال</h3>
+    <img id="receipt-modal-img" style="max-width:100%; border-radius:12px;">
+    <button class="secondary-btn" id="receipt-modal-close" style="margin-top:16px;">إغلاق</button>
   </div>
 </div>
 
@@ -202,10 +240,9 @@
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
-    onSnapshot, query, orderBy
+    onSnapshot, query, orderBy, runTransaction
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ⚠️ نفس بيانات Firebase تبعك
   const firebaseConfig = {
     apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
     authDomain: "my-websit-2e275.firebaseapp.com",
@@ -223,6 +260,9 @@
   let currentUser = null;
   let allOrders = [];
   let allProducts = [];
+  let allUsers = [];
+  let allTopups = [];
+  let pImageData = "";
 
   document.getElementById("google-login-btn").addEventListener("click", async () => {
     try { await signInWithPopup(auth, provider); }
@@ -230,6 +270,7 @@
   });
 
   onAuthStateChanged(auth, async (user) => {
+    document.getElementById("splash").style.display = "none";
     if (!user) {
       currentUser = null;
       document.getElementById("login-screen").style.display = "block";
@@ -238,9 +279,9 @@
       return;
     }
 
-    // تحقق إنه هذا المستخدم أدمن فعلاً (موجود بـ collection "admins")
     const adminDoc = await getDoc(doc(db, "admins", user.uid));
     if (!adminDoc.exists()) {
+      document.getElementById("login-screen").style.display = "block";
       document.getElementById("denied-msg").style.display = "block";
       document.getElementById("status-pill").textContent = "غير مصرّح";
       await auth.signOut();
@@ -254,11 +295,11 @@
 
     listenOrders();
     listenProducts();
+    listenUsers();
+    listenTopups();
     loadPaymentSettings();
-    loadApiSettings();
   });
 
-  // -------- التنقل بين التابات --------
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
@@ -268,12 +309,44 @@
     });
   });
 
+  // ============== ضغط الصور ==============
+  function compressImageToDataUrl(file, maxWidth = 500, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxWidth / img.width);
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById("p-image-drop").addEventListener("click", () => document.getElementById("p-image-input").click());
+  document.getElementById("p-image-input").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    pImageData = await compressImageToDataUrl(file);
+    document.getElementById("p-image-preview-img").src = pImageData;
+    document.getElementById("p-image-preview").style.display = "block";
+  });
+
   // ============== الطلبات ==============
   function listenOrders() {
-    const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (snap) => {
+    onSnapshot(collection(db, "orders"), (snap) => {
       allOrders = [];
       snap.forEach((d) => allOrders.push({ id: d.id, ...d.data() }));
+      allOrders.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
       renderOverview();
       renderOrders();
     });
@@ -287,6 +360,7 @@
 
   function orderCardHTML(o) {
     const itemsText = (o.items || []).map((i) => `${i.name} ×${i.qty}`).join(" — ");
+    const receiptHTML = o.receiptImage ? `<img src="${o.receiptImage}" class="receipt-thumb" data-receipt="${o.id}">` : "";
     return `
       <div class="card" data-id="${o.id}">
         <div class="card-row">
@@ -295,7 +369,9 @@
             <div class="t-meta">${o.userEmail || ""}</div>
             <div class="order-items-list">${itemsText}</div>
             <div class="t-meta">معرّف اللعبة: ${o.gameId || "—"} | تواصل: ${o.contact || "—"}</div>
-            <div style="color:var(--gold); font-weight:700; margin-top:6px;">${o.total} $</div>
+            ${o.note ? `<div class="t-meta">ملاحظة: ${o.note}</div>` : ""}
+            <div style="color:var(--gold); font-weight:700; margin-top:6px;">${o.total} $ ${o.paymentMethod === "balance" ? "(من الرصيد)" : ""}</div>
+            ${receiptHTML}
           </div>
         </div>
         ${o.status === "pending" ? `
@@ -315,6 +391,7 @@
     if (allOrders.length === 0) { list.innerHTML = `<div class="empty-state">لا يوجد طلبات بعد</div>`; return; }
     list.innerHTML = allOrders.map(orderCardHTML).join("");
     attachOrderActions(list);
+    attachReceiptViewers(list);
   }
 
   function attachOrderActions(container) {
@@ -330,6 +407,18 @@
     });
   }
 
+  function attachReceiptViewers(container) {
+    container.querySelectorAll("[data-receipt]").forEach((img) => {
+      img.addEventListener("click", () => {
+        document.getElementById("receipt-modal-img").src = img.src;
+        document.getElementById("receipt-modal-backdrop").classList.add("active");
+      });
+    });
+  }
+  document.getElementById("receipt-modal-close").addEventListener("click", () => {
+    document.getElementById("receipt-modal-backdrop").classList.remove("active");
+  });
+
   function renderOverview() {
     const pending = allOrders.filter((o) => o.status === "pending").length;
     const confirmed = allOrders.filter((o) => o.status === "confirmed").length;
@@ -343,6 +432,7 @@
     if (allOrders.length === 0) { recent.innerHTML = `<div class="empty-state">لا يوجد طلبات بعد</div>`; return; }
     recent.innerHTML = allOrders.slice(0, 5).map(orderCardHTML).join("");
     attachOrderActions(recent);
+    attachReceiptViewers(recent);
   }
 
   // ============== المنتجات ==============
@@ -358,10 +448,12 @@
   function renderProducts() {
     const list = document.getElementById("products-list");
     if (allProducts.length === 0) { list.innerHTML = `<div class="empty-state">ما في منتجات بعد، أضف أول منتج</div>`; return; }
-    list.innerHTML = allProducts.map((p) => `
+    list.innerHTML = allProducts.map((p) => {
+      const imageSrc = p.imageData || p.imageUrl;
+      return `
       <div class="card" data-id="${p.id}">
         <div class="card-row">
-          <div class="card-thumb">${p.imageUrl ? `<img src="${p.imageUrl}">` : (p.icon || "🎮")}</div>
+          <div class="card-thumb">${imageSrc ? `<img src="${imageSrc}">` : (p.icon || "🎮")}</div>
           <div class="card-info">
             <div class="t-name">${p.name}</div>
             <div class="t-meta">${p.category || "عام"} • ${p.price} $</div>
@@ -372,7 +464,8 @@
           <button class="icon-btn danger" data-action="delete">🗑 حذف</button>
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
 
     list.querySelectorAll(".card").forEach((card) => {
       const id = card.dataset.id;
@@ -390,9 +483,15 @@
     document.getElementById("p-name").value = product?.name || "";
     document.getElementById("p-price").value = product?.price ?? "";
     document.getElementById("p-category").value = product?.category || "";
-    document.getElementById("p-image").value = product?.imageUrl || "";
     document.getElementById("p-icon").value = product?.icon || "🎮";
     document.getElementById("p-desc").value = product?.description || "";
+    pImageData = product?.imageData || "";
+    if (pImageData) {
+      document.getElementById("p-image-preview-img").src = pImageData;
+      document.getElementById("p-image-preview").style.display = "block";
+    } else {
+      document.getElementById("p-image-preview").style.display = "none";
+    }
     document.getElementById("product-modal-backdrop").classList.add("active");
   }
 
@@ -407,19 +506,148 @@
       name: document.getElementById("p-name").value.trim(),
       price: parseFloat(document.getElementById("p-price").value) || 0,
       category: document.getElementById("p-category").value.trim() || "عام",
-      imageUrl: document.getElementById("p-image").value.trim(),
+      imageData: pImageData || "",
       icon: document.getElementById("p-icon").value.trim() || "🎮",
       description: document.getElementById("p-desc").value.trim(),
     };
     if (!data.name) { alert("الرجاء كتابة اسم المنتج"); return; }
 
-    if (id) await updateDoc(doc(db, "products", id), data);
-    else await addDoc(collection(db, "products"), data);
-
-    document.getElementById("product-modal-backdrop").classList.remove("active");
+    try {
+      if (id) await updateDoc(doc(db, "products", id), data);
+      else await addDoc(collection(db, "products"), data);
+      document.getElementById("product-modal-backdrop").classList.remove("active");
+      pImageData = "";
+    } catch (err) {
+      alert("تعذر الحفظ، يمكن الصورة كبيرة جداً: " + err.message);
+    }
   });
 
-  // ============== محفظة الدفع ==============
+  // ============== المحفظة ==============
+  function listenUsers() {
+    onSnapshot(collection(db, "users"), (snap) => {
+      allUsers = [];
+      snap.forEach((d) => allUsers.push({ id: d.id, ...d.data() }));
+      renderUsers();
+    });
+  }
+
+  function renderUsers() {
+    const list = document.getElementById("users-list");
+    if (allUsers.length === 0) { list.innerHTML = `<div class="empty-state">ما في مستخدمين بعد</div>`; return; }
+    list.innerHTML = allUsers.map((u) => `
+      <div class="card" data-uid="${u.id}">
+        <div class="card-row">
+          <div class="card-info">
+            <div class="t-name">${u.name || "مستخدم"}</div>
+            <div class="t-meta">${u.email || ""}</div>
+            <div style="color:var(--gold); font-weight:800; margin-top:6px; font-family:'Cairo';">${(u.balance || 0).toFixed(2)} $</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn gold" data-action="adjust">تعديل الرصيد</button>
+        </div>
+      </div>
+    `).join("");
+
+    list.querySelectorAll(".card").forEach((card) => {
+      const uid = card.dataset.uid;
+      const user = allUsers.find((u) => u.id === uid);
+      card.querySelector('[data-action="adjust"]').addEventListener("click", () => openWalletModal(user));
+    });
+  }
+
+  function openWalletModal(user) {
+    document.getElementById("wallet-edit-uid").value = user.id;
+    document.getElementById("wallet-modal-user").textContent = user.name || user.email || "";
+    document.getElementById("wallet-current-balance").textContent = (user.balance || 0).toFixed(2) + " $";
+    document.getElementById("wallet-amount").value = "";
+    document.getElementById("wallet-modal-backdrop").classList.add("active");
+  }
+
+  async function adjustBalance(delta) {
+    const uid = document.getElementById("wallet-edit-uid").value;
+    const amount = parseFloat(document.getElementById("wallet-amount").value);
+    if (!amount || amount <= 0) { alert("اكتب مبلغ صحيح"); return; }
+    const userRef = doc(db, "users", uid);
+    try {
+      await runTransaction(db, async (transaction) => {
+        const snap = await transaction.get(userRef);
+        const current = snap.exists() ? (snap.data().balance || 0) : 0;
+        const updated = current + delta * amount;
+        transaction.update(userRef, { balance: updated < 0 ? 0 : updated });
+      });
+      document.getElementById("wallet-modal-backdrop").classList.remove("active");
+    } catch (err) {
+      alert("حدث خطأ: " + err.message);
+    }
+  }
+  document.getElementById("wallet-add-btn").addEventListener("click", () => adjustBalance(1));
+  document.getElementById("wallet-deduct-btn").addEventListener("click", () => adjustBalance(-1));
+
+  // ============== طلبات الشحن ==============
+  function listenTopups() {
+    onSnapshot(collection(db, "topups"), (snap) => {
+      allTopups = [];
+      snap.forEach((d) => allTopups.push({ id: d.id, ...d.data() }));
+      allTopups.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      renderTopups();
+    });
+  }
+
+  function renderTopups() {
+    const list = document.getElementById("topups-list");
+    if (allTopups.length === 0) { list.innerHTML = `<div class="empty-state">لا يوجد طلبات بعد</div>`; return; }
+    list.innerHTML = allTopups.map((t) => {
+      const receiptHTML = t.receiptImage ? `<img src="${t.receiptImage}" class="receipt-thumb" data-receipt="${t.id}">` : "";
+      return `
+      <div class="card" data-id="${t.id}">
+        <div class="card-row">
+          <div class="card-info">
+            <div class="t-name">${t.userName || "مستخدم"} ${statusBadge(t.status)}</div>
+            <div class="t-meta">${t.userEmail || ""}</div>
+            ${t.note ? `<div class="t-meta">ملاحظة: ${t.note}</div>` : ""}
+            <div style="color:var(--gold); font-weight:800; margin-top:6px;">${t.amount} $</div>
+            ${receiptHTML}
+          </div>
+        </div>
+        ${t.status === "pending" ? `
+        <div class="card-actions">
+          <button class="icon-btn success" data-action="confirm">✓ تأكيد وإضافة للرصيد</button>
+          <button class="icon-btn danger" data-action="reject">✕ رفض</button>
+        </div>` : ""}
+      </div>
+    `;
+    }).join("");
+
+    list.querySelectorAll(".card").forEach((card) => {
+      const id = card.dataset.id;
+      const topup = allTopups.find((t) => t.id === id);
+      const confirmBtn = card.querySelector('[data-action="confirm"]');
+      const rejectBtn = card.querySelector('[data-action="reject"]');
+      if (confirmBtn) confirmBtn.addEventListener("click", () => confirmTopup(topup));
+      if (rejectBtn) rejectBtn.addEventListener("click", async () => {
+        await updateDoc(doc(db, "topups", id), { status: "rejected" });
+      });
+    });
+    attachReceiptViewers(list);
+  }
+
+  async function confirmTopup(topup) {
+    const userRef = doc(db, "users", topup.uid);
+    const topupRef = doc(db, "topups", topup.id);
+    try {
+      await runTransaction(db, async (transaction) => {
+        const userSnap = await transaction.get(userRef);
+        const current = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
+        transaction.update(userRef, { balance: current + topup.amount });
+        transaction.update(topupRef, { status: "confirmed" });
+      });
+    } catch (err) {
+      alert("حدث خطأ: " + err.message);
+    }
+  }
+
+  // ============== طرق الدفع ==============
   async function loadPaymentSettings() {
     const snap = await getDoc(doc(db, "settings", "payment"));
     if (snap.exists()) {
@@ -437,26 +665,6 @@
       instructions: document.getElementById("pay-instructions").value.trim(),
     });
     alert("تم حفظ بيانات الدفع، رح تظهر فوراً عند المستخدم.");
-  });
-
-  // ============== إعدادات API ==============
-  async function loadApiSettings() {
-    const snap = await getDoc(doc(db, "settings", "api"));
-    if (snap.exists()) {
-      const d = snap.data();
-      document.getElementById("api-provider").value = d.provider || "";
-      document.getElementById("api-baseurl").value = d.baseUrl || "";
-      document.getElementById("api-key").value = d.apiKey || "";
-    }
-  }
-
-  document.getElementById("save-api-btn").addEventListener("click", async () => {
-    await setDoc(doc(db, "settings", "api"), {
-      provider: document.getElementById("api-provider").value.trim(),
-      baseUrl: document.getElementById("api-baseurl").value.trim(),
-      apiKey: document.getElementById("api-key").value.trim(),
-    });
-    alert("تم حفظ إعدادات API. تذكر: الجلب الفعلي للمنتجات يحتاج Cloud Function (راجع README).");
   });
 </script>
 </body>
