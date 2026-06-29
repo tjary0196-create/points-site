@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+  /* نفس الأنماط السابقة مع إضافة قسم الإعدادات */
   :root{
     --bg: #0E0D0F; --bg-soft: #171517; --card: #1C1A1D;
     --gold: #D4A24C; --gold-soft: rgba(212,162,76,0.14);
@@ -36,6 +37,14 @@
 
   #app{ display:none; }
 
+  .tabs{ display:flex; gap:8px; overflow-x:auto; padding:0 16px 12px; max-width:700px; margin:0 auto; }
+  .tab{ flex-shrink:0; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); padding:9px 16px; border-radius:999px; font-size:13px; cursor:pointer; white-space:nowrap; }
+  .tab.active{ background:var(--gold); color:#1A140A; border-color:var(--gold); font-weight:700; }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
   .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:18px; }
   .stat-card{ background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:20px; position:relative; overflow:hidden; }
   .stat-card .icon{ font-size:30px; position:absolute; left:15px; top:15px; opacity:0.2; pointer-events:none; }
@@ -48,14 +57,6 @@
   #toast{ position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--gold); color:#1A140A; padding:14px 24px; border-radius:16px; font-weight:bold; box-shadow:0 8px 20px rgba(0,0,0,0.6); opacity:0; transition:0.3s; z-index:100; pointer-events:none; }
   #toast.show{ opacity:1; transform:translateX(-50%) translateY(-10px); }
   #toast.error{ background:var(--red); color:white; }
-
-  .tabs{ display:flex; gap:8px; overflow-x:auto; padding:0 16px 12px; max-width:700px; margin:0 auto; }
-  .tab{ flex-shrink:0; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); padding:9px 16px; border-radius:999px; font-size:13px; cursor:pointer; white-space:nowrap; }
-  .tab.active{ background:var(--gold); color:#1A140A; border-color:var(--gold); font-weight:700; }
-
-  .panel{ display:none; }
-  .panel.active{ display:block; animation: fadeIn .25s ease; }
-  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 
   .section-title{ font-family:'Cairo'; font-weight:800; font-size:16px; margin:18px 0 12px; display:flex; justify-content:space-between; align-items:center; }
   .add-btn{ background:var(--gold); color:#1A140A; border:none; border-radius:10px; padding:8px 14px; font-weight:800; font-size:13px; cursor:pointer; }
@@ -128,6 +129,7 @@
     <button class="tab" data-panel="panel-products">المنتجات</button>
     <button class="tab" data-panel="panel-wallet">المحفظة</button>
     <button class="tab" data-panel="panel-topups">طلبات الشحن</button>
+    <button class="tab" data-panel="panel-settings">الإعدادات</button> <!-- قسم جديد -->
   </div>
 
   <div class="container">
@@ -162,16 +164,36 @@
       <div class="section-title">طلبات شحن الرصيد</div>
       <div id="topups-list"><div class="empty-state">لا يوجد طلبات بعد</div></div>
     </div>
+
+    <!-- قسم الإعدادات الجديد -->
+    <div class="panel" id="panel-settings">
+      <div class="section-title">إعدادات البانر الإعلاني</div>
+      <p class="hint">هنا يمكنك تحديد صورة الإعلان، النص، والرابط الذي يفتح عند الضغط عليه.</p>
+      <div class="field">
+        <label>رابط صورة البانر (اختياري)</label>
+        <input type="text" id="banner-image" placeholder="مثال: https://example.com/banner.jpg">
+      </div>
+      <div class="field">
+        <label>نص الإعلان (يظهر إذا لم تضع صورة)</label>
+        <input type="text" id="banner-text" placeholder="مثال: خصم 20% على جميع الألعاب!">
+      </div>
+      <div class="field">
+        <label>رابط التحويل (عند الضغط على البانر)</label>
+        <input type="text" id="banner-link" placeholder="مثال: https://t.me/DigitalSyriaStore">
+      </div>
+      <button class="primary-btn" id="save-settings-btn" style="width:100%;">حفظ الإعدادات</button>
+    </div>
   </div>
 </div>
 
+<!-- Modals (Product, Wallet, Receipt) -->
 <div class="modal-backdrop" id="product-modal-backdrop">
   <div class="modal">
     <h3 id="product-modal-title">منتج جديد</h3>
     <input type="hidden" id="product-edit-id">
     <div class="field"><label>اسم المنتج</label><input type="text" id="p-name"></div>
     <div class="field"><label>السعر ($)</label><input type="number" id="p-price" step="0.01"></div>
-    <div class="field"><label>التصنيف</label><input type="text" id="p-category" placeholder="مثال: شحن ألعاب"></div>
+    <div class="field"><label>التصنيف</label><input type="text" id="p-category" placeholder="مثال: ألعاب, تطبيقات, بطاقات"></div>
     <div class="field">
       <label>صورة المنتج (من جهازك)</label>
       <div class="file-drop" id="p-image-drop">📷 اضغط لاختيار صورة من جهازك</div>
@@ -283,6 +305,7 @@
     listenProducts();
     listenUsers();
     listenTopups();
+    loadSettings();
   });
 
   document.querySelectorAll(".tab").forEach((tab) => {
@@ -325,6 +348,37 @@
     document.getElementById("p-image-preview").style.display = "block";
   });
 
+  // إعدادات المتجر (تحميل)
+  async function loadSettings() {
+    try {
+      const snap = await getDoc(doc(db, "settings", "banner"));
+      if (snap.exists()) {
+        const data = snap.data();
+        document.getElementById("banner-image").value = data.imageUrl || "";
+        document.getElementById("banner-text").value = data.text || "";
+        document.getElementById("banner-link").value = data.link || "";
+      }
+    } catch (err) {
+      showToast("خطأ في تحميل الإعدادات", true);
+    }
+  }
+
+  // حفظ إعدادات المتجر
+  document.getElementById("save-settings-btn").addEventListener("click", async () => {
+    const data = {
+      imageUrl: document.getElementById("banner-image").value.trim(),
+      text: document.getElementById("banner-text").value.trim(),
+      link: document.getElementById("banner-link").value.trim(),
+    };
+    try {
+      await setDoc(doc(db, "settings", "banner"), data);
+      showToast("تم حفظ إعدادات البانر بنجاح!");
+    } catch (err) {
+      showToast("خطأ في الحفظ: " + err.message, true);
+    }
+  });
+
+  // ----- Orders (نفس الكود السابق) -----
   function listenOrders() {
     onSnapshot(collection(db, "orders"), (snap) => {
       allOrders = [];
@@ -413,6 +467,7 @@
     document.getElementById("receipt-modal-backdrop").classList.remove("active");
   });
 
+  // ----- Products -----
   function listenProducts() {
     onSnapshot(collection(db, "products"), (snap) => {
       allProducts = [];
@@ -500,6 +555,7 @@
     }
   });
 
+  // ----- Users & Wallet -----
   function listenUsers() {
     onSnapshot(collection(db, "users"), (snap) => {
       allUsers = [];
@@ -562,6 +618,7 @@
   document.getElementById("wallet-add-btn").addEventListener("click", () => adjustBalance(1));
   document.getElementById("wallet-deduct-btn").addEventListener("click", () => adjustBalance(-1));
 
+  // ----- Topups -----
   function listenTopups() {
     onSnapshot(collection(db, "topups"), (snap) => {
       allTopups = [];
@@ -624,7 +681,6 @@
       showToast("حدث خطأ: " + err.message, true);
     }
   }
-
 </script>
 </body>
 </html>
