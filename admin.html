@@ -18,24 +18,29 @@
     background: radial-gradient(circle at 50% -10%, #221c14 0%, var(--bg) 55%);
     color: var(--text); font-family:'Tajawal', sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3,.display{ font-family:'Cairo', sans-serif; }
-  .container{ max-width: 600px; margin: 0 auto; padding: 0 16px 100px; }
-  .topbar{ display:flex; align-items:center; justify-content:space-between; padding:18px 16px; max-width:600px; margin:0 auto; }
-  .brand{ display:flex; align-items:center; gap:8px; font-family:'Cairo'; font-weight:900; font-size:16px; }
+  .container{ max-width: 700px; margin: 0 auto; padding: 0 16px 100px; }
+  
+  /* الشريط العلوي */
+  .topbar{ display:flex; align-items:center; justify-content:space-between; padding:18px 16px; max-width:700px; margin:0 auto; }
+  .brand{ display:flex; align-items:center; gap:8px; font-family:'Cairo'; font-weight:900; font-size:16px; color:var(--gold); }
   .brand .coin{ width:20px; height:20px; border-radius:50%; background: conic-gradient(from 180deg, var(--gold), #f1cf8a, var(--gold)); box-shadow: 0 0 10px rgba(212,162,76,0.5); }
   .pill{ font-size:11.5px; color:var(--text-dim); border:1px solid var(--hairline); padding:5px 11px; border-radius:999px; }
 
+  /* شاشة البداية */
   #splash{ position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; }
   #splash .coin{ width:50px; height:50px; border-radius:50%; background: conic-gradient(from 180deg, var(--gold), #f1cf8a, var(--gold)); box-shadow:0 0 18px rgba(212,162,76,0.6); animation: spin 1s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
+  /* تسجيل الدخول */
   #login-screen{ display:none; padding: 80px 18px; text-align:center; }
   .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#1A140A; font-weight:700; font-size:15px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; margin:24px auto 0; width:100%; max-width:300px; }
   .google-btn svg{ width:20px; height:20px; }
 
+  /* التطبيق */
   #app{ display:none; }
 
-  .tabs{ display:flex; gap:8px; overflow-x:auto; padding:0 16px 12px; max-width:600px; margin:0 auto; }
+  /* قائمة التبويبات */
+  .tabs{ display:flex; gap:8px; overflow-x:auto; padding:0 16px 12px; max-width:700px; margin:0 auto; }
   .tab{ flex-shrink:0; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); padding:9px 16px; border-radius:999px; font-size:13px; cursor:pointer; white-space:nowrap; }
   .tab.active{ background:var(--gold); color:#1A140A; border-color:var(--gold); font-weight:700; }
 
@@ -43,14 +48,24 @@
   .panel.active{ display:block; animation: fadeIn .25s ease; }
   @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 
-  .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
-  .stat-card{ background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:16px; }
-  .stat-card .num{ font-family:'Cairo'; font-weight:900; font-size:26px; color:var(--gold); }
+  /* بطاقات الإحصائيات المتحركة */
+  .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:18px; }
+  .stat-card{ background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:20px; position:relative; overflow:hidden; }
+  .stat-card .icon{ font-size:30px; position:absolute; left:15px; top:15px; opacity:0.2; pointer-events:none; }
+  .stat-card .num{ font-family:'Cairo'; font-weight:900; font-size:28px; color:var(--gold); }
   .stat-card .lbl{ font-size:12px; color:var(--text-dim); margin-top:4px; }
+  .stat-card.gold{ border-color:var(--gold); background: rgba(212,162,76,0.1); }
+  .stat-card.green{ border-color:var(--green); background: rgba(63,166,106,0.1); }
+  .stat-card.red{ border-color:var(--red); background: rgba(180,84,58,0.1); }
 
+  /* إشعار (Toast Notification) */
+  #toast{ position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--gold); color:#1A140A; padding:14px 24px; border-radius:16px; font-weight:bold; box-shadow:0 8px 20px rgba(0,0,0,0.6); opacity:0; transition:0.3s; z-index:100; pointer-events:none; }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(-10px); }
+  #toast.error{ background:var(--red); color:white; }
+
+  /* باقي العناصر مثل البطاقات، الحقول، إلخ */
   .section-title{ font-family:'Cairo'; font-weight:800; font-size:16px; margin:18px 0 12px; display:flex; justify-content:space-between; align-items:center; }
   .add-btn{ background:var(--gold); color:#1A140A; border:none; border-radius:10px; padding:8px 14px; font-weight:800; font-size:13px; cursor:pointer; }
-
   .card{ background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:14px; margin-bottom:10px; }
   .card-row{ display:flex; gap:12px; align-items:flex-start; }
   .card-thumb{ width:48px; height:48px; border-radius:12px; background:var(--gold-soft); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; overflow:hidden; }
@@ -63,37 +78,29 @@
   .icon-btn.danger{ color:var(--red); border-color:rgba(180,84,58,0.3); }
   .icon-btn.success{ color:var(--green); border-color:rgba(63,166,106,0.3); }
   .icon-btn.gold{ color:var(--gold); border-color:rgba(212,162,76,0.3); }
-
+  .primary-btn{ background: linear-gradient(135deg, var(--gold), #b9883e); color:#1A140A; font-weight:800; font-size:14.5px; padding:13px; border:none; border-radius:12px; cursor:pointer; width:100%; }
+  .secondary-btn{ background:var(--card); color:var(--text-dim); font-weight:700; font-size:14.5px; padding:13px; border:1px solid var(--hairline); border-radius:12px; cursor:pointer; }
   .status-badge{ font-size:11px; padding:4px 9px; border-radius:999px; font-weight:700; }
   .status-pending{ background:rgba(212,162,76,0.18); color:var(--gold); }
   .status-confirmed{ background:rgba(63,166,106,0.18); color:var(--green); }
   .status-rejected{ background:rgba(180,84,58,0.18); color:var(--red); }
+  .empty-state{ text-align:center; color:var(--text-dim); font-size:13px; padding:24px 10px; }
 
-  .field{ margin-bottom:12px; }
-  .field label{ font-size:12.5px; color:var(--text-dim); display:block; margin-bottom:5px; }
-  .field input, .field textarea, .field select{ width:100%; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text); border-radius:10px; padding:10px 12px; font-size:13.5px; font-family:'Tajawal'; }
-  .field textarea{ resize:vertical; min-height:70px; }
-  .field.invalid input{ border-color:var(--red); }
-  .field .field-error{ display:none; color:var(--red); font-size:12px; margin-top:4px; }
-  .field.invalid .field-error{ display:block; }
-
-  .file-drop{ border:1.5px dashed var(--hairline); border-radius:12px; padding:14px; text-align:center; font-size:12.5px; color:var(--text-dim); cursor:pointer; }
-  .file-drop input{ display:none; }
-  .file-preview{ margin-top:10px; width:80px; height:80px; border-radius:10px; overflow:hidden; border:1px solid var(--hairline); }
-  .file-preview img{ width:100%; height:100%; object-fit:cover; display:block; }
-
+  /* نافذة تعديل المنتج */
   .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:flex-end; justify-content:center; z-index:50; }
   .modal-backdrop.active{ display:flex; }
   .modal{ background:var(--bg); border:1px solid var(--hairline); border-radius:24px 24px 0 0; padding:22px 18px 30px; width:100%; max-width:600px; max-height:85vh; overflow-y:auto; }
   .modal h3{ font-size:17px; margin-bottom:16px; }
   .modal-btn-row{ display:flex; gap:10px; margin-top:16px; }
-  .primary-btn{ flex:1; background: linear-gradient(135deg, var(--gold), #b9883e); color:#1A140A; font-weight:800; font-size:14.5px; padding:13px; border:none; border-radius:12px; cursor:pointer; }
-  .secondary-btn{ flex:1; background:var(--card); color:var(--text-dim); font-weight:700; font-size:14.5px; padding:13px; border:1px solid var(--hairline); border-radius:12px; cursor:pointer; }
+  .field{ margin-bottom:12px; }
+  .field label{ font-size:12.5px; color:var(--text-dim); display:block; margin-bottom:5px; }
+  .field input, .field textarea, .field select{ width:100%; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text); border-radius:10px; padding:10px 12px; font-size:13.5px; font-family:'Tajawal'; }
+  .field textarea{ resize:vertical; min-height:70px; }
+  .file-drop{ border:1.5px dashed var(--hairline); border-radius:12px; padding:14px; text-align:center; font-size:12.5px; color:var(--text-dim); cursor:pointer; }
+  .file-drop input{ display:none; }
+  .file-preview{ margin-top:10px; width:80px; height:80px; border-radius:10px; overflow:hidden; border:1px solid var(--hairline); }
+  .file-preview img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-  .empty-state{ text-align:center; color:var(--text-dim); font-size:13px; padding:24px 10px; }
-  .hint{ font-size:12px; color:var(--text-dim); line-height:1.7; margin-top:4px; }
-  .order-items-list{ font-size:12px; color:var(--text-dim); margin-top:6px; line-height:1.6; }
-  .receipt-thumb{ width:60px; height:60px; border-radius:8px; object-fit:cover; margin-top:6px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -101,7 +108,7 @@
 <div id="splash"><div class="coin"></div></div>
 
 <div class="topbar">
-  <div class="brand"><span class="coin"></span> لوحة Digital Syria Store</div>
+  <div class="brand"><span class="coin"></span> Digital Syria Store</div>
   <div class="pill" id="status-pill">غير متصل</div>
 </div>
 
@@ -132,10 +139,10 @@
     <!-- OVERVIEW -->
     <div class="panel active" id="panel-overview">
       <div class="stat-grid">
-        <div class="stat-card"><div class="num" id="stat-pending">0</div><div class="lbl">طلبات قيد المراجعة</div></div>
-        <div class="stat-card"><div class="num" id="stat-confirmed">0</div><div class="lbl">طلبات مؤكدة</div></div>
-        <div class="stat-card"><div class="num" id="stat-revenue">0 $</div><div class="lbl">إجمالي الإيرادات المؤكدة</div></div>
-        <div class="stat-card"><div class="num" id="stat-products">0</div><div class="lbl">عدد المنتجات</div></div>
+        <div class="stat-card gold"><span class="icon">💰</span><div class="num" id="stat-revenue">0</div><div class="lbl">الإيرادات المؤكدة</div></div>
+        <div class="stat-card green"><span class="icon">📦</span><div class="num" id="stat-confirmed">0</div><div class="lbl">الطلبات المؤكدة</div></div>
+        <div class="stat-card red"><span class="icon">⏳</span><div class="num" id="stat-pending">0</div><div class="lbl">قيد المراجعة</div></div>
+        <div class="stat-card"><span class="icon">🛒</span><div class="num" id="stat-products">0</div><div class="lbl">عدد المنتجات</div></div>
       </div>
       <div class="section-title">آخر الطلبات</div>
       <div id="recent-orders"><div class="empty-state">لا يوجد طلبات بعد</div></div>
@@ -182,13 +189,13 @@
         <label>تعليمات إضافية للمستخدم</label>
         <textarea id="pay-instructions" placeholder="مثال: بعد التحويل أرسل صورة الإيصال للأدمن عبر تلغرام..."></textarea>
       </div>
-      <button class="primary-btn" id="save-payment-btn" style="width:100%;">حفظ التغييرات</button>
+      <button class="primary-btn" id="save-payment-btn">حفظ التغييرات</button>
     </div>
 
   </div>
 </div>
 
-<!-- ===== PRODUCT MODAL ===== -->
+<!-- ===== MODALS ===== -->
 <div class="modal-backdrop" id="product-modal-backdrop">
   <div class="modal">
     <h3 id="product-modal-title">منتج جديد</h3>
@@ -211,39 +218,16 @@
   </div>
 </div>
 
-<!-- ===== WALLET ADJUST MODAL ===== -->
-<div class="modal-backdrop" id="wallet-modal-backdrop">
-  <div class="modal">
-    <h3>تعديل رصيد <span id="wallet-modal-user"></span></h3>
-    <input type="hidden" id="wallet-edit-uid">
-    <p class="hint">الرصيد الحالي: <b id="wallet-current-balance" style="color:var(--gold);">0 $</b></p>
-    <div class="field" style="margin-top:12px;">
-      <label>المبلغ</label>
-      <input type="number" id="wallet-amount" step="0.01" placeholder="مثال: 10">
-    </div>
-    <div class="modal-btn-row">
-      <button class="secondary-btn" id="wallet-deduct-btn" style="color:var(--red);">خصم −</button>
-      <button class="primary-btn" id="wallet-add-btn">إضافة +</button>
-    </div>
-  </div>
-</div>
+<!-- ===== TOAST ===== -->
+<div id="toast">تمت العملية بنجاح</div>
 
-<!-- ===== RECEIPT VIEW MODAL ===== -->
-<div class="modal-backdrop" id="receipt-modal-backdrop">
-  <div class="modal" style="text-align:center;">
-    <h3>صورة الإيصال</h3>
-    <img id="receipt-modal-img" style="max-width:100%; border-radius:12px;">
-    <button class="secondary-btn" id="receipt-modal-close" style="margin-top:16px;">إغلاق</button>
-  </div>
-</div>
-
-<!-- ===== FIREBASE ===== -->
+<!-- ===== FIREBASE SCRIPT ===== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
-    onSnapshot, query, orderBy, runTransaction
+    onSnapshot, query, runTransaction
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -267,9 +251,18 @@
   let allTopups = [];
   let pImageData = "";
 
+  // Toast Notification Function
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = isError ? 'error' : '';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+
   document.getElementById("google-login-btn").addEventListener("click", async () => {
     try { await signInWithPopup(auth, provider); }
-    catch (err) { console.error("تعذر تسجيل الدخول: " + err.message); }
+    catch (err) { showToast("تعذر تسجيل الدخول: " + err.message, true); }
   });
 
   onAuthStateChanged(auth, async (user) => {
@@ -343,6 +336,7 @@
     document.getElementById("p-image-preview").style.display = "block";
   });
 
+  // ===== ORDERS =====
   function listenOrders() {
     onSnapshot(collection(db, "orders"), (snap) => {
       allOrders = [];
@@ -361,7 +355,7 @@
 
   function orderCardHTML(o) {
     const itemsText = (o.items || []).map((i) => `${i.name} ×${i.qty}`).join(" — ");
-    const receiptHTML = o.receiptImage ? `<img src="${o.receiptImage}" class="receipt-thumb" data-receipt="${o.id}">` : "";
+    const receiptHTML = o.receiptImage ? `<img src="${o.receiptImage}" class="receipt-thumb" onclick="showReceipt('${o.receiptImage}')">` : "";
     return `
       <div class="card" data-id="${o.id}">
         <div class="card-row">
@@ -392,7 +386,6 @@
     if (allOrders.length === 0) { list.innerHTML = `<div class="empty-state">لا يوجد طلبات بعد</div>`; return; }
     list.innerHTML = allOrders.map(orderCardHTML).join("");
     attachOrderActions(list);
-    attachReceiptViewers(list);
   }
 
   function attachOrderActions(container) {
@@ -403,22 +396,11 @@
           const action = btn.dataset.action;
           const newStatus = action === "confirm" ? "confirmed" : action === "reject" ? "rejected" : "pending";
           await updateDoc(doc(db, "orders", id), { status: newStatus });
+          showToast(`تم تغيير حالة الطلب إلى ${newStatus === 'confirmed' ? 'مؤكد' : newStatus === 'rejected' ? 'مرفوض' : 'قيد المراجعة'}`);
         });
       });
     });
   }
-
-  function attachReceiptViewers(container) {
-    container.querySelectorAll("[data-receipt]").forEach((img) => {
-      img.addEventListener("click", () => {
-        document.getElementById("receipt-modal-img").src = img.src;
-        document.getElementById("receipt-modal-backdrop").classList.add("active");
-      });
-    });
-  }
-  document.getElementById("receipt-modal-close").addEventListener("click", () => {
-    document.getElementById("receipt-modal-backdrop").classList.remove("active");
-  });
 
   function renderOverview() {
     const pending = allOrders.filter((o) => o.status === "pending").length;
@@ -433,9 +415,9 @@
     if (allOrders.length === 0) { recent.innerHTML = `<div class="empty-state">لا يوجد طلبات بعد</div>`; return; }
     recent.innerHTML = allOrders.slice(0, 5).map(orderCardHTML).join("");
     attachOrderActions(recent);
-    attachReceiptViewers(recent);
   }
 
+  // ===== PRODUCTS =====
   function listenProducts() {
     onSnapshot(collection(db, "products"), (snap) => {
       allProducts = [];
@@ -510,18 +492,20 @@
       icon: document.getElementById("p-icon").value.trim() || "🎮",
       description: document.getElementById("p-desc").value.trim(),
     };
-    if (!data.name) { /*alert("الرجاء كتابة اسم المنتج");*/ return; }
+    if (!data.name) { showToast("الرجاء كتابة اسم المنتج", true); return; }
 
     try {
       if (id) await updateDoc(doc(db, "products", id), data);
       else await addDoc(collection(db, "products"), data);
       document.getElementById("product-modal-backdrop").classList.remove("active");
       pImageData = "";
+      showToast("تم حفظ المنتج بنجاح!");
     } catch (err) {
-      console.error("تعذر الحفظ: " + err.message);
+      showToast("تعذر الحفظ: " + err.message, true);
     }
   });
 
+  // ===== WALLET & USERS =====
   function listenUsers() {
     onSnapshot(collection(db, "users"), (snap) => {
       allUsers = [];
@@ -566,7 +550,7 @@
   async function adjustBalance(delta) {
     const uid = document.getElementById("wallet-edit-uid").value;
     const amount = parseFloat(document.getElementById("wallet-amount").value);
-    if (!amount || amount <= 0) { /*alert("اكتب مبلغ صحيح");*/ return; }
+    if (!amount || amount <= 0) { showToast("اكتب مبلغ صحيح", true); return; }
     const userRef = doc(db, "users", uid);
     try {
       await runTransaction(db, async (transaction) => {
@@ -576,13 +560,15 @@
         transaction.update(userRef, { balance: updated < 0 ? 0 : updated });
       });
       document.getElementById("wallet-modal-backdrop").classList.remove("active");
+      showToast("تم تعديل الرصيد بنجاح!");
     } catch (err) {
-      console.error("حدث خطأ: " + err.message);
+      showToast("حدث خطأ: " + err.message, true);
     }
   }
   document.getElementById("wallet-add-btn").addEventListener("click", () => adjustBalance(1));
   document.getElementById("wallet-deduct-btn").addEventListener("click", () => adjustBalance(-1));
 
+  // ===== TOPUPS =====
   function listenTopups() {
     onSnapshot(collection(db, "topups"), (snap) => {
       allTopups = [];
@@ -596,7 +582,7 @@
     const list = document.getElementById("topups-list");
     if (allTopups.length === 0) { list.innerHTML = `<div class="empty-state">لا يوجد طلبات بعد</div>`; return; }
     list.innerHTML = allTopups.map((t) => {
-      const receiptHTML = t.receiptImage ? `<img src="${t.receiptImage}" class="receipt-thumb" data-receipt="${t.id}">` : "";
+      const receiptHTML = t.receiptImage ? `<img src="${t.receiptImage}" class="receipt-thumb" onclick="showReceipt('${t.receiptImage}')">` : "";
       return `
       <div class="card" data-id="${t.id}">
         <div class="card-row">
@@ -625,9 +611,9 @@
       if (confirmBtn) confirmBtn.addEventListener("click", () => confirmTopup(topup));
       if (rejectBtn) rejectBtn.addEventListener("click", async () => {
         await updateDoc(doc(db, "topups", id), { status: "rejected" });
+        showToast("تم رفض الطلب");
       });
     });
-    attachReceiptViewers(list);
   }
 
   async function confirmTopup(topup) {
@@ -640,11 +626,21 @@
         transaction.update(userRef, { balance: current + topup.amount });
         transaction.update(topupRef, { status: "confirmed" });
       });
+      showToast("🎉 تم تأكيد الشحن وإضافة الرصيد بنجاح!");
     } catch (err) {
-      console.error("حدث خطأ: " + err.message);
+      showToast("حدث خطأ: " + err.message, true);
     }
   }
 
+  window.showReceipt = function(src) {
+    document.getElementById("receipt-modal-img").src = src;
+    document.getElementById("receipt-modal-backdrop").classList.add("active");
+  }
+  document.getElementById("receipt-modal-close").addEventListener("click", () => {
+    document.getElementById("receipt-modal-backdrop").classList.remove("active");
+  });
+
+  // ===== PAYMENT SETTINGS =====
   async function loadPaymentSettings() {
     const snap = await getDoc(doc(db, "settings", "payment"));
     if (snap.exists()) {
@@ -661,8 +657,18 @@
       usdt: document.getElementById("pay-usdt").value.trim(),
       instructions: document.getElementById("pay-instructions").value.trim(),
     });
-    // تم إزالة alert
+    showToast("تم حفظ بيانات الدفع، رح تظهر فوراً عند المستخدم.");
   });
 </script>
+
+<!-- ===== RECEIPT MODAL ===== -->
+<div class="modal-backdrop" id="receipt-modal-backdrop">
+  <div class="modal" style="text-align:center;">
+    <h3>صورة الإيصال</h3>
+    <img id="receipt-modal-img" style="max-width:100%; border-radius:12px;">
+    <button class="secondary-btn" id="receipt-modal-close" style="margin-top:16px;">إغلاق</button>
+  </div>
+</div>
+
 </body>
 </html>
