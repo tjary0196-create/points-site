@@ -226,7 +226,7 @@
     <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
     <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
     
-    <!-- 👇 زر تسجيل الخروج الجديد 👇 -->
+    <!-- زر تسجيل الخروج -->
     <a onclick="handleLogout()" style="color:var(--red); font-weight:700;">🚪 تسجيل الخروج</a>
   </div>
   <!-- قسم الإحالة الديناميكي -->
@@ -463,14 +463,18 @@
     }
   });
 
-  // 👇 دالة تسجيل الخروج الجديدة 👇
+  // دالة تسجيل الخروج المحسنة
   window.handleLogout = async function() {
+    // إغلاق القائمة الجانبية فوراً
+    document.getElementById('sidebar').classList.remove('open');
+    
+    // تصفير السلة
+    cart = [];
+    updateCartUI();
+    
     try {
       await signOut(auth);
-      // إعادة تعيين حالة المتجر
-      cart = [];
       currentUser = null;
-      updateCartUI();
       showToast("🚪 تم تسجيل الخروج بنجاح!");
     } catch (error) {
       showToast("حدث خطأ أثناء تسجيل الخروج: " + error.message, true);
@@ -493,6 +497,12 @@
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
       await setDoc(ref, { name: user.displayName || "", email: user.email || "", balance: 0, referralCode: code, totalReferrals: 0, pendingReward: 0, claimedReward: 0, createdAt: serverTimestamp() });
     } else {
+      // إذا كان المستخدم موجوداً لكنه يفتقد referralCode، قم بإنشائه له
+      const data = snap.data();
+      if (!data.referralCode) {
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        await setDoc(ref, { referralCode: code }, { merge: true });
+      }
       await setDoc(ref, { name: user.displayName || "", email: user.email || "" }, { merge: true });
     }
     checkReferralCode();
