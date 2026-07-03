@@ -14,13 +14,8 @@
     --green: #3FA66A; --red: #B4543A; --hairline: rgba(242,239,233,0.08);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  body{
-    background: radial-gradient(circle at 50% -10%, #221c14 0%, var(--bg) 55%);
-    color: var(--text); font-family:'Tajawal', sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3,.display{ font-family:'Cairo', sans-serif; }
+  body{ background: radial-gradient(circle at 50% -10%, #221c14 0%, var(--bg) 55%); color: var(--text); font-family:'Tajawal', sans-serif; min-height:100vh; }
   .container{ max-width: 700px; margin: 0 auto; padding: 0 16px 100px; }
-  
   .topbar{ display:flex; align-items:center; justify-content:space-between; padding:18px 16px; max-width:700px; margin:0 auto; }
   .brand{ display:flex; align-items:center; gap:8px; font-family:'Cairo'; font-weight:900; font-size:16px; color:var(--gold); }
   .brand .coin{ width:20px; height:20px; border-radius:50%; background: conic-gradient(from 180deg, var(--gold), #f1cf8a, var(--gold)); box-shadow: 0 0 10px rgba(212,162,76,0.5); }
@@ -35,7 +30,6 @@
   .google-btn svg{ width:20px; height:20px; }
 
   #app{ display:none; }
-
   .tabs{ display:flex; gap:8px; overflow-x:auto; padding:0 16px 12px; max-width:700px; margin:0 auto; }
   .tab{ flex-shrink:0; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); padding:9px 16px; border-radius:999px; font-size:13px; cursor:pointer; white-space:nowrap; }
   .tab.active{ background:var(--gold); color:#1A140A; border-color:var(--gold); font-weight:700; }
@@ -126,6 +120,7 @@
     <button class="tab" data-panel="panel-products">المنتجات</button>
     <button class="tab" data-panel="panel-wallet">المحفظة</button>
     <button class="tab" data-panel="panel-topups">طلبات الشحن</button>
+    <button class="tab" data-panel="panel-payment">طرق الدفع</button>
     <button class="tab" data-panel="panel-ads">الإعلانات</button>
     <button class="tab" data-panel="panel-referral">التحكم بالإحالة</button>
   </div>
@@ -163,14 +158,30 @@
       <div id="topups-list"><div class="empty-state">لا يوجد طلبات بعد</div></div>
     </div>
 
-    <!-- ==== تبويب الإعلانات ==== -->
+    <div class="panel" id="panel-payment">
+      <div class="section-title">طرق الدفع</div>
+      <p class="hint">هاي البيانات بتظهر بصفحة إتمام الطلب وطلب شحن الرصيد عند المستخدم.</p>
+      <div class="field" style="margin-top:14px;">
+        <label>رقم سيريتل كاش / MTN كاش</label>
+        <input type="text" id="pay-cash">
+      </div>
+      <div class="field">
+        <label>محفظة USDT (TRC20 أو غيرها)</label>
+        <input type="text" id="pay-usdt">
+      </div>
+      <div class="field">
+        <label>تعليمات إضافية للمستخدم</label>
+        <textarea id="pay-instructions" placeholder="مثال: بعد التحويل أرسل صورة الإيصال للأدمن عبر تلغرام..."></textarea>
+      </div>
+      <button class="primary-btn" id="save-payment-btn" style="width:100%;">حفظ التغييرات</button>
+    </div>
+
     <div class="panel" id="panel-ads">
       <div class="section-title">
         الإعلانات المتحركة
         <button class="add-btn" id="add-ad-btn">+ إضافة إعلان</button>
       </div>
       <p class="hint">اختر صورة من جهازك لتعرض في شريط الإعلانات المتحرك، وأضف الرابط الذي يفتح عند الضغط عليها.</p>
-      
       <div id="ad-upload-form" style="display:none; margin-bottom:20px;">
         <div class="field">
           <label>رفع صورة الإعلان</label>
@@ -190,7 +201,6 @@
       <div id="ads-list"><div class="empty-state">لا توجد إعلانات حالياً.</div></div>
     </div>
 
-    <!-- ==== تبويب التحكم في الإحالة ==== -->
     <div class="panel" id="panel-referral">
       <div class="section-title">التحكم في نظام الإحالة</div>
       <p class="hint">من هنا تستطيع تفعيل، تعطيل، وتحديد شروط نظام الإحالة بالكامل.</p>
@@ -349,6 +359,7 @@
     listenUsers();
     listenTopups();
     listenAds();
+    loadPaymentSettings();
     listenReferralSettings();
   });
 
@@ -383,7 +394,6 @@
     });
   }
 
-  // ===== إدارة المنتجات =====
   document.getElementById("p-image-drop").addEventListener("click", () => document.getElementById("p-image-input").click());
   document.getElementById("p-image-input").addEventListener("change", async (e) => {
     const file = e.target.files[0];
@@ -391,6 +401,25 @@
     pImageData = await compressImageToDataUrl(file);
     document.getElementById("p-image-preview-img").src = pImageData;
     document.getElementById("p-image-preview").style.display = "block";
+  });
+
+  async function loadPaymentSettings() {
+    const snap = await getDoc(doc(db, "settings", "payment"));
+    if (snap.exists()) {
+      const d = snap.data();
+      document.getElementById("pay-cash").value = d.cash || "";
+      document.getElementById("pay-usdt").value = d.usdt || "";
+      document.getElementById("pay-instructions").value = d.instructions || "";
+    }
+  }
+
+  document.getElementById("save-payment-btn").addEventListener("click", async () => {
+    await setDoc(doc(db, "settings", "payment"), {
+      cash: document.getElementById("pay-cash").value.trim(),
+      usdt: document.getElementById("pay-usdt").value.trim(),
+      instructions: document.getElementById("pay-instructions").value.trim(),
+    });
+    showToast("تم حفظ بيانات الدفع!");
   });
 
   function listenOrders() {
