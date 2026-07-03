@@ -54,6 +54,12 @@
   .section-title{ font-family:'Cairo'; font-weight:800; font-size:16px; margin:18px 0 12px; display:flex; justify-content:space-between; align-items:center; }
   .add-btn{ background:var(--gold); color:#1A140A; border:none; border-radius:10px; padding:8px 14px; font-weight:800; font-size:13px; cursor:pointer; }
 
+  .search-box{ display:flex; gap:8px; margin-bottom:14px; }
+  .search-box input{ flex:1; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text); border-radius:10px; padding:10px 12px; font-size:13.5px; font-family:'Tajawal'; }
+  .search-box button{ background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); border-radius:10px; padding:0 14px; cursor:pointer; font-size:13px; }
+
+  .order-id-tag{ font-size:11px; color:var(--text-dim); font-family:monospace; }
+
   .card{ background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:14px; margin-bottom:10px; }
   .card-row{ display:flex; gap:12px; align-items:flex-start; }
   .card-thumb{ width:48px; height:48px; border-radius:12px; background:var(--gold-soft); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; overflow:hidden; }
@@ -141,6 +147,10 @@
 
     <div class="panel" id="panel-orders">
       <div class="section-title">جميع الطلبات</div>
+      <div class="search-box">
+        <input type="text" id="orders-search" placeholder="ابحث برقم الطلب (ID)، الاسم، أو الإيميل...">
+        <button id="orders-search-clear">مسح</button>
+      </div>
       <div id="orders-list"><div class="empty-state">لا يوجد طلبات بعد</div></div>
     </div>
 
@@ -151,29 +161,38 @@
 
     <div class="panel" id="panel-wallet">
       <div class="section-title">رصيد المستخدمين</div>
-      <p class="hint">تقدر تضيف أو تخصم رصيد يدوياً من أي مستخدم.</p>
+      <p class="hint">تقدر تضيف أو تخصم رصيد يدوياً من أي مستخدم. الأرقام هنا بالدولار (وحدة الرصيد الأساسية).</p>
       <div id="users-list" style="margin-top:14px;"><div class="empty-state">جاري التحميل…</div></div>
     </div>
 
     <div class="panel" id="panel-topups">
       <div class="section-title">طلبات شحن الرصيد</div>
+      <div class="search-box">
+        <input type="text" id="topups-search" placeholder="ابحث برقم الطلب (ID)، الاسم، أو الإيميل...">
+        <button id="topups-search-clear">مسح</button>
+      </div>
       <div id="topups-list"><div class="empty-state">لا يوجد طلبات بعد</div></div>
     </div>
 
     <div class="panel" id="panel-payment">
       <div class="section-title">طرق الدفع</div>
-      <p class="hint">هاي البيانات بتظهر بصفحة إتمام الطلب وطلب شحن الرصيد عند المستخدم.</p>
+      <p class="hint">هاي البيانات بتظهر بصفحة إتمام الطلب وطلب شحن الرصيد عند المستخدم. طريقة الدفع الوحيدة المعتمدة حالياً هي شام كاش.</p>
       <div class="field" style="margin-top:14px;">
-        <label>رقم سيريتل كاش / MTN كاش</label>
-        <input type="text" id="pay-cash">
+        <label>رقم شام كاش (Sham Cash)</label>
+        <input type="text" id="pay-cash" placeholder="مثال: 36a12d49df140f5b5ffc769684d31c77">
       </div>
       <div class="field">
-        <label>محفظة USDT (TRC20 أو غيرها)</label>
+        <label>محفظة USDT (اختياري)</label>
         <input type="text" id="pay-usdt">
       </div>
       <div class="field">
         <label>تعليمات إضافية للمستخدم</label>
         <textarea id="pay-instructions" placeholder="مثال: بعد التحويل أرسل صورة الإيصال للأدمن عبر تلغرام..."></textarea>
+      </div>
+      <div class="field">
+        <label>سعر صرف الدولار (كم ليرة سورية = 1 دولار)</label>
+        <input type="number" id="pay-exchange-rate" step="1" placeholder="مثال: 15000">
+        <p class="hint">هاد الرقم يتحكم بكل تحويلات الأسعار بالمتجر بين الدولار والليرة السورية للمستخدمين.</p>
       </div>
       <button class="primary-btn" id="save-payment-btn" style="width:100%;">حفظ التغييرات</button>
     </div>
@@ -267,7 +286,7 @@
     <input type="hidden" id="wallet-edit-uid">
     <p class="hint">الرصيد الحالي: <b id="wallet-current-balance" style="color:var(--gold);">0 $</b></p>
     <div class="field" style="margin-top:12px;">
-      <label>المبلغ</label>
+      <label>المبلغ ($)</label>
       <input type="number" id="wallet-amount" step="0.01" placeholder="مثال: 10">
     </div>
     <div class="modal-btn-row">
@@ -318,6 +337,8 @@
   let pImageData = "";
   let adImageData = "";
   let referralSettings = {};
+  let ordersSearchTerm = "";
+  let topupsSearchTerm = "";
 
   // ===== أمان: دالة تنظيف أي نص قادم من المستخدمين (الاسم، الملاحظة، معرّف اللعبة...) =====
   // كل هاي الحقول يكتبها المستخدم العادي بالمتجر، فلازم تُعالج قبل ما تدخل بالـ HTML
@@ -439,14 +460,19 @@
       document.getElementById("pay-cash").value = d.cash || "";
       document.getElementById("pay-usdt").value = d.usdt || "";
       document.getElementById("pay-instructions").value = d.instructions || "";
+      document.getElementById("pay-exchange-rate").value = d.exchangeRate || 15000;
+    } else {
+      document.getElementById("pay-exchange-rate").value = 15000;
     }
   }
 
   document.getElementById("save-payment-btn").addEventListener("click", async () => {
+    const rate = parseFloat(document.getElementById("pay-exchange-rate").value);
     await setDoc(doc(db, "settings", "payment"), {
       cash: document.getElementById("pay-cash").value.trim(),
       usdt: document.getElementById("pay-usdt").value.trim(),
       instructions: document.getElementById("pay-instructions").value.trim(),
+      exchangeRate: (!isNaN(rate) && rate > 0) ? rate : 15000,
     });
     showToast("تم حفظ بيانات الدفع!");
   });
@@ -467,20 +493,31 @@
     return `<span class="status-badge ${cls}">${text}</span>`;
   }
 
+  function formatDisplayAmount(o) {
+    // نعرض للأدمن المبلغ بالدولار (الأساسي) وبجانبه المكافئ بالعملة التي اختارها المستخدم عند الطلب إن وجدت
+    const usd = `${escapeHTML((o.total || 0).toFixed ? o.total.toFixed(2) : o.total)} $`;
+    if (o.currency === "SYR" && o.displayTotal) {
+      return `${usd} <span style="color:var(--text-dim); font-weight:400;">(${Number(o.displayTotal).toLocaleString("en-US")} ل.س)</span>`;
+    }
+    return usd;
+  }
+
   // ===== أمان: كل حقل جاي من المستخدم (userName, gameId, contact, note, items.name) يُمرَّر عبر escapeHTML =====
   function orderCardHTML(o) {
     const itemsText = (o.items || []).map((i) => `${escapeHTML(i.name)} ×${escapeHTML(i.qty)}`).join(" — ");
     const receiptHTML = o.receiptImage ? `<img src="${o.receiptImage}" class="receipt-thumb" data-receipt="${escapeHTML(o.receiptImage)}">` : "";
+    const orderIdShort = escapeHTML(o.id.slice(0, 8).toUpperCase());
     return `
       <div class="card" data-id="${o.id}">
         <div class="card-row">
           <div class="card-info">
+            <div class="order-id-tag">طلب #${orderIdShort}</div>
             <div class="t-name">${escapeHTML(o.userName || "مستخدم")} ${statusBadge(o.status)}</div>
             <div class="t-meta">${escapeHTML(o.userEmail || "")}</div>
             <div class="order-items-list">${itemsText}</div>
             <div class="t-meta">معرّف اللعبة: ${escapeHTML(o.gameId || "—")} | تواصل: ${escapeHTML(o.contact || "—")}</div>
             ${o.note ? `<div class="t-meta">ملاحظة: ${escapeHTML(o.note)}</div>` : ""}
-            <div style="color:var(--gold); font-weight:700; margin-top:6px;">${escapeHTML(o.total)} $ ${o.paymentMethod === "balance" ? "(من الرصيد)" : ""}</div>
+            <div style="color:var(--gold); font-weight:700; margin-top:6px;">${formatDisplayAmount(o)} ${o.paymentMethod === "balance" ? "(من الرصيد)" : ""}</div>
             ${receiptHTML}
           </div>
         </div>
@@ -496,15 +533,43 @@
     `;
   }
 
+  function matchesSearch(o, term) {
+    if (!term) return true;
+    const t = term.trim().toLowerCase();
+    return (
+      o.id.toLowerCase().includes(t) ||
+      (o.userName || "").toLowerCase().includes(t) ||
+      (o.userEmail || "").toLowerCase().includes(t) ||
+      (o.gameId || "").toLowerCase().includes(t) ||
+      (o.contact || "").toLowerCase().includes(t)
+    );
+  }
+
   function renderOrders() {
     const list = document.getElementById("orders-list");
-    if (allOrders.length === 0) { list.innerHTML = `<div class="empty-state">لا يوجد طلبات بعد</div>`; return; }
-    list.innerHTML = allOrders.map(orderCardHTML).join("");
+    const filtered = allOrders.filter((o) => matchesSearch(o, ordersSearchTerm));
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state">${ordersSearchTerm ? "ما في نتائج مطابقة للبحث" : "لا يوجد طلبات بعد"}</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(orderCardHTML).join("");
     attachOrderActions(list);
     attachReceiptClicks(list);
   }
 
+  document.getElementById("orders-search").addEventListener("input", (e) => {
+    ordersSearchTerm = e.target.value;
+    renderOrders();
+  });
+  document.getElementById("orders-search-clear").addEventListener("click", () => {
+    ordersSearchTerm = "";
+    document.getElementById("orders-search").value = "";
+    renderOrders();
+  });
+
   // ===== أمان: منع الضغط المتكرر على أزرار تأكيد/رفض الطلب (يمنع تكرار العملية أو خصم مضاعف) =====
+  // ===== محاسبياً: إذا الطلب مدفوع من الرصيد ورُفض، يترجع المبلغ تلقائياً لرصيد المستخدم =====
+  // ===== وإذا رجّع الأدمن طلب "مرفوض" (رصيد) لحالة تانية، ينخصم المبلغ من جديد =====
   function attachOrderActions(container) {
     container.querySelectorAll(".card").forEach((card) => {
       const id = card.dataset.id;
@@ -515,7 +580,7 @@
           const action = btn.dataset.action;
           const newStatus = action === "confirm" ? "confirmed" : action === "reject" ? "rejected" : "pending";
           try {
-            await updateDoc(doc(db, "orders", id), { status: newStatus });
+            await changeOrderStatus(id, newStatus);
             showToast(`تم تغيير حالة الطلب إلى ${newStatus === 'confirmed' ? 'مؤكد' : newStatus === 'rejected' ? 'مرفوض' : 'قيد المراجعة'}`);
           } catch (err) {
             showToast("حدث خطأ: " + err.message, true);
@@ -523,6 +588,33 @@
           }
         });
       });
+    });
+  }
+
+  async function changeOrderStatus(orderId, newStatus) {
+    const orderRef = doc(db, "orders", orderId);
+    await runTransaction(db, async (transaction) => {
+      const orderSnap = await transaction.get(orderRef);
+      if (!orderSnap.exists()) throw new Error("الطلب غير موجود");
+      const order = orderSnap.data();
+      const oldStatus = order.status;
+      if (oldStatus === newStatus) { transaction.update(orderRef, { status: newStatus }); return; }
+
+      if (order.paymentMethod === "balance") {
+        const userRef = doc(db, "users", order.uid);
+        const userSnap = await transaction.get(userRef);
+        const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
+
+        // كانت مرفوضة (تم رد المبلغ سابقاً) والآن رح تصير غير مرفوضة => نعيد خصم المبلغ
+        if (oldStatus === "rejected" && newStatus !== "rejected") {
+          transaction.update(userRef, { balance: currentBalance - order.total });
+        }
+        // كانت غير مرفوضة والآن رح تصير مرفوضة => نرجع المبلغ للمستخدم
+        else if (oldStatus !== "rejected" && newStatus === "rejected") {
+          transaction.update(userRef, { balance: currentBalance + order.total });
+        }
+      }
+      transaction.update(orderRef, { status: newStatus });
     });
   }
 
@@ -735,20 +827,38 @@
     });
   }
 
+  function matchesTopupSearch(t, term) {
+    if (!term) return true;
+    const q = term.trim().toLowerCase();
+    return (
+      t.id.toLowerCase().includes(q) ||
+      (t.userName || "").toLowerCase().includes(q) ||
+      (t.userEmail || "").toLowerCase().includes(q)
+    );
+  }
+
   // ===== أمان: userName, note, amount كلها تُنظف قبل الإدراج بالـ HTML =====
   function renderTopups() {
     const list = document.getElementById("topups-list");
-    if (allTopups.length === 0) { list.innerHTML = `<div class="empty-state">لا يوجد طلبات بعد</div>`; return; }
-    list.innerHTML = allTopups.map((t) => {
+    const filtered = allTopups.filter((t) => matchesTopupSearch(t, topupsSearchTerm));
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state">${topupsSearchTerm ? "ما في نتائج مطابقة للبحث" : "لا يوجد طلبات بعد"}</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map((t) => {
       const receiptHTML = t.receiptImage ? `<img src="${t.receiptImage}" class="receipt-thumb" data-receipt="${escapeHTML(t.receiptImage)}">` : "";
+      const amountUsd = (Number(t.amount) || 0).toFixed(2);
+      const amountExtra = t.currency === "SYR" && t.originalAmount ? ` <span style="color:var(--text-dim); font-weight:400;">(${Number(t.originalAmount).toLocaleString("en-US")} ل.س)</span>` : "";
+      const topupIdShort = escapeHTML(t.id.slice(0, 8).toUpperCase());
       return `
       <div class="card" data-id="${t.id}">
         <div class="card-row">
           <div class="card-info">
+            <div class="order-id-tag">طلب شحن #${topupIdShort}</div>
             <div class="t-name">${escapeHTML(t.userName || "مستخدم")} ${statusBadge(t.status)}</div>
             <div class="t-meta">${escapeHTML(t.userEmail || "")}</div>
             ${t.note ? `<div class="t-meta">ملاحظة: ${escapeHTML(t.note)}</div>` : ""}
-            <div style="color:var(--gold); font-weight:800; margin-top:6px;">${escapeHTML(t.amount)} $</div>
+            <div style="color:var(--gold); font-weight:800; margin-top:6px;">${amountUsd} $${amountExtra}</div>
             ${receiptHTML}
           </div>
         </div>
@@ -795,6 +905,16 @@
     attachReceiptClicks(list);
   }
 
+  document.getElementById("topups-search").addEventListener("input", (e) => {
+    topupsSearchTerm = e.target.value;
+    renderTopups();
+  });
+  document.getElementById("topups-search-clear").addEventListener("click", () => {
+    topupsSearchTerm = "";
+    document.getElementById("topups-search").value = "";
+    renderTopups();
+  });
+
   async function confirmTopup(topup) {
     const userRef = doc(db, "users", topup.uid);
     const topupRef = doc(db, "topups", topup.id);
@@ -807,7 +927,8 @@
         }
         const userSnap = await transaction.get(userRef);
         const current = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-        transaction.update(userRef, { balance: current + topup.amount });
+        // amount مخزّن دائماً بالدولار (تم تحويله من واجهة المستخدم حسب سعر الصرف وقت الطلب)
+        transaction.update(userRef, { balance: current + (topup.amount || 0) });
         transaction.update(topupRef, { status: "confirmed" });
       });
       showToast("🎉 تم تأكيد الشحن وإضافة الرصيد بنجاح!");
