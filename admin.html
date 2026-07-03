@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  /* نفس الأنماط السابقة مع إضافة قسم الإعدادات */
   :root{
     --bg: #0E0D0F; --bg-soft: #171517; --card: #1C1A1D;
     --gold: #D4A24C; --gold-soft: rgba(212,162,76,0.14);
@@ -104,9 +103,7 @@
 </style>
 </head>
 <body>
-
 <div id="splash"><div class="coin"></div></div>
-
 <div class="topbar">
   <div class="brand"><span class="coin"></span> لوحة Digital Syria Store</div>
   <div class="pill" id="status-pill">غير متصل</div>
@@ -129,7 +126,7 @@
     <button class="tab" data-panel="panel-products">المنتجات</button>
     <button class="tab" data-panel="panel-wallet">المحفظة</button>
     <button class="tab" data-panel="panel-topups">طلبات الشحن</button>
-    <button class="tab" data-panel="panel-settings">الإعدادات</button> <!-- قسم جديد -->
+    <button class="tab" data-panel="panel-settings">الإعدادات</button>
   </div>
 
   <div class="container">
@@ -165,7 +162,6 @@
       <div id="topups-list"><div class="empty-state">لا يوجد طلبات بعد</div></div>
     </div>
 
-    <!-- قسم الإعدادات الجديد -->
     <div class="panel" id="panel-settings">
       <div class="section-title">إعدادات البانر الإعلاني</div>
       <p class="hint">هنا يمكنك تحديد صورة الإعلان، النص، والرابط الذي يفتح عند الضغط عليه.</p>
@@ -186,7 +182,7 @@
   </div>
 </div>
 
-<!-- Modals (Product, Wallet, Receipt) -->
+<!-- Modals -->
 <div class="modal-backdrop" id="product-modal-backdrop">
   <div class="modal">
     <h3 id="product-modal-title">منتج جديد</h3>
@@ -348,7 +344,6 @@
     document.getElementById("p-image-preview").style.display = "block";
   });
 
-  // إعدادات المتجر (تحميل)
   async function loadSettings() {
     try {
       const snap = await getDoc(doc(db, "settings", "banner"));
@@ -363,7 +358,6 @@
     }
   }
 
-  // حفظ إعدادات المتجر
   document.getElementById("save-settings-btn").addEventListener("click", async () => {
     const data = {
       imageUrl: document.getElementById("banner-image").value.trim(),
@@ -378,7 +372,6 @@
     }
   });
 
-  // ----- Orders (نفس الكود السابق) -----
   function listenOrders() {
     onSnapshot(collection(db, "orders"), (snap) => {
       allOrders = [];
@@ -467,7 +460,6 @@
     document.getElementById("receipt-modal-backdrop").classList.remove("active");
   });
 
-  // ----- Products -----
   function listenProducts() {
     onSnapshot(collection(db, "products"), (snap) => {
       allProducts = [];
@@ -555,7 +547,6 @@
     }
   });
 
-  // ----- Users & Wallet -----
   function listenUsers() {
     onSnapshot(collection(db, "users"), (snap) => {
       allUsers = [];
@@ -618,7 +609,6 @@
   document.getElementById("wallet-add-btn").addEventListener("click", () => adjustBalance(1));
   document.getElementById("wallet-deduct-btn").addEventListener("click", () => adjustBalance(-1));
 
-  // ----- Topups -----
   function listenTopups() {
     onSnapshot(collection(db, "topups"), (snap) => {
       allTopups = [];
