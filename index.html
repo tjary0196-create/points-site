@@ -460,6 +460,17 @@
     }
   });
 
+  // Function to check URL params for referral code
+  function checkReferralCode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref');
+    if (ref && currentUser) {
+      // Store the referral code in the user's document
+      const userRef = doc(db, "users", currentUser.uid);
+      setDoc(userRef, { referredBy: ref }, { merge: true });
+    }
+  }
+
   async function ensureUserDoc(user) {
     const ref = doc(db, "users", user.uid);
     const snap = await getDoc(ref);
@@ -469,6 +480,7 @@
     } else {
       await setDoc(ref, { name: user.displayName || "", email: user.email || "" }, { merge: true });
     }
+    checkReferralCode();
   }
 
   function listenUserBalance(uid) {
@@ -492,7 +504,6 @@
     showToast("تم نسخ رابط الدعوة!");
   }
 
-  // استماع لحالة نظام الإحالة (تفعيل/تعطيل من الأدمن)
   function listenReferralStatus() {
     onSnapshot(doc(db, "settings", "referral"), (snap) => {
       if (snap.exists()) {
@@ -508,7 +519,7 @@
 
   document.getElementById('withdraw-referral-btn').addEventListener('click', async () => {
     const errorEl = document.getElementById('referral-error-msg');
-    errorEl.style.display = 'none'; // إخفاء الخطأ عند الضغط
+    errorEl.style.display = 'none';
 
     if (!currentUser) { 
         errorEl.textContent = "يجب تسجيل الدخول أولاً";
@@ -522,25 +533,25 @@
         const result = await withdrawFunction();
         showToast(result.data.message);
     } catch (err) {
-        // الخطأ يظهر أحمر تحت الزر
         errorEl.textContent = "خطأ في السحب: " + err.message;
         errorEl.style.display = 'block';
     }
   });
 
-  // ===== ADS SLIDER =====
   function listenAdsSlider() {
     onSnapshot(collection(db, "ads"), (snap) => {
       const ads = [];
-      snap.forEach((d) => ads.push(d.data().imageData));
+      snap.forEach((d) => ads.push({ img: d.data().imageData, link: d.data().link || '#' }));
       const track = document.getElementById('ads-slider-track');
       if (ads.length === 0) {
         track.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد إعلانات حالياً</div>`;
         return;
       }
-      track.innerHTML = ads.map(img => `
+      track.innerHTML = ads.map(ad => `
         <div class="slider-slide">
-          <img src="${img}" alt="إعلان">
+          <a href="${ad.link}" target="_blank">
+            <img src="${ad.img}" alt="إعلان">
+          </a>
         </div>
       `).join("");
 
@@ -558,7 +569,6 @@
     });
   }
 
-  // ===== PRODUCTS =====
   function loadProducts() {
     onSnapshot(collection(db, "products"), (snap) => {
       allProducts = [];
