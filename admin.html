@@ -169,13 +169,18 @@
         الإعلانات المتحركة
         <button class="add-btn" id="add-ad-btn">+ إضافة إعلان</button>
       </div>
-      <p class="hint">اختر صورة من جهازك لتعرض في شريط الإعلانات المتحرك.</p>
+      <p class="hint">اختر صورة من جهازك لتعرض في شريط الإعلانات المتحرك، وأضف الرابط الذي يفتح عند الضغط عليها.</p>
+      
       <div id="ad-upload-form" style="display:none; margin-bottom:20px;">
         <div class="field">
           <label>رفع صورة الإعلان</label>
           <div class="file-drop" id="ad-image-drop">📷 اضغط لاختيار صورة الإعلان</div>
           <input type="file" id="ad-image-input" accept="image/*">
-          <div class="file-preview" id="ad-image-preview" style="display:none;"><img id="ad-image-preview-img"></div>
+          <div class="file-preview" id="ad-image-preview" style="display:none;"><img id="ad-image-preview-img" style="max-width:100%; height:auto; border-radius:8px;"></div>
+        </div>
+        <div class="field">
+          <label>رابط الإعلان (عند الضغط)</label>
+          <input type="text" id="ad-link" placeholder="مثال: https://t.me/DigitalSyriaStore">
         </div>
         <div class="modal-btn-row">
           <button class="secondary-btn" id="ad-cancel-btn">إلغاء</button>
@@ -275,7 +280,7 @@
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
-    onSnapshot, query, runTransaction
+    onSnapshot, query, runTransaction, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -726,6 +731,7 @@
     adImageData = "";
     document.getElementById("ad-image-preview").style.display = "none";
     document.getElementById("ad-image-input").value = "";
+    document.getElementById("ad-link").value = "";
   });
 
   document.getElementById("ad-image-drop").addEventListener("click", () => document.getElementById("ad-image-input").click());
@@ -739,12 +745,18 @@
 
   document.getElementById("ad-save-btn").addEventListener("click", async () => {
     if (!adImageData) { showToast("الرجاء اختيار صورة أولاً", true); return; }
+    const link = document.getElementById("ad-link").value.trim();
     try {
-      await addDoc(collection(db, "ads"), { imageData: adImageData, createdAt: serverTimestamp() });
+      await addDoc(collection(db, "ads"), { 
+        imageData: adImageData, 
+        link: link || "#",
+        createdAt: serverTimestamp() 
+      });
       document.getElementById("ad-upload-form").style.display = "none";
       adImageData = "";
       document.getElementById("ad-image-preview").style.display = "none";
       document.getElementById("ad-image-input").value = "";
+      document.getElementById("ad-link").value = "";
       showToast("تم إضافة الإعلان بنجاح!");
     } catch (err) {
       showToast("خطأ في الرفع: " + err.message, true);
