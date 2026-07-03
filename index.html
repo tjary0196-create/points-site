@@ -225,6 +225,9 @@
     <a onclick="switchView('view-orders')">📦 طلباتي</a>
     <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
     <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
+    
+    <!-- 👇 زر تسجيل الخروج الجديد 👇 -->
+    <a onclick="handleLogout()" style="color:var(--red); font-weight:700;">🚪 تسجيل الخروج</a>
   </div>
   <!-- قسم الإحالة الديناميكي -->
   <div class="ref-section" id="referral-section">
@@ -380,7 +383,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
   import { getFirestore, collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -460,12 +463,24 @@
     }
   });
 
-  // Function to check URL params for referral code
+  // 👇 دالة تسجيل الخروج الجديدة 👇
+  window.handleLogout = async function() {
+    try {
+      await signOut(auth);
+      // إعادة تعيين حالة المتجر
+      cart = [];
+      currentUser = null;
+      updateCartUI();
+      showToast("🚪 تم تسجيل الخروج بنجاح!");
+    } catch (error) {
+      showToast("حدث خطأ أثناء تسجيل الخروج: " + error.message, true);
+    }
+  };
+
   function checkReferralCode() {
     const urlParams = new URLSearchParams(window.location.search);
     const ref = urlParams.get('ref');
     if (ref && currentUser) {
-      // Store the referral code in the user's document
       const userRef = doc(db, "users", currentUser.uid);
       setDoc(userRef, { referredBy: ref }, { merge: true });
     }
