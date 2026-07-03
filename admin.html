@@ -126,7 +126,8 @@
     <button class="tab" data-panel="panel-products">المنتجات</button>
     <button class="tab" data-panel="panel-wallet">المحفظة</button>
     <button class="tab" data-panel="panel-topups">طلبات الشحن</button>
-    <button class="tab" data-panel="panel-settings">الإعدادات</button>
+    <button class="tab" data-panel="panel-ads">الإعلانات</button>
+    <button class="tab" data-panel="panel-referral">التحكم بالإحالة</button>
   </div>
 
   <div class="container">
@@ -162,22 +163,60 @@
       <div id="topups-list"><div class="empty-state">لا يوجد طلبات بعد</div></div>
     </div>
 
-    <div class="panel" id="panel-settings">
-      <div class="section-title">إعدادات البانر الإعلاني</div>
-      <p class="hint">هنا يمكنك تحديد صورة الإعلان، النص، والرابط الذي يفتح عند الضغط عليه.</p>
-      <div class="field">
-        <label>رابط صورة البانر (اختياري)</label>
-        <input type="text" id="banner-image" placeholder="مثال: https://example.com/banner.jpg">
+    <!-- ==== تبويب الإعلانات ==== -->
+    <div class="panel" id="panel-ads">
+      <div class="section-title">
+        الإعلانات المتحركة
+        <button class="add-btn" id="add-ad-btn">+ إضافة إعلان</button>
       </div>
-      <div class="field">
-        <label>نص الإعلان (يظهر إذا لم تضع صورة)</label>
-        <input type="text" id="banner-text" placeholder="مثال: خصم 20% على جميع الألعاب!">
+      <p class="hint">اختر صورة من جهازك لتعرض في شريط الإعلانات المتحرك.</p>
+      <div id="ad-upload-form" style="display:none; margin-bottom:20px;">
+        <div class="field">
+          <label>رفع صورة الإعلان</label>
+          <div class="file-drop" id="ad-image-drop">📷 اضغط لاختيار صورة الإعلان</div>
+          <input type="file" id="ad-image-input" accept="image/*">
+          <div class="file-preview" id="ad-image-preview" style="display:none;"><img id="ad-image-preview-img"></div>
+        </div>
+        <div class="modal-btn-row">
+          <button class="secondary-btn" id="ad-cancel-btn">إلغاء</button>
+          <button class="primary-btn" id="ad-save-btn">حفظ الإعلان</button>
+        </div>
       </div>
-      <div class="field">
-        <label>رابط التحويل (عند الضغط على البانر)</label>
-        <input type="text" id="banner-link" placeholder="مثال: https://t.me/DigitalSyriaStore">
+      <div id="ads-list"><div class="empty-state">لا توجد إعلانات حالياً.</div></div>
+    </div>
+
+    <!-- ==== تبويب التحكم في الإحالة ==== -->
+    <div class="panel" id="panel-referral">
+      <div class="section-title">التحكم في نظام الإحالة</div>
+      <p class="hint">من هنا تستطيع تفعيل، تعطيل، وتحديد شروط نظام الإحالة بالكامل.</p>
+      
+      <div class="field" style="margin-top:14px;">
+        <label>حالة النظام</label>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
+          <button id="toggle-referral-btn" style="padding:10px 20px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; background:var(--red); color:white;">معطل</button>
+          <span style="font-size:13px; color:var(--text-dim);" id="toggle-status-label">النظام معطل حالياً</span>
+        </div>
       </div>
-      <button class="primary-btn" id="save-settings-btn" style="width:100%;">حفظ الإعدادات</button>
+
+      <div class="field">
+        <label>عدد الدعوات المطلوبة للحصول على المكافأة</label>
+        <input type="number" id="ref-threshold" placeholder="مثال: 20">
+      </div>
+
+      <div class="field">
+        <label>قيمة المكافأة ($)</label>
+        <input type="number" id="ref-reward" step="0.01" placeholder="مثال: 1">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="primary-btn" id="save-referral-settings">حفظ الإعدادات</button>
+      </div>
+      
+      <div class="section-title" style="margin-top:20px;">إحصائيات عامة</div>
+      <div class="stat-grid">
+         <div class="stat-card"><div class="num" id="stat-total-referrals">0</div><div class="lbl">إجمالي الإحالات</div></div>
+         <div class="stat-card gold"><div class="num" id="stat-total-paid">0 $</div><div class="lbl">المكافآت المدفوعة</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -258,7 +297,10 @@
   let allProducts = [];
   let allUsers = [];
   let allTopups = [];
+  let allAds = [];
   let pImageData = "";
+  let adImageData = "";
+  let referralSettings = {};
 
   function showToast(msg, isError = false) {
     const t = document.getElementById('toast');
@@ -301,7 +343,8 @@
     listenProducts();
     listenUsers();
     listenTopups();
-    loadSettings();
+    listenAds();
+    listenReferralSettings();
   });
 
   document.querySelectorAll(".tab").forEach((tab) => {
@@ -335,6 +378,7 @@
     });
   }
 
+  // ===== إدارة المنتجات =====
   document.getElementById("p-image-drop").addEventListener("click", () => document.getElementById("p-image-input").click());
   document.getElementById("p-image-input").addEventListener("change", async (e) => {
     const file = e.target.files[0];
@@ -342,34 +386,6 @@
     pImageData = await compressImageToDataUrl(file);
     document.getElementById("p-image-preview-img").src = pImageData;
     document.getElementById("p-image-preview").style.display = "block";
-  });
-
-  async function loadSettings() {
-    try {
-      const snap = await getDoc(doc(db, "settings", "banner"));
-      if (snap.exists()) {
-        const data = snap.data();
-        document.getElementById("banner-image").value = data.imageUrl || "";
-        document.getElementById("banner-text").value = data.text || "";
-        document.getElementById("banner-link").value = data.link || "";
-      }
-    } catch (err) {
-      showToast("خطأ في تحميل الإعدادات", true);
-    }
-  }
-
-  document.getElementById("save-settings-btn").addEventListener("click", async () => {
-    const data = {
-      imageUrl: document.getElementById("banner-image").value.trim(),
-      text: document.getElementById("banner-text").value.trim(),
-      link: document.getElementById("banner-link").value.trim(),
-    };
-    try {
-      await setDoc(doc(db, "settings", "banner"), data);
-      showToast("تم حفظ إعدادات البانر بنجاح!");
-    } catch (err) {
-      showToast("خطأ في الحفظ: " + err.message, true);
-    }
   });
 
   function listenOrders() {
@@ -671,6 +687,108 @@
       showToast("حدث خطأ: " + err.message, true);
     }
   }
+
+  // ===== إدارة الإعلانات =====
+  function listenAds() {
+    onSnapshot(collection(db, "ads"), (snap) => {
+      allAds = [];
+      snap.forEach((d) => allAds.push({ id: d.id, ...d.data() }));
+      renderAds();
+    });
+  }
+
+  function renderAds() {
+    const list = document.getElementById("ads-list");
+    if (allAds.length === 0) { list.innerHTML = `<div class="empty-state">لا توجد إعلانات حالياً.</div>`; return; }
+    list.innerHTML = allAds.map((ad) => `
+      <div class="ad-item" data-id="${ad.id}">
+        <img src="${ad.imageData}" class="receipt-thumb" style="width:100%; height:auto; border-radius:8px;">
+        <div class="card-actions" style="padding-top:10px;">
+          <button class="icon-btn danger" data-action="delete-ad">🗑 حذف الإعلان</button>
+        </div>
+      </div>
+    `).join("");
+    list.querySelectorAll('[data-action="delete-ad"]').forEach(btn => {
+      btn.addEventListener("click", async () => {
+        if (confirm("هل أنت متأكد من حذف هذا الإعلان؟")) {
+          await deleteDoc(doc(db, "ads", btn.closest('.ad-item').dataset.id));
+          showToast("تم حذف الإعلان");
+        }
+      });
+    });
+  }
+
+  document.getElementById("add-ad-btn").addEventListener("click", () => {
+    document.getElementById("ad-upload-form").style.display = "block";
+  });
+  document.getElementById("ad-cancel-btn").addEventListener("click", () => {
+    document.getElementById("ad-upload-form").style.display = "none";
+    adImageData = "";
+    document.getElementById("ad-image-preview").style.display = "none";
+    document.getElementById("ad-image-input").value = "";
+  });
+
+  document.getElementById("ad-image-drop").addEventListener("click", () => document.getElementById("ad-image-input").click());
+  document.getElementById("ad-image-input").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    adImageData = await compressImageToDataUrl(file);
+    document.getElementById("ad-image-preview-img").src = adImageData;
+    document.getElementById("ad-image-preview").style.display = "block";
+  });
+
+  document.getElementById("ad-save-btn").addEventListener("click", async () => {
+    if (!adImageData) { showToast("الرجاء اختيار صورة أولاً", true); return; }
+    try {
+      await addDoc(collection(db, "ads"), { imageData: adImageData, createdAt: serverTimestamp() });
+      document.getElementById("ad-upload-form").style.display = "none";
+      adImageData = "";
+      document.getElementById("ad-image-preview").style.display = "none";
+      document.getElementById("ad-image-input").value = "";
+      showToast("تم إضافة الإعلان بنجاح!");
+    } catch (err) {
+      showToast("خطأ في الرفع: " + err.message, true);
+    }
+  });
+
+  // ===== التحكم في الإحالة =====
+  function listenReferralSettings() {
+    onSnapshot(doc(db, "settings", "referral"), (snap) => {
+      if (snap.exists()) {
+        referralSettings = snap.data();
+        document.getElementById('ref-threshold').value = referralSettings.threshold || 20;
+        document.getElementById('ref-reward').value = referralSettings.rewardAmount || 1;
+        
+        const toggleBtn = document.getElementById('toggle-referral-btn');
+        const statusLabel = document.getElementById('toggle-status-label');
+        if (referralSettings.isActive === true) {
+          toggleBtn.textContent = 'مفعل';
+          toggleBtn.style.background = 'var(--green)';
+          statusLabel.textContent = 'النظام مفعل للمستخدمين';
+        } else {
+          toggleBtn.textContent = 'معطل';
+          toggleBtn.style.background = 'var(--red)';
+          statusLabel.textContent = 'النظام معطل حالياً';
+        }
+      } else {
+        document.getElementById('ref-threshold').value = 20;
+        document.getElementById('ref-reward').value = 1;
+      }
+    });
+  }
+
+  document.getElementById('toggle-referral-btn').addEventListener('click', async () => {
+    const newState = referralSettings.isActive === true ? false : true;
+    await setDoc(doc(db, "settings", "referral"), { isActive: newState }, { merge: true });
+    showToast(newState ? "تم تفعيل نظام الإحالة!" : "تم تعطيل نظام الإحالة!");
+  });
+
+  document.getElementById('save-referral-settings').addEventListener('click', async () => {
+    const threshold = parseInt(document.getElementById('ref-threshold').value) || 20;
+    const reward = parseFloat(document.getElementById('ref-reward').value) || 1;
+    await setDoc(doc(db, "settings", "referral"), { threshold: threshold, rewardAmount: reward }, { merge: true });
+    showToast("تم حفظ الإعدادات بنجاح!");
+  });
 </script>
 </body>
 </html>
