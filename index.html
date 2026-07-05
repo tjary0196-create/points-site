@@ -106,19 +106,26 @@
   .telegram-join{ display:flex; align-items:center; gap:10px; justify-content:center; margin-top:26px; background: rgba(40,159,224,0.12); border:1px solid #289fe0; color:#5cc1f0; border-radius:14px; padding:12px 16px; font-size:13.5px; font-weight:700; }
 
   #app{ display:none; padding: 14px 18px 100px; }
+
+  /* تصنيفات وأقسام */
   .section-title{ font-family:'Cairo'; font-weight:800; font-size:16px; margin: 22px 0 12px; display:flex; align-items:center; justify-content:space-between; }
   .section-title small{ font-family:'Tajawal'; font-weight:400; color:var(--text-dim); font-size:12.5px; }
+
   .category-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px; }
   .cat-box{ background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:16px; text-align:center; cursor:pointer; transition:0.2s; }
   .cat-box.active{ border-color:var(--gold); background:var(--gold-soft); }
-  .cat-box span{ display:block; font-size:24px; margin-bottom:6px; }
-  .cat-box p{ font-weight:700; font-size:13px; }
+  .cat-box img{ width:100%; height:80px; object-fit:cover; border-radius:8px; }
+  .cat-box span{ display:block; font-size:28px; margin-top:4px; }
+  .cat-box p{ font-weight:700; font-size:13px; margin-top:6px; }
+
   .cat-row{ display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; margin-bottom:6px; }
   .cat-chip{ flex-shrink:0; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); padding:8px 16px; border-radius:999px; font-size:13px; cursor:pointer; white-space:nowrap; }
   .cat-chip.active{ background:var(--gold); color:#1A140A; border-color:var(--gold); font-weight:700; }
+
   .product-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
-  .product-card{ position:relative; background:var(--card); border:1px solid var(--hairline); border-radius:16px; overflow:hidden; padding-bottom:10px; display:flex; flex-direction:column; cursor:pointer; }
-  .product-card .product-icon{ width:100%; height:150px; border-radius:0; background:var(--bg-soft); overflow:hidden; }
+  .product-card{ position:relative; background:var(--card); border:1px solid var(--hairline); border-radius:16px; overflow:hidden; padding-bottom:10px; display:flex; flex-direction:column; cursor:pointer; transition:transform 0.2s; }
+  .product-card:hover{ transform:translateY(-3px); border-color:var(--gold); }
+  .product-card .product-icon{ width:100%; height:150px; background:var(--bg-soft); overflow:hidden; }
   .product-card .product-icon img{ width:100%; height:100%; object-fit:cover; }
   .product-card .product-name{ font-weight:700; font-size:13.5px; padding:10px 12px 0; line-height:1.4; }
   .product-card .product-price-badge{ position:absolute; top:10px; right:10px; background:var(--gold); color:#1A140A; padding:4px 12px; border-radius:20px; font-weight:900; font-size:14px; box-shadow:0 2px 8px rgba(0,0,0,0.5); z-index:10; }
@@ -182,6 +189,12 @@
   .modal h3{ font-size:17px; margin-bottom:14px; }
   .modal-close{ float:left; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); border-radius:10px; padding:6px 12px; cursor:pointer; }
 
+  /* مودال الشراء السريع */
+  .quick-buy-modal .modal{ max-width:350px; }
+  .quick-buy-modal .qty-control{ justify-content:center; margin:12px 0; }
+  .quick-buy-modal .qty-control button{ width:36px; height:36px; font-size:18px; }
+  .quick-buy-modal .qty-control span{ font-size:20px; min-width:30px; text-align:center; }
+
   /* CONTACT BANNERS */
   .contact-reveal{ text-align:center; }
   .contact-reveal-btn{ display:block; width:100%; background:var(--gold-soft); border:1px dashed var(--gold); color:var(--gold); font-weight:800; font-size:14px; padding:13px; border-radius:14px; cursor:pointer; margin-top:6px; }
@@ -201,7 +214,6 @@
   .contact-banner::after{ content:""; position:absolute; inset:0; background:linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent); background-size:200% 100%; animation: shimmer 2.6s linear infinite; pointer-events:none; }
   @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
 
-  /* ORDER SEARCH (admin-style reuse not needed here) */
 </style>
 </head>
 <body>
@@ -292,9 +304,9 @@
     </div>
 
     <div class="view active" id="view-home">
-      <div class="section-title">الأقسام</div>
+      <div class="section-title">الأقسام الرئيسية</div>
       <div class="category-grid" id="category-grid"></div>
-      <div class="section-title">التصنيفات</div>
+      <div class="section-title">التصنيفات الفرعية</div>
       <div class="cat-row" id="cat-row"></div>
       <div class="section-title">المنتجات <small id="product-count"></small></div>
       <div class="product-grid" id="product-grid"><div class="empty-state" style="grid-column:1/-1;">جاري تحميل المنتجات…</div></div>
@@ -334,21 +346,12 @@
       <div class="summary-card"><div class="summary-row total"><span>المطلوب دفعه</span><span id="checkout-total">0</span></div></div>
       <div class="section-title" style="margin-bottom:0;">طريقة الدفع</div>
       <div class="pay-toggle">
-        <button id="pay-balance-btn" data-method="balance">من رصيدي</button>
-        <button id="pay-manual-btn" data-method="manual" class="active">تحويل يدوي</button>
+        <button id="pay-balance-btn" data-method="balance" class="active">من رصيدي</button>
+        <!-- تم إزالة الدفع اليدوي -->
       </div>
-      <div id="balance-pay-box" style="display:none;" class="payment-box">رصيدك الحالي: <b id="checkout-balance-amount">0</b><br>رح يتم خصم المبلغ مباشرة من رصيدك، وتبقى الطلبية قيد المراجعة لحين تأكيد الأدمن.</div>
-      <div id="manual-pay-box">
-        <div class="payment-box" id="payment-box">جاري تحميل بيانات الدفع…</div>
-        <div class="field">
-          <label>إرفاق صورة إيصال الدفع (اختياري)</label>
-          <div class="file-upload-area" id="receipt-drop">📎 اضغط لإرفاق صورة الإيصال</div>
-          <input type="file" id="receipt-input" accept="image/*">
-          <div class="file-status" id="receipt-status">✅ تم رفع الصورة بنجاح</div>
-          <button class="file-remove-btn" id="receipt-remove">إزالة الصورة</button>
-        </div>
-      </div>
+      <div id="balance-pay-box" class="payment-box">رصيدك الحالي: <b id="checkout-balance-amount">0</b><br>سيتم خصم المبلغ مباشرة من رصيدك، ويبقى الطلب قيد المراجعة لحين تأكيد الأدمن.</div>
       <button class="primary-btn" id="confirm-order-btn">تأكيد الطلب</button>
+      <button class="secondary-btn" id="go-to-topup-btn">شحن الرصيد (إذا كان رصيدك غير كافٍ)</button>
     </div>
 
     <div class="view" id="view-orders">
@@ -366,7 +369,27 @@
   </div>
 </div>
 
-<!-- TOPUP MODAL FIXED -->
+<!-- مودال الشراء السريع -->
+<div class="modal-backdrop quick-buy-modal" id="quick-buy-modal">
+  <div class="modal">
+    <button class="modal-close" id="quick-buy-close">إغلاق ✕</button>
+    <h3 id="quick-buy-title">منتج</h3>
+    <div style="text-align:center; margin:10px 0;">
+      <img id="quick-buy-image" src="" style="max-width:100%; height:150px; object-fit:cover; border-radius:12px;">
+    </div>
+    <div id="quick-buy-price" style="font-size:20px; color:var(--gold); font-weight:800; text-align:center;">0 $</div>
+    <div class="qty-control" style="display:flex; justify-content:center; gap:16px; margin:12px 0;">
+      <button id="quick-buy-dec">−</button>
+      <span id="quick-buy-qty">1</span>
+      <button id="quick-buy-inc">+</button>
+    </div>
+    <button class="primary-btn" id="quick-buy-add-to-cart">أضف للسلة</button>
+    <button class="secondary-btn" id="quick-buy-buy-now">شراء الآن</button>
+    <input type="hidden" id="quick-buy-product-id">
+  </div>
+</div>
+
+<!-- TOPUP MODAL -->
 <div class="modal-backdrop" id="topup-modal-backdrop">
   <div class="modal"><button class="modal-close" id="topup-close-btn">إغلاق ✕</button>
     <h3>طلب شحن رصيد</h3>
@@ -444,16 +467,16 @@
   let currentUser = null;
   let cart = [];
   let allProducts = [];
-  let activeCategory = "الكل";
-  let selectedPayMethod = "manual";
+  let allCategories = [];
+  let activeCategory = null; // null يعني الكل
+  let selectedPayMethod = "balance"; // الآن فقط من الرصيد
   let receiptDataUrl = "";
   let topupReceiptDataUrl = "";
 
-  // ===== العملة والتحويل =====
-  let displayCurrency = "SYR";      // العملة المعروضة بالواجهة (منتجات/رصيد...)
-  let exchangeRate = 15000;         // كم ل.س = 1$ -- تُقرأ من settings/payment.exchangeRate
-  let checkoutCurrency = "SYR";     // العملة المختارة بصفحة الدفع
-  let topupCurrency = "SYR";        // العملة المختارة بطلب الشحن
+  let displayCurrency = "SYR";
+  let exchangeRate = 15000;
+  let checkoutCurrency = "SYR";
+  let topupCurrency = "SYR";
   let lastKnownBalance = 0;
 
   function fmt(usdAmount, currency = displayCurrency) {
@@ -462,7 +485,6 @@
     return Math.round(n * exchangeRate).toLocaleString("en-US") + " ل.س";
   }
 
-  // ===== أمان: دالة تنظيف أي نص قادم من المستخدم قبل إدراجه بالـ HTML =====
   function escapeHTML(str) {
     if (str === null || str === undefined) return "";
     return String(str)
@@ -486,13 +508,13 @@
   document.getElementById("close-sidebar").addEventListener("click", () => document.getElementById("sidebar").classList.remove("open"));
   document.getElementById("sidebar-overlay").addEventListener("click", () => document.getElementById("sidebar").classList.remove("open"));
 
-  // ===== تفعيل تبديل العملة الفعلي (سوري / دولار فقط) =====
   window.setCurrency = function(type) {
     displayCurrency = type;
     document.querySelectorAll('.currency-toggle button').forEach(b => b.classList.toggle('active', b.dataset.currency === type));
     renderBalanceDisplays();
     renderProducts();
     updateCartUI();
+    updateCheckoutTotalDisplay();
   };
 
   function renderBalanceDisplays() {
@@ -524,12 +546,12 @@
       document.getElementById("app").style.display = "block";
       document.getElementById("cart-trigger").style.display = "flex";
       document.getElementById("balance-pill").style.display = "flex";
-      // ===== الشاشة الجانبية (القائمة) تظهر فقط للمستخدم المسجل دخول =====
       document.getElementById("open-sidebar").style.display = "inline-block";
       document.getElementById("sidebar-username").textContent = user.displayName || "مستخدم";
       await ensureUserDoc(user);
       listenUserBalance(user.uid);
       loadProducts();
+      loadCategories();
       listenOrders();
       listenTopups();
       listenAdsSlider();
@@ -614,23 +636,19 @@
     });
   }
 
-  // ===== أمان: منع الضغط المتكرر على زر سحب الإحالة أثناء المعالجة =====
   document.getElementById('withdraw-referral-btn').addEventListener('click', async () => {
     const errorEl = document.getElementById('referral-error-msg');
     const btn = document.getElementById('withdraw-referral-btn');
     errorEl.style.display = 'none';
-
     if (!currentUser) {
         errorEl.textContent = "يجب تسجيل الدخول أولاً";
         errorEl.style.display = 'block';
         return;
     }
-
     if (btn.disabled) return;
     btn.disabled = true;
     const originalText = btn.textContent;
     btn.textContent = "جاري المعالجة...";
-
     showToast("جاري معالجة السحب...");
     try {
         const withdrawFunction = httpsCallable(functions, 'withdrawReferral');
@@ -645,7 +663,7 @@
     }
   });
 
-  // ===== إعلانات: تصحيح مشكلة اختفاء أحد الإعلانات (تراكم أكثر من مؤقت شرائح بنفس الوقت) =====
+  // ===== إعلانات =====
   let adsIntervalId = null;
   let adsCurrentIndex = 0;
   function listenAdsSlider() {
@@ -654,17 +672,13 @@
       snap.forEach((d) => ads.push({ img: d.data().imageData, link: d.data().link || '#' }));
       const track = document.getElementById('ads-slider-track');
       const dotsWrap = document.getElementById('ads-slider-dots');
-
-      // نلغي أي مؤقّت سابق قبل إعادة البناء لمنع تراكم عدة مؤقتات بنفس الوقت (سبب اختفاء إعلان)
       if (adsIntervalId) { clearInterval(adsIntervalId); adsIntervalId = null; }
       adsCurrentIndex = 0;
-
       if (ads.length === 0) {
         track.innerHTML = `<div class="empty-state" style="padding:20px;">لا توجد إعلانات حالياً</div>`;
         dotsWrap.innerHTML = "";
         return;
       }
-      // ===== أمان: بناء عناصر الشريط عبر DOM API بدل حقن روابط/مصادر مباشرة بالـ HTML =====
       track.innerHTML = "";
       track.style.transform = "translateX(0%)";
       dotsWrap.innerHTML = "";
@@ -672,7 +686,6 @@
         const slide = document.createElement("div");
         slide.className = "slider-slide";
         const a = document.createElement("a");
-        // اسمح فقط بروابط http/https كتحويل، أي شي غير ذلك يُهمل لمنع javascript: URIs
         const safeLink = /^https?:\/\//i.test(ad.link) ? ad.link : "#";
         a.href = safeLink;
         a.target = "_blank";
@@ -684,14 +697,11 @@
         a.appendChild(img);
         slide.appendChild(a);
         track.appendChild(slide);
-
         const dot = document.createElement("span");
         if (i === 0) dot.classList.add("active");
         dotsWrap.appendChild(dot);
       });
-
       if (ads.length > 1) {
-        const container = document.getElementById('ads-slider-container');
         const slideCount = ads.length;
         function goToNextSlide() {
           adsCurrentIndex = (adsCurrentIndex + 1) % slideCount;
@@ -703,64 +713,190 @@
     });
   }
 
+  // ===== الأقسام =====
+  function loadCategories() {
+    onSnapshot(collection(db, "categories"), (snap) => {
+      allCategories = [];
+      snap.forEach((d) => allCategories.push({ id: d.id, ...d.data() }));
+      renderCategories();
+    });
+  }
+
+  function renderCategories() {
+    // عرض الأقسام الرئيسية (بدون أب)
+    const mainCategories = allCategories.filter(c => !c.parentId);
+    const grid = document.getElementById("category-grid");
+    if (mainCategories.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">لا توجد أقسام</div>`;
+    } else {
+      grid.innerHTML = mainCategories.map(c => `
+        <div class="cat-box" data-id="${c.id}">
+          ${c.imageData ? `<img src="${c.imageData}" alt="${escapeHTML(c.name)}">` : `<span>📁</span>`}
+          <p>${escapeHTML(c.name)}</p>
+        </div>
+      `).join("");
+      grid.querySelectorAll(".cat-box").forEach(box => {
+        box.addEventListener("click", () => {
+          const id = box.dataset.id;
+          // تصفية المنتجات حسب هذا القسم وكل أقسامه الفرعية
+          const children = allCategories.filter(c => c.parentId === id);
+          const childIds = children.map(c => c.id);
+          const allIds = [id, ...childIds];
+          activeCategory = allIds; // مصفوفة من المعرفات
+          renderProducts();
+          // تمييز القسم النشط
+          grid.querySelectorAll(".cat-box").forEach(b => b.classList.remove("active"));
+          box.classList.add("active");
+          // تحديث شريط التصنيفات الفرعية
+          renderSubCategories(id);
+        });
+      });
+    }
+  }
+
+  function renderSubCategories(parentId) {
+    const row = document.getElementById("cat-row");
+    const children = allCategories.filter(c => c.parentId === parentId);
+    if (children.length === 0) {
+      row.innerHTML = `<div class="cat-chip active" data-id="all">الكل</div>`;
+    } else {
+      row.innerHTML = `<div class="cat-chip" data-id="all">الكل</div>` + children.map(c => `
+        <div class="cat-chip" data-id="${c.id}">${escapeHTML(c.name)}</div>
+      `).join("");
+    }
+    row.querySelectorAll(".cat-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const id = chip.dataset.id;
+        if (id === "all") {
+          // عرض كل منتجات القسم الرئيسي
+          if (activeCategory && Array.isArray(activeCategory)) {
+            // نعرض كل منتجات القسم الرئيسي والأقسام الفرعية
+            // لكننا سنعتمد الفلترة حسب activeCategory
+          }
+          // لا نحتاج تغيير activeCategory، سنقوم بعرض الكل بناءً على القسم الرئيسي المحدد
+          renderProducts();
+        } else {
+          // تصفية حسب القسم الفرعي
+          activeCategory = [id];
+          renderProducts();
+        }
+        row.querySelectorAll(".cat-chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+      });
+    });
+    // افتراضيًا الكل نشط
+    row.querySelector('.cat-chip[data-id="all"]')?.classList.add("active");
+  }
+
+  // ===== المنتجات =====
   function loadProducts() {
     onSnapshot(collection(db, "products"), (snap) => {
       allProducts = [];
       snap.forEach((d) => allProducts.push({ id: d.id, ...d.data() }));
-      if (allProducts.length === 0) {
-        document.getElementById("product-grid").innerHTML = `<div class="empty-state" style="grid-column:1/-1;">ما في منتجات بعد، تابعنا قريباً 👀</div>`;
-        document.getElementById("cat-row").innerHTML = "";
-        return;
-      }
-      const categories = ["الكل", ...new Set(allProducts.map((p) => p.category || "عام"))];
-      const catRow = document.getElementById("cat-row");
-      catRow.innerHTML = "";
-      categories.forEach((cat) => {
-        const chip = document.createElement("button");
-        chip.className = "cat-chip" + (cat === activeCategory ? " active" : "");
-        chip.textContent = cat;
-        chip.addEventListener("click", () => {
-          activeCategory = cat;
-          document.querySelectorAll(".cat-chip").forEach((c) => c.classList.remove("active"));
-          chip.classList.add("active");
-          renderProducts();
-        });
-        catRow.appendChild(chip);
-      });
       renderProducts();
-    }, (err) => {
-      document.getElementById("product-grid").innerHTML = `<div class="empty-state" style="grid-column:1/-1;">تعذر تحميل المنتجات: ${escapeHTML(err.message)}</div>`;
     });
   }
 
   function renderProducts() {
     const grid = document.getElementById("product-grid");
-    const filtered = activeCategory === "الكل" ? allProducts : allProducts.filter((p) => (p.category || "عام") === activeCategory);
+    let filtered = allProducts;
+    if (activeCategory && Array.isArray(activeCategory)) {
+      // فلترة حسب معرفات الأقسام
+      filtered = allProducts.filter(p => activeCategory.includes(p.categoryId));
+    } else if (activeCategory && typeof activeCategory === 'string') {
+      // حالة قديمة، لكن نتعامل معها
+      filtered = allProducts.filter(p => p.categoryId === activeCategory);
+    }
+    // إذا لم يكن هناك قسم محدد، نعرض الكل
     document.getElementById("product-count").textContent = `(${filtered.length})`;
-    if (filtered.length === 0) { grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">ما في منتجات بهذا التصنيف</div>`; return; }
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">لا توجد منتجات في هذا القسم</div>`;
+      return;
+    }
     grid.innerHTML = "";
     filtered.forEach((p) => {
       const imageSrc = p.imageData || p.imageUrl;
       const card = document.createElement("div");
       card.className = "product-card";
-      // ===== أمان: اسم المنتج والسعر يجيان من الأدمن (موثوقين نسبياً) لكن منعزّم الاحتياط ونستخدم escapeHTML بكل الأحوال =====
       card.innerHTML = `
         <div class="product-icon">${imageSrc ? `<img src="${imageSrc}" alt="${escapeHTML(p.name)}">` : (p.icon || "🎮")}</div>
         <div class="product-price-badge">${fmt(p.price)}</div>
         <div class="product-name">${escapeHTML(p.name)}</div>
         <button class="product-btn">أضف للسلة</button>
       `;
-      card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); addToCart(p); });
+      // عند الضغط على البطاقة تفتح مودال الشراء السريع
+      card.addEventListener("click", (e) => {
+        if (e.target.tagName === 'BUTTON') return;
+        openQuickBuy(p);
+      });
+      card.querySelector("button").addEventListener("click", (e) => {
+        e.stopPropagation();
+        addToCart(p);
+      });
       grid.appendChild(card);
     });
   }
 
+  // ===== مودال الشراء السريع =====
+  let quickBuyProduct = null;
+  let quickBuyQty = 1;
+
+  function openQuickBuy(product) {
+    quickBuyProduct = product;
+    quickBuyQty = 1;
+    document.getElementById("quick-buy-title").textContent = product.name;
+    const imageSrc = product.imageData || product.imageUrl;
+    document.getElementById("quick-buy-image").src = imageSrc || "";
+    document.getElementById("quick-buy-image").style.display = imageSrc ? "block" : "none";
+    document.getElementById("quick-buy-price").textContent = fmt(product.price);
+    document.getElementById("quick-buy-qty").textContent = 1;
+    document.getElementById("quick-buy-product-id").value = product.id;
+    document.getElementById("quick-buy-modal").classList.add("active");
+  }
+
+  document.getElementById("quick-buy-close").addEventListener("click", () => {
+    document.getElementById("quick-buy-modal").classList.remove("active");
+  });
+
+  document.getElementById("quick-buy-inc").addEventListener("click", () => {
+    quickBuyQty++;
+    document.getElementById("quick-buy-qty").textContent = quickBuyQty;
+    document.getElementById("quick-buy-price").textContent = fmt(quickBuyProduct.price * quickBuyQty);
+  });
+  document.getElementById("quick-buy-dec").addEventListener("click", () => {
+    if (quickBuyQty > 1) {
+      quickBuyQty--;
+      document.getElementById("quick-buy-qty").textContent = quickBuyQty;
+      document.getElementById("quick-buy-price").textContent = fmt(quickBuyProduct.price * quickBuyQty);
+    }
+  });
+
+  document.getElementById("quick-buy-add-to-cart").addEventListener("click", () => {
+    if (!quickBuyProduct) return;
+    for (let i = 0; i < quickBuyQty; i++) {
+      addToCart(quickBuyProduct);
+    }
+    document.getElementById("quick-buy-modal").classList.remove("active");
+    showToast("تمت إضافة المنتج إلى السلة");
+  });
+
+  document.getElementById("quick-buy-buy-now").addEventListener("click", () => {
+    if (!quickBuyProduct) return;
+    // نضيف إلى السلة ثم نذهب إلى صفحة الدفع
+    for (let i = 0; i < quickBuyQty; i++) {
+      addToCart(quickBuyProduct);
+    }
+    document.getElementById("quick-buy-modal").classList.remove("active");
+    // الانتقال إلى السلة ثم الدفع
+    switchView("view-cart");
+    document.getElementById("checkout-btn").click();
+  });
+
+  // ===== السلة =====
   function addToCart(product) {
     const imageSrc = product.imageData || product.imageUrl || "";
     const existing = cart.find((c) => c.id === product.id);
     if (existing) existing.qty += 1;
-    // نخزّن فقط الـ id والكمية بالسلة محلياً لأغراض العرض؛ السعر والاسم الفعليين
-    // يُعاد التحقق منهما من قاعدة البيانات وقت إتمام الطلب (انظر دالة تأكيد الطلب أدناه)
     else cart.push({ id: product.id, name: product.name, price: product.price, icon: product.icon || "🎮", imageUrl: imageSrc, qty: 1 });
     updateCartUI();
   }
@@ -806,11 +942,11 @@
   document.getElementById("checkout-btn").addEventListener("click", async () => {
     const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
     document.getElementById("checkout-total").textContent = fmt(total, checkoutCurrency);
-    await loadPaymentBox("payment-box");
+    await loadPaymentBox("balance-pay-box");
     switchView("view-checkout");
   });
 
-  // ===== تبديل عملة الدفع بصفحة إتمام الطلب =====
+  // ===== الدفع =====
   function updateCheckoutTotalDisplay() {
     const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
     document.getElementById("checkout-total").textContent = fmt(total, checkoutCurrency);
@@ -828,15 +964,9 @@
     updateCheckoutTotalDisplay();
   });
 
-  document.getElementById("topup-cur-syr").addEventListener("click", () => {
-    topupCurrency = "SYR";
-    document.getElementById("topup-cur-syr").classList.add("active");
-    document.getElementById("topup-cur-usd").classList.remove("active");
-  });
-  document.getElementById("topup-cur-usd").addEventListener("click", () => {
-    topupCurrency = "USD";
-    document.getElementById("topup-cur-usd").classList.add("active");
-    document.getElementById("topup-cur-syr").classList.remove("active");
+  document.getElementById("go-to-topup-btn").addEventListener("click", () => {
+    // فتح مودال الشحن
+    document.getElementById("open-topup-btn").click();
   });
 
   async function loadPaymentBox(targetId) {
@@ -844,107 +974,21 @@
     try {
       const snap = await getDoc(doc(db, "settings", "payment"));
       if (snap.exists()) exchangeRate = Number(snap.data().exchangeRate) > 0 ? Number(snap.data().exchangeRate) : exchangeRate;
-      if (!snap.exists()) { box.innerHTML = `<b>طريقة الدفع:</b><br>لسا ما تم ضبط بيانات الدفع، تواصل مع الأدمن.`; return; }
-      const d = snap.data();
-      box.innerHTML = `<b>طريقة الدفع (شام كاش):</b><br>${d.cash ? `رقم شام كاش: <b>${escapeHTML(d.cash)}</b><br>` : ""}${d.usdt ? `محفظة USDT: <b>${escapeHTML(d.usdt)}</b><br>` : ""}${d.instructions ? `<br>${escapeHTML(d.instructions)}<br>` : ""}<br>سعر الصرف الحالي: <b>1$ = ${exchangeRate.toLocaleString("en-US")} ل.س</b>`;
+      // ليس هناك حاجة لعرض بيانات الدفع، لأن الدفع من الرصيد
+      box.innerHTML = `رصيدك الحالي: <b>${fmt(lastKnownBalance)}</b><br>سيتم خصم المبلغ مباشرة من رصيدك، ويبقى الطلب قيد المراجعة لحين تأكيد الأدمن.`;
     } catch (err) {
-      box.innerHTML = `<b>طريقة الدفع:</b><br>تعذر تحميل بيانات الدفع، حاول مرة ثانية.`;
+      box.innerHTML = `تعذر تحميل الرصيد.`;
     }
   }
 
-  document.getElementById("pay-balance-btn").addEventListener("click", () => {
-    selectedPayMethod = "balance";
-    document.getElementById("pay-balance-btn").classList.add("active");
-    document.getElementById("pay-manual-btn").classList.remove("active");
-    document.getElementById("balance-pay-box").style.display = "block";
-    document.getElementById("manual-pay-box").style.display = "none";
-  });
-  document.getElementById("pay-manual-btn").addEventListener("click", () => {
-    selectedPayMethod = "manual";
-    document.getElementById("pay-manual-btn").classList.add("active");
-    document.getElementById("pay-balance-btn").classList.remove("active");
-    document.getElementById("balance-pay-box").style.display = "none";
-    document.getElementById("manual-pay-box").style.display = "block";
-  });
-
-  function compressImageToDataUrl(file, maxWidth = 500, quality = 0.7) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const scale = Math.min(1, maxWidth / img.width);
-          const canvas = document.createElement("canvas");
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL("image/jpeg", quality));
-        };
-        img.onerror = reject;
-        img.src = e.target.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function setupFileUpload(dropId, inputId, statusId, removeId, dataUrlVarSetter) {
-    const drop = document.getElementById(dropId);
-    const input = document.getElementById(inputId);
-    const status = document.getElementById(statusId);
-    const remove = document.getElementById(removeId);
-    
-    drop.addEventListener("click", () => input.click());
-    input.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      // ===== أمان: التأكد أن الملف صورة فعلاً وضمن حجم معقول قبل معالجته =====
-      if (!file.type.startsWith("image/")) {
-        showToast("الرجاء اختيار صورة صالحة فقط", true);
-        input.value = "";
-        return;
-      }
-      if (file.size > 8 * 1024 * 1024) {
-        showToast("حجم الصورة كبير جداً (الحد الأقصى 8MB)", true);
-        input.value = "";
-        return;
-      }
-      const dataUrl = await compressImageToDataUrl(file);
-      dataUrlVarSetter(dataUrl);
-      status.style.display = "block";
-      remove.style.display = "inline-block";
-      drop.style.display = "none";
-    });
-    remove.addEventListener("click", () => {
-      input.value = "";
-      dataUrlVarSetter("");
-      status.style.display = "none";
-      remove.style.display = "none";
-      drop.style.display = "block";
-    });
-  }
-
-  setupFileUpload("receipt-drop", "receipt-input", "receipt-status", "receipt-remove", (val) => { receiptDataUrl = val; });
-  setupFileUpload("topup-receipt-drop", "topup-receipt-input", "topup-receipt-status", "topup-receipt-remove", (val) => { topupReceiptDataUrl = val; });
-
-  function validateField(fieldId, isValid) {
-    const field = document.getElementById(fieldId);
-    field.classList.toggle("invalid", !isValid);
-    return isValid;
-  }
-
-  // ===== أمان: منع الإرسال المزدوج + إعادة التحقق من الأسعار من قاعدة البيانات مباشرة قبل إنشاء الطلب =====
-  // ===== كل الطلبات (سواء دفع يدوي أو من الرصيد) تبقى "قيد المراجعة" لحين تأكيد الأدمن يدوياً =====
+  // ===== تأكيد الطلب =====
   document.getElementById("confirm-order-btn").addEventListener("click", async () => {
     const gameId = document.getElementById("checkout-game-id").value.trim();
     const contact = document.getElementById("checkout-contact").value.trim();
     const note = document.getElementById("checkout-note").value.trim();
-
     const phoneRegex = /^[0-9]{10}$/;
     const gameIdOk = validateField("field-game-id", gameId.length > 0 && gameId.length <= 100);
     const contactOk = validateField("field-contact", phoneRegex.test(contact));
-
     if (!gameIdOk || !contactOk) return;
     if (cart.length === 0) { showToast("سلتك فاضية", true); return; }
     if (note.length > 500) { showToast("الملاحظة طويلة جداً", true); return; }
@@ -955,8 +999,7 @@
     btn.textContent = "جاري إرسال الطلب…";
 
     try {
-      // إعادة جلب كل منتج من قاعدة البيانات مباشرة والتأكد من السعر الحقيقي
-      // بدل الاعتماد على القيم المخزنة محلياً بمتغير السلة (اللي ممكن يتلاعب فيها المستخدم من الـ console)
+      // التحقق من المنتجات
       const verifiedItems = [];
       for (const cartItem of cart) {
         const prodSnap = await getDoc(doc(db, "products", cartItem.id));
@@ -985,39 +1028,28 @@
         gameId: gameId,
         contact: contact,
         note: note,
-        receiptImage: selectedPayMethod === "manual" ? receiptDataUrl : "",
-        paymentMethod: selectedPayMethod,
-        status: "pending", // ===== دائماً قيد المراجعة، حتى لو الدفع من الرصيد =====
+        receiptImage: "",
+        paymentMethod: "balance",
+        status: "pending",
         createdAt: serverTimestamp(),
       };
 
-      if (selectedPayMethod === "balance") {
-        const userRef = doc(db, "users", currentUser.uid);
-        await runTransaction(db, async (transaction) => {
-          const userSnap = await transaction.get(userRef);
-          const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-          if (currentBalance < total) throw new Error("رصيدك غير كافٍ لإتمام هذا الطلب");
-          // نخصم المبلغ فوراً لحجزه، لكن الطلب يبقى قيد المراجعة لحين تأكيد الأدمن
-          // وإذا رفض الأدمن الطلب لاحقاً، رح يترجع المبلغ تلقائياً لرصيدك
-          transaction.update(userRef, { balance: currentBalance - total });
-          const newOrderRef = doc(collection(db, "orders"));
-          transaction.set(newOrderRef, orderData);
-        });
-      } else {
-        await addDoc(collection(db, "orders"), orderData);
-      }
+      const userRef = doc(db, "users", currentUser.uid);
+      await runTransaction(db, async (transaction) => {
+        const userSnap = await transaction.get(userRef);
+        const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
+        if (currentBalance < total) throw new Error("رصيدك غير كافٍ لإتمام هذا الطلب");
+        transaction.update(userRef, { balance: currentBalance - total });
+        const newOrderRef = doc(collection(db, "orders"));
+        transaction.set(newOrderRef, orderData);
+      });
 
       cart = [];
       updateCartUI();
       document.getElementById("checkout-game-id").value = "";
       document.getElementById("checkout-contact").value = "";
       document.getElementById("checkout-note").value = "";
-      receiptDataUrl = "";
-      document.getElementById("receipt-status").style.display = "none";
-      document.getElementById("receipt-remove").style.display = "none";
-      document.getElementById("receipt-drop").style.display = "block";
-      
-      showToast(selectedPayMethod === "balance" ? "تم خصم المبلغ من رصيدك، وطلبك الآن قيد المراجعة من الأدمن ⏳" : "تم إرسال طلبك بنجاح! بيصير قيد المراجعة.");
+      showToast("تم خصم المبلغ من رصيدك، وطلبك الآن قيد المراجعة من الأدمن ⏳");
       switchView("view-orders");
     } catch (err) {
       showToast("حدث خطأ: " + err.message, true);
@@ -1027,35 +1059,74 @@
     }
   });
 
-  function listenOrders() {
-    const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid));
-    onSnapshot(q, (snap) => {
-      const list = document.getElementById("orders-list");
-      if (snap.empty) { list.innerHTML = `<div class="empty-state">ما عندك طلبات بعد</div>`; return; }
-      const orders = [];
-      snap.forEach((d) => orders.push({ id: d.id, ...d.data() }));
-      orders.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      list.innerHTML = "";
-      orders.forEach((o) => {
-        const statusText = { pending: "قيد المراجعة", confirmed: "مؤكد ✓", rejected: "مرفوض" }[o.status] || "قيد المراجعة";
-        const statusClass = { pending: "status-pending", confirmed: "status-confirmed", rejected: "status-rejected" }[o.status] || "status-pending";
-        // ===== أمان: تنظيف اسم المنتج والكمية والملاحظة قبل إدراجها بالـ HTML =====
-        const itemsSummary = (o.items || []).map((i) => `${escapeHTML(i.name)} ×${escapeHTML(i.qty)}`).join(" — ");
-        const card = document.createElement("div");
-        card.className = "order-card";
-        card.innerHTML = `
-          <div class="order-row"><span style="font-weight:700; font-size:13.5px;">طلب #${escapeHTML(o.id.slice(0, 8).toUpperCase())}</span><span class="status-badge ${statusClass}">${statusText}</span></div>
-          <div style="color:var(--text-dim); font-size:12.5px; margin-bottom:4px;">${itemsSummary}</div>
-          ${o.note ? `<div style="color:var(--text-dim); font-size:12px; margin-bottom:4px;">ملاحظة: ${escapeHTML(o.note)}</div>` : ""}
-          <div style="color:var(--gold); font-weight:700; font-size:14px;">${fmt(o.total)} ${o.paymentMethod === "balance" ? "(من الرصيد)" : ""}</div>
-        `;
-        list.appendChild(card);
-      });
-    }, (err) => {
-      document.getElementById("orders-list").innerHTML = `<div class="empty-state">تعذر تحميل الطلبات: ${escapeHTML(err.message)}</div>`;
+  // ===== رفع الملفات =====
+  function setupFileUpload(dropId, inputId, statusId, removeId, dataUrlVarSetter) {
+    const drop = document.getElementById(dropId);
+    const input = document.getElementById(inputId);
+    const status = document.getElementById(statusId);
+    const remove = document.getElementById(removeId);
+    
+    drop.addEventListener("click", () => input.click());
+    input.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        showToast("الرجاء اختيار صورة صالحة فقط", true);
+        input.value = "";
+        return;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        showToast("حجم الصورة كبير جداً (الحد الأقصى 8MB)", true);
+        input.value = "";
+        return;
+      }
+      const dataUrl = await compressImageToDataUrl(file);
+      dataUrlVarSetter(dataUrl);
+      status.style.display = "block";
+      remove.style.display = "inline-block";
+      drop.style.display = "none";
+    });
+    remove.addEventListener("click", () => {
+      input.value = "";
+      dataUrlVarSetter("");
+      status.style.display = "none";
+      remove.style.display = "none";
+      drop.style.display = "block";
     });
   }
 
+  function compressImageToDataUrl(file, maxWidth = 500, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxWidth / img.width);
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  setupFileUpload("receipt-drop", "receipt-input", "receipt-status", "receipt-remove", (val) => { receiptDataUrl = val; });
+  setupFileUpload("topup-receipt-drop", "topup-receipt-input", "topup-receipt-status", "topup-receipt-remove", (val) => { topupReceiptDataUrl = val; });
+
+  function validateField(fieldId, isValid) {
+    const field = document.getElementById(fieldId);
+    field.classList.toggle("invalid", !isValid);
+    return isValid;
+  }
+
+  // ===== طلبات الشحن =====
   document.getElementById("open-topup-btn").addEventListener("click", async () => {
     await loadPaymentBox("topup-payment-box");
     document.getElementById("topup-modal-backdrop").classList.add("active");
@@ -1064,7 +1135,6 @@
     document.getElementById("topup-modal-backdrop").classList.remove("active");
   });
 
-  // ===== أمان: منع الإرسال المزدوج لطلب الشحن =====
   document.getElementById("submit-topup-btn").addEventListener("click", async () => {
     const amount = parseFloat(document.getElementById("topup-amount").value);
     const note = document.getElementById("topup-note").value.trim();
@@ -1077,7 +1147,6 @@
     btn.disabled = true;
     btn.textContent = "جاري الإرسال…";
 
-    // نحوّل المبلغ لدولار (وحدة الرصيد الأساسية) حسب العملة المختارة وسعر الصرف الحالي
     const usdAmount = topupCurrency === "SYR" ? (amount / exchangeRate) : amount;
 
     try {
@@ -1085,8 +1154,8 @@
         uid: currentUser.uid,
         userName: currentUser.displayName,
         userEmail: currentUser.email,
-        amount: usdAmount,           // القيمة بالدولار (تُستخدم لإضافة الرصيد الفعلي)
-        originalAmount: amount,      // القيمة كما أدخلها المستخدم
+        amount: usdAmount,
+        originalAmount: amount,
         currency: topupCurrency,
         exchangeRateAtOrder: exchangeRate,
         note: note,
@@ -1109,6 +1178,33 @@
       btn.textContent = "إرسال طلب الشحن";
     }
   });
+
+  // ===== طلبات المستخدم =====
+  function listenOrders() {
+    const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid));
+    onSnapshot(q, (snap) => {
+      const list = document.getElementById("orders-list");
+      if (snap.empty) { list.innerHTML = `<div class="empty-state">ما عندك طلبات بعد</div>`; return; }
+      const orders = [];
+      snap.forEach((d) => orders.push({ id: d.id, ...d.data() }));
+      orders.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      list.innerHTML = "";
+      orders.forEach((o) => {
+        const statusText = { pending: "قيد المراجعة", confirmed: "مؤكد ✓", rejected: "مرفوض" }[o.status] || "قيد المراجعة";
+        const statusClass = { pending: "status-pending", confirmed: "status-confirmed", rejected: "status-rejected" }[o.status] || "status-pending";
+        const itemsSummary = (o.items || []).map((i) => `${escapeHTML(i.name)} ×${escapeHTML(i.qty)}`).join(" — ");
+        const card = document.createElement("div");
+        card.className = "order-card";
+        card.innerHTML = `
+          <div class="order-row"><span style="font-weight:700; font-size:13.5px;">طلب #${escapeHTML(o.id.slice(0, 8).toUpperCase())}</span><span class="status-badge ${statusClass}">${statusText}</span></div>
+          <div style="color:var(--text-dim); font-size:12.5px; margin-bottom:4px;">${itemsSummary}</div>
+          ${o.note ? `<div style="color:var(--text-dim); font-size:12px; margin-bottom:4px;">ملاحظة: ${escapeHTML(o.note)}</div>` : ""}
+          <div style="color:var(--gold); font-weight:700; font-size:14px;">${fmt(o.total)} (من الرصيد)</div>
+        `;
+        list.appendChild(card);
+      });
+    });
+  }
 
   function listenTopups() {
     const q = query(collection(db, "topups"), where("uid", "==", currentUser.uid));
@@ -1140,7 +1236,6 @@
   bindModal(["about-link-login", "about-link-home"], "about-modal-backdrop", "about-close-btn");
   bindModal(["contact-link-login", "contact-link-home"], "contact-modal-backdrop", "contact-close-btn");
 
-  // ===== إظهار بانرات التواصل (تلغرام / واتساب) عند الضغط على "اضغط هنا" =====
   document.getElementById("reveal-tg-btn").addEventListener("click", () => {
     document.getElementById("tg-banner").classList.add("show");
   });
