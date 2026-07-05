@@ -83,6 +83,9 @@
   .field label{ font-size:12.5px; color:var(--text-dim); display:block; margin-bottom:5px; }
   .field input, .field textarea, .field select{ width:100%; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text); border-radius:10px; padding:10px 12px; font-size:13.5px; font-family:'Tajawal'; }
   .field textarea{ resize:vertical; min-height:70px; }
+  .field-inline{ display:flex; gap:8px; align-items:stretch; }
+  .field-inline input{ flex:1; }
+  .field-toggle-btn{ background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); border-radius:10px; padding:0 12px; cursor:pointer; font-size:12px; white-space:nowrap; }
 
   .file-drop{ border:1.5px dashed var(--hairline); border-radius:12px; padding:14px; text-align:center; font-size:12.5px; color:var(--text-dim); cursor:pointer; }
   .file-drop input{ display:none; }
@@ -102,6 +105,26 @@
   .hint{ font-size:12px; color:var(--text-dim); line-height:1.7; margin-top:4px; }
   .order-items-list{ font-size:12px; color:var(--text-dim); margin-top:6px; line-height:1.6; }
   .receipt-thumb{ width:60px; height:60px; border-radius:8px; object-fit:cover; margin-top:6px; cursor:pointer; }
+
+  /* قسم الأقسام */
+  .category-item{ display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--hairline); border-radius:12px; padding:10px; margin-bottom:8px; }
+  .category-item img{ width:40px; height:40px; border-radius:8px; object-fit:cover; }
+  .category-item .info{ flex:1; }
+  .category-item .info .name{ font-weight:700; font-size:14px; }
+  .category-item .info .parent{ font-size:12px; color:var(--text-dim); }
+
+  /* قسم API */
+  .api-item{ background:var(--card); border:1px solid var(--hairline); border-radius:12px; padding:12px; margin-bottom:8px; }
+  .api-item .row{ display:flex; justify-content:space-between; }
+  .api-item .row .url{ font-size:13px; color:var(--text-dim); }
+  .api-item .row .actions{ display:flex; gap:6px; }
+  .api-product-item{ display:flex; align-items:center; gap:10px; background:var(--bg-soft); border-radius:8px; padding:8px; margin-top:6px; }
+  .api-product-item img{ width:30px; height:30px; border-radius:6px; object-fit:cover; }
+  .api-product-item .info{ flex:1; }
+  .api-product-item .info .name{ font-size:13px; font-weight:600; }
+  .api-product-item .info .price{ font-size:12px; color:var(--gold); }
+  .api-product-item .info .cost{ font-size:11px; color:var(--text-dim); }
+  .api-product-item .info .override-tag{ font-size:10px; color:var(--gold); border:1px solid rgba(212,162,76,0.4); border-radius:6px; padding:1px 5px; margin-right:4px; }
 </style>
 </head>
 <body>
@@ -126,10 +149,12 @@
     <button class="tab active" data-panel="panel-overview">نظرة عامة</button>
     <button class="tab" data-panel="panel-orders">الطلبات</button>
     <button class="tab" data-panel="panel-products">المنتجات</button>
+    <button class="tab" data-panel="panel-categories">الأقسام</button>
     <button class="tab" data-panel="panel-wallet">المحفظة</button>
     <button class="tab" data-panel="panel-topups">طلبات الشحن</button>
     <button class="tab" data-panel="panel-payment">طرق الدفع</button>
     <button class="tab" data-panel="panel-ads">الإعلانات</button>
+    <button class="tab" data-panel="panel-api">سحب منتجات API</button>
     <button class="tab" data-panel="panel-referral">التحكم بالإحالة</button>
   </div>
 
@@ -157,6 +182,12 @@
     <div class="panel" id="panel-products">
       <div class="section-title">المنتجات <button class="add-btn" id="add-product-btn">+ منتج جديد</button></div>
       <div id="products-list"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <div class="panel" id="panel-categories">
+      <div class="section-title">الأقسام <button class="add-btn" id="add-category-btn">+ قسم جديد</button></div>
+      <p class="hint">يمكنك إضافة أقسام فرعية داخل أي قسم. كل قسم له صورة واسم.</p>
+      <div id="categories-list"><div class="empty-state">لا توجد أقسام بعد.</div></div>
     </div>
 
     <div class="panel" id="panel-wallet">
@@ -222,6 +253,15 @@
       <div id="ads-list"><div class="empty-state">لا توجد إعلانات حالياً.</div></div>
     </div>
 
+    <div class="panel" id="panel-api">
+      <div class="section-title">
+        مصادر API
+        <button class="add-btn" id="add-api-btn">+ إضافة مصدر</button>
+      </div>
+      <p class="hint">أضف رابط API الذي يوفر المنتجات. يمكنك تحديد الأقسام التي تريد سحبها، وسيتم عرض المنتجات هنا مع إمكانية تعديل السعر والاسم والوصف. أي منتج تعدّله يدوياً بيتحفظ عليه علامة "معدَّل يدوياً" ومش رح تتبدل قيمه تلقائياً بالمزامنة القادمة.</p>
+      <div id="api-sources-list"><div class="empty-state">لا توجد مصادر API.</div></div>
+    </div>
+
     <div class="panel" id="panel-referral">
       <div class="section-title">التحكم في نظام الإحالة</div>
       <p class="hint">من هنا تستطيع تفعيل، تعطيل، وتحديد شروط نظام الإحالة بالكامل.</p>
@@ -253,20 +293,24 @@
          <div class="stat-card"><div class="num" id="stat-total-referrals">0</div><div class="lbl">إجمالي الإحالات</div></div>
          <div class="stat-card gold"><div class="num" id="stat-total-paid">0 $</div><div class="lbl">المكافآت المدفوعة</div></div>
       </div>
+      <p class="hint" id="referral-stats-hint">الإحصائيات محسوبة من مجموعة <code>referrals</code> في Firestore (حقل <code>rewardAmount</code> لكل وثيقة). إذا كان اسم المجموعة أو الحقل مختلف عندك بالبوت، بلّغني لأعدّل الاستعلام.</p>
     </div>
   </div>
 </div>
 
 <!-- Modals -->
+
+<!-- Product Modal -->
 <div class="modal-backdrop" id="product-modal-backdrop">
   <div class="modal">
     <h3 id="product-modal-title">منتج جديد</h3>
     <input type="hidden" id="product-edit-id">
     <div class="field"><label>اسم المنتج</label><input type="text" id="p-name"></div>
     <div class="field"><label>السعر ($)</label><input type="number" id="p-price" step="0.01"></div>
-    <div class="field"><label>التصنيف</label><input type="text" id="p-category" placeholder="مثال: ألعاب, تطبيقات, بطاقات"></div>
-    <div class="field">
-      <label>صورة المنتج (من جهازك)</label>
+    <div class="field"><label>القسم</label>
+      <select id="p-category"><option value="">اختر القسم</option></select>
+    </div>
+    <div class="field"><label>صورة المنتج (من جهازك)</label>
       <div class="file-drop" id="p-image-drop">📷 اضغط لاختيار صورة من جهازك</div>
       <input type="file" id="p-image-input" accept="image/*">
       <div class="file-preview" id="p-image-preview" style="display:none;"><img id="p-image-preview-img"></div>
@@ -280,6 +324,66 @@
   </div>
 </div>
 
+<!-- Category Modal -->
+<div class="modal-backdrop" id="category-modal-backdrop">
+  <div class="modal">
+    <h3 id="category-modal-title">قسم جديد</h3>
+    <input type="hidden" id="category-edit-id">
+    <div class="field"><label>اسم القسم</label><input type="text" id="cat-name"></div>
+    <div class="field"><label>القسم الأب (اختياري، لإنشاء أقسام فرعية)</label>
+      <select id="cat-parent"><option value="">لا يوجد (قسم رئيسي)</option></select>
+    </div>
+    <div class="field"><label>صورة القسم</label>
+      <div class="file-drop" id="cat-image-drop">📷 اضغط لاختيار صورة القسم</div>
+      <input type="file" id="cat-image-input" accept="image/*">
+      <div class="file-preview" id="cat-image-preview" style="display:none;"><img id="cat-image-preview-img"></div>
+    </div>
+    <div class="modal-btn-row">
+      <button class="secondary-btn" id="category-cancel-btn">إلغاء</button>
+      <button class="primary-btn" id="category-save-btn">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Modal -->
+<div class="modal-backdrop" id="api-modal-backdrop">
+  <div class="modal">
+    <h3 id="api-modal-title">مصدر API جديد</h3>
+    <input type="hidden" id="api-edit-id">
+    <div class="field"><label>رابط API (يجب أن يعيد JSON)</label><input type="text" id="api-url" placeholder="https://api.action-cash.com/client/api/"></div>
+    <div class="field"><label>API Token (مفتاح الوصول)</label>
+      <div class="field-inline">
+        <input type="password" id="api-token" placeholder="أدخل المفتاح هنا" autocomplete="off">
+        <button type="button" class="field-toggle-btn" id="api-token-toggle">إظهار</button>
+      </div>
+      <p class="hint">المفتاح مخزَّن بقاعدة البيانات. تأكد إن قواعد أمان Firestore بتسمح فقط للأدمن بقراءة/كتابة مجموعة apiSources.</p>
+    </div>
+    <div class="field"><label>الأقسام التي تريد سحبها (افصل بفاصلة)</label><input type="text" id="api-categories" placeholder="ألعاب, بطاقات, اشتراكات"></div>
+    <div class="modal-btn-row">
+      <button class="secondary-btn" id="api-cancel-btn">إلغاء</button>
+      <button class="primary-btn" id="api-save-btn">حفظ وسحب المنتجات</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Product Edit Modal -->
+<div class="modal-backdrop" id="api-product-modal-backdrop">
+  <div class="modal">
+    <h3>تعديل منتج API</h3>
+    <input type="hidden" id="api-product-edit-apiid">
+    <input type="hidden" id="api-product-edit-prodid">
+    <p class="hint">تعديلاتك هون بتُحفظ وما بتنمسح بالمزامنة القادمة (تُعلَّم "معدَّل يدوياً").</p>
+    <div class="field"><label>الاسم</label><input type="text" id="api-product-name"></div>
+    <div class="field"><label>السعر ($)</label><input type="number" id="api-product-price" step="0.01"></div>
+    <div class="field"><label>التكلفة ($)</label><input type="number" id="api-product-cost" step="0.01"></div>
+    <div class="modal-btn-row">
+      <button class="secondary-btn" id="api-product-cancel-btn">إلغاء</button>
+      <button class="primary-btn" id="api-product-save-btn">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Wallet Modal -->
 <div class="modal-backdrop" id="wallet-modal-backdrop">
   <div class="modal">
     <h3>تعديل رصيد <span id="wallet-modal-user"></span></h3>
@@ -296,6 +400,7 @@
   </div>
 </div>
 
+<!-- Receipt Modal -->
 <div class="modal-backdrop" id="receipt-modal-backdrop">
   <div class="modal" style="text-align:center;">
     <h3>صورة الإيصال</h3>
@@ -311,7 +416,7 @@
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
-    onSnapshot, query, runTransaction, serverTimestamp
+    onSnapshot, runTransaction, serverTimestamp, writeBatch
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -334,15 +439,16 @@
   let allUsers = [];
   let allTopups = [];
   let allAds = [];
+  let allCategories = [];
+  let allApiSources = [];
+  let allReferrals = [];
   let pImageData = "";
   let adImageData = "";
+  let catImageData = "";
   let referralSettings = {};
   let ordersSearchTerm = "";
   let topupsSearchTerm = "";
 
-  // ===== أمان: دالة تنظيف أي نص قادم من المستخدمين (الاسم، الملاحظة، معرّف اللعبة...) =====
-  // كل هاي الحقول يكتبها المستخدم العادي بالمتجر، فلازم تُعالج قبل ما تدخل بالـ HTML
-  // بلوحة التحكم اللي أنت (الأدمن) مسجل دخول فيها بصلاحيات كاملة على قاعدة البيانات.
   function escapeHTML(str) {
     if (str === null || str === undefined) return "";
     return String(str)
@@ -351,6 +457,18 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  // تحويل نص إلى معرّف ثابت (نفس النص = نفس المعرّف دايماً)، يستخدم كبديل عن Math.random()
+  // حتى ما تنفصل تعديلاتك اليدوية عن المنتج بعد كل مزامنة API.
+  function stableHash(str) {
+    let hash = 0;
+    const s = String(str || "");
+    for (let i = 0; i < s.length; i++) {
+      hash = (hash << 5) - hash + s.charCodeAt(i);
+      hash |= 0;
+    }
+    return "h" + Math.abs(hash).toString(36);
   }
 
   function showToast(msg, isError = false) {
@@ -397,6 +515,9 @@
     listenAds();
     loadPaymentSettings();
     listenReferralSettings();
+    listenReferralStats();
+    listenCategories();
+    listenApiSources();
   });
 
   document.querySelectorAll(".tab").forEach((tab) => {
@@ -430,7 +551,6 @@
     });
   }
 
-  // ===== أمان: التحقق من نوع وحجم الصورة قبل معالجتها (يطبق على منتجات وإعلانات) =====
   function validateImageFile(file) {
     if (!file.type.startsWith("image/")) {
       showToast("الرجاء اختيار صورة صالحة فقط", true);
@@ -453,30 +573,515 @@
     document.getElementById("p-image-preview").style.display = "block";
   });
 
-  async function loadPaymentSettings() {
-    const snap = await getDoc(doc(db, "settings", "payment"));
-    if (snap.exists()) {
-      const d = snap.data();
-      document.getElementById("pay-cash").value = d.cash || "";
-      document.getElementById("pay-usdt").value = d.usdt || "";
-      document.getElementById("pay-instructions").value = d.instructions || "";
-      document.getElementById("pay-exchange-rate").value = d.exchangeRate || 15000;
-    } else {
-      document.getElementById("pay-exchange-rate").value = 15000;
-    }
+  // === كود الأقسام ===
+  function listenCategories() {
+    onSnapshot(collection(db, "categories"), (snap) => {
+      allCategories = [];
+      snap.forEach((d) => allCategories.push({ id: d.id, ...d.data() }));
+      renderCategories();
+      populateCategorySelects();
+    });
   }
 
-  document.getElementById("save-payment-btn").addEventListener("click", async () => {
-    const rate = parseFloat(document.getElementById("pay-exchange-rate").value);
-    await setDoc(doc(db, "settings", "payment"), {
-      cash: document.getElementById("pay-cash").value.trim(),
-      usdt: document.getElementById("pay-usdt").value.trim(),
-      instructions: document.getElementById("pay-instructions").value.trim(),
-      exchangeRate: (!isNaN(rate) && rate > 0) ? rate : 15000,
+  function renderCategories() {
+    const list = document.getElementById("categories-list");
+    if (allCategories.length === 0) { list.innerHTML = `<div class="empty-state">لا توجد أقسام بعد، أضف أول قسم.</div>`; return; }
+    list.innerHTML = allCategories.map(cat => {
+      const parent = allCategories.find(p => p.id === cat.parentId);
+      const parentName = parent ? parent.name : "قسم رئيسي";
+      return `
+        <div class="category-item" data-id="${cat.id}">
+          ${cat.imageData ? `<img src="${cat.imageData}" alt="${escapeHTML(cat.name)}">` : `<span style="font-size:30px;">📁</span>`}
+          <div class="info">
+            <div class="name">${escapeHTML(cat.name)}</div>
+            <div class="parent">الأب: ${escapeHTML(parentName)}</div>
+          </div>
+          <div class="card-actions">
+            <button class="icon-btn gold" data-action="edit">✎</button>
+            <button class="icon-btn danger" data-action="delete">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    list.querySelectorAll("[data-action='edit']").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.closest('.category-item').dataset.id;
+        const cat = allCategories.find(c => c.id === id);
+        openCategoryModal(cat);
+      });
     });
-    showToast("تم حفظ بيانات الدفع!");
+    list.querySelectorAll("[data-action='delete']").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.closest('.category-item').dataset.id;
+        const affectedProducts = allProducts.filter(p => p.categoryId === id).length;
+        const affectedSubcats = allCategories.filter(c => c.parentId === id).length;
+        let msg = "متأكد من حذف هذا القسم؟";
+        if (affectedProducts || affectedSubcats) {
+          msg += ` سيتم فصل ${affectedProducts} منتج و ${affectedSubcats} قسم فرعي عن هذا القسم (تصبح بلا قسم بدل ما تختفي).`;
+        }
+        if (confirm(msg)) {
+          if (btn.disabled) return;
+          btn.disabled = true;
+          try {
+            await deleteCategoryAndUnlink(id);
+            showToast("تم حذف القسم");
+          } catch (err) {
+            showToast("خطأ: " + err.message, true);
+          } finally {
+            btn.disabled = false;
+          }
+        }
+      });
+    });
+  }
+
+  // حذف قسم مع فصل المنتجات والأقسام الفرعية المرتبطة به بدل تركها تشير لقسم محذوف
+  async function deleteCategoryAndUnlink(catId) {
+    const batch = writeBatch(db);
+    allProducts.filter(p => p.categoryId === catId).forEach(p => {
+      batch.update(doc(db, "products", p.id), { categoryId: "" });
+    });
+    allCategories.filter(c => c.parentId === catId).forEach(c => {
+      batch.update(doc(db, "categories", c.id), { parentId: "" });
+    });
+    batch.delete(doc(db, "categories", catId));
+    await batch.commit();
+  }
+
+  // كل الأقسام الفرعية (وفروعها) بشكل متكرر تحت قسم معيّن، تُستخدم لمنع اختيار القسم نفسه
+  // أو أحد أحفاده كـ "قسم أب" له وهذا يسبب حلقة لا نهائية بشجرة الأقسام
+  function getDescendantCategoryIds(catId) {
+    const result = new Set();
+    const stack = [catId];
+    while (stack.length) {
+      const current = stack.pop();
+      allCategories.forEach(c => {
+        if (c.parentId === current && !result.has(c.id)) {
+          result.add(c.id);
+          stack.push(c.id);
+        }
+      });
+    }
+    return result;
+  }
+
+  function populateCategorySelects() {
+    const editingCatId = document.getElementById("category-edit-id")?.value || "";
+    const excluded = editingCatId ? new Set([editingCatId, ...getDescendantCategoryIds(editingCatId)]) : new Set();
+
+    const configs = [
+      { id: "p-category", placeholder: "اختر القسم", exclude: new Set() },
+      { id: "cat-parent", placeholder: "لا يوجد (قسم رئيسي)", exclude: excluded },
+    ];
+
+    configs.forEach(({ id, placeholder, exclude }) => {
+      const select = document.getElementById(id);
+      if (!select) return;
+      const currentVal = select.value;
+      select.innerHTML = `<option value="">${placeholder}</option>`;
+      allCategories.forEach(cat => {
+        if (exclude.has(cat.id)) return;
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = cat.name;
+        select.appendChild(opt);
+      });
+      select.value = exclude.has(currentVal) ? "" : currentVal;
+    });
+  }
+
+  document.getElementById("add-category-btn").addEventListener("click", () => openCategoryModal(null));
+  document.getElementById("category-cancel-btn").addEventListener("click", () => {
+    document.getElementById("category-modal-backdrop").classList.remove("active");
   });
 
+  function openCategoryModal(cat) {
+    document.getElementById("category-modal-title").textContent = cat ? "تعديل القسم" : "قسم جديد";
+    document.getElementById("category-edit-id").value = cat?.id || "";
+    document.getElementById("cat-name").value = cat?.name || "";
+    document.getElementById("cat-parent").value = cat?.parentId || "";
+    catImageData = cat?.imageData || "";
+    if (catImageData) {
+      document.getElementById("cat-image-preview-img").src = catImageData;
+      document.getElementById("cat-image-preview").style.display = "block";
+    } else {
+      document.getElementById("cat-image-preview").style.display = "none";
+    }
+    document.getElementById("category-modal-backdrop").classList.add("active");
+    populateCategorySelects();
+  }
+
+  document.getElementById("cat-image-drop").addEventListener("click", () => document.getElementById("cat-image-input").click());
+  document.getElementById("cat-image-input").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!validateImageFile(file)) { e.target.value = ""; return; }
+    catImageData = await compressImageToDataUrl(file);
+    document.getElementById("cat-image-preview-img").src = catImageData;
+    document.getElementById("cat-image-preview").style.display = "block";
+  });
+
+  document.getElementById("category-save-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("category-save-btn");
+    if (btn.disabled) return;
+    const id = document.getElementById("category-edit-id").value;
+    const name = document.getElementById("cat-name").value.trim();
+    if (!name) { showToast("الرجاء كتابة اسم القسم", true); return; }
+    const parentId = document.getElementById("cat-parent").value || "";
+    if (parentId && id && (parentId === id || getDescendantCategoryIds(id).has(parentId))) {
+      showToast("لا يمكن اختيار القسم نفسه أو أحد أقسامه الفرعية كقسم أب", true);
+      return;
+    }
+    const data = { name, parentId, imageData: catImageData || "" };
+    btn.disabled = true;
+    try {
+      if (id) await updateDoc(doc(db, "categories", id), data);
+      else await addDoc(collection(db, "categories"), data);
+      document.getElementById("category-modal-backdrop").classList.remove("active");
+      catImageData = "";
+      showToast("تم حفظ القسم");
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // === كود المنتجات مع ربط الأقسام ===
+  function listenProducts() {
+    onSnapshot(collection(db, "products"), (snap) => {
+      allProducts = [];
+      snap.forEach((d) => allProducts.push({ id: d.id, ...d.data() }));
+      renderProducts();
+      document.getElementById("stat-products").textContent = allProducts.length;
+    });
+  }
+
+  function renderProducts() {
+    const list = document.getElementById("products-list");
+    if (allProducts.length === 0) { list.innerHTML = `<div class="empty-state">ما في منتجات بعد، أضف أول منتج</div>`; return; }
+    list.innerHTML = allProducts.map((p) => {
+      const imageSrc = p.imageData || p.imageUrl;
+      const cat = allCategories.find(c => c.id === p.categoryId);
+      const catName = cat ? cat.name : (p.category || "عام");
+      return `
+      <div class="card" data-id="${p.id}">
+        <div class="card-row">
+          <div class="card-thumb">${imageSrc ? `<img src="${imageSrc}">` : escapeHTML(p.icon || "🎮")}</div>
+          <div class="card-info">
+            <div class="t-name">${escapeHTML(p.name)}</div>
+            <div class="t-meta">${escapeHTML(catName)} • ${escapeHTML(p.price)} $</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn gold" data-action="edit">✎ تعديل</button>
+          <button class="icon-btn danger" data-action="delete">🗑 حذف</button>
+        </div>
+      </div>
+    `;
+    }).join("");
+
+    list.querySelectorAll(".card").forEach((card) => {
+      const id = card.dataset.id;
+      const product = allProducts.find((p) => p.id === id);
+      card.querySelector('[data-action="edit"]').addEventListener("click", () => openProductModal(product));
+      card.querySelector('[data-action="delete"]').addEventListener("click", async () => {
+        if (confirm(`متأكد بدك تحذف "${product.name}"؟`)) await deleteDoc(doc(db, "products", id));
+      });
+    });
+  }
+
+  function openProductModal(product) {
+    document.getElementById("product-modal-title").textContent = product ? "تعديل المنتج" : "منتج جديد";
+    document.getElementById("product-edit-id").value = product?.id || "";
+    document.getElementById("p-name").value = product?.name || "";
+    document.getElementById("p-price").value = product?.price ?? "";
+    document.getElementById("p-category").value = product?.categoryId || "";
+    document.getElementById("p-icon").value = product?.icon || "🎮";
+    document.getElementById("p-desc").value = product?.description || "";
+    pImageData = product?.imageData || "";
+    if (pImageData) {
+      document.getElementById("p-image-preview-img").src = pImageData;
+      document.getElementById("p-image-preview").style.display = "block";
+    } else {
+      document.getElementById("p-image-preview").style.display = "none";
+    }
+    document.getElementById("product-modal-backdrop").classList.add("active");
+    populateCategorySelects();
+  }
+
+  document.getElementById("add-product-btn").addEventListener("click", () => openProductModal(null));
+  document.getElementById("product-cancel-btn").addEventListener("click", () => {
+    document.getElementById("product-modal-backdrop").classList.remove("active");
+  });
+
+  document.getElementById("product-save-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("product-save-btn");
+    if (btn.disabled) return;
+
+    const id = document.getElementById("product-edit-id").value;
+    const price = parseFloat(document.getElementById("p-price").value);
+    const data = {
+      name: document.getElementById("p-name").value.trim(),
+      price: (isNaN(price) || price < 0) ? 0 : price,
+      categoryId: document.getElementById("p-category").value || "",
+      imageData: pImageData || "",
+      icon: document.getElementById("p-icon").value.trim() || "🎮",
+      description: document.getElementById("p-desc").value.trim(),
+    };
+    if (!data.name) { showToast("الرجاء كتابة اسم المنتج", true); return; }
+
+    btn.disabled = true;
+    try {
+      if (id) await updateDoc(doc(db, "products", id), data);
+      else await addDoc(collection(db, "products"), data);
+      document.getElementById("product-modal-backdrop").classList.remove("active");
+      pImageData = "";
+      showToast("تم حفظ المنتج بنجاح!");
+    } catch (err) {
+      showToast("تعذر الحفظ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // === كود API ===
+  function listenApiSources() {
+    onSnapshot(collection(db, "apiSources"), (snap) => {
+      allApiSources = [];
+      snap.forEach((d) => allApiSources.push({ id: d.id, ...d.data() }));
+      renderApiSources();
+    });
+  }
+
+  function renderApiSources() {
+    const list = document.getElementById("api-sources-list");
+    if (allApiSources.length === 0) { list.innerHTML = `<div class="empty-state">لا توجد مصادر API.</div>`; return; }
+    list.innerHTML = allApiSources.map(api => {
+      return `
+        <div class="api-item" data-id="${api.id}">
+          <div class="row">
+            <div><strong>${escapeHTML(api.url)}</strong></div>
+            <div class="actions">
+              <button class="icon-btn gold" data-action="edit">✎</button>
+              <button class="icon-btn danger" data-action="delete">🗑</button>
+            </div>
+          </div>
+          <div class="row" style="margin-top:6px;">
+            <span class="url">الأقسام: ${escapeHTML(api.categories || 'الكل')}</span>
+            <button class="icon-btn success" data-action="sync">🔄 سحب الآن</button>
+          </div>
+          <div id="api-products-${api.id}" style="margin-top:10px;">
+            ${(api.products || []).map(p => `
+              <div class="api-product-item">
+                ${p.image ? `<img src="${p.image}">` : `<span>📦</span>`}
+                <div class="info">
+                  <div class="name">${p.manualOverride ? `<span class="override-tag">معدَّل يدوياً</span>` : ""}${escapeHTML(p.name)}</div>
+                  <div class="price">السعر: ${escapeHTML(p.price)} $</div>
+                  <div class="cost">التكلفة: ${escapeHTML(p.cost || 0)} $</div>
+                </div>
+                <div class="card-actions" style="flex:0;">
+                  <button class="icon-btn gold" data-action="edit-api-product" data-apiid="${api.id}" data-prodid="${p.id}">✎</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    list.querySelectorAll("[data-action='edit']").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.closest('.api-item').dataset.id;
+        const api = allApiSources.find(a => a.id === id);
+        openApiModal(api);
+      });
+    });
+    list.querySelectorAll("[data-action='delete']").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.closest('.api-item').dataset.id;
+        if (confirm("حذف مصدر API؟")) {
+          await deleteDoc(doc(db, "apiSources", id));
+          showToast("تم الحذف");
+        }
+      });
+    });
+    list.querySelectorAll("[data-action='sync']").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.closest('.api-item').dataset.id;
+        btn.disabled = true;
+        btn.textContent = "جاري السحب...";
+        try {
+          await syncApiProducts(id);
+          showToast("تم سحب المنتجات بنجاح!");
+        } catch (err) {
+          showToast("خطأ في السحب: " + err.message, true);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "🔄 سحب الآن";
+        }
+      });
+    });
+    list.querySelectorAll("[data-action='edit-api-product']").forEach(btn => {
+      btn.addEventListener("click", () => {
+        openApiProductModal(btn.dataset.apiid, btn.dataset.prodid);
+      });
+    });
+  }
+
+  async function syncApiProducts(apiId) {
+    const apiDoc = await getDoc(doc(db, "apiSources", apiId));
+    if (!apiDoc.exists()) throw new Error("المصدر غير موجود");
+    const data = apiDoc.data();
+    const url = data.url;
+    const token = data.token || "";
+    const categories = (data.categories || "").split(',').map(s => s.trim()).filter(Boolean);
+
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, { headers });
+    if (!response.ok) throw new Error("فشل الاتصال بـ API");
+    const json = await response.json();
+
+    let products = json;
+    if (!Array.isArray(products)) {
+      products = json.products || json.data || json.items || json.result || [];
+    }
+    if (!Array.isArray(products)) throw new Error("تنسيق البيانات غير مدعوم");
+
+    if (categories.length > 0) {
+      products = products.filter(p => {
+        const pCat = (p.category || p.categories || '');
+        return categories.some(c => pCat.includes(c));
+      });
+    }
+
+    // نفهرس المنتجات الحالية بمعرّف ثابت حتى نحافظ على أي تعديل يدوي سابق (السعر/التكلفة/الاسم)
+    const existingById = {};
+    (data.products || []).forEach(p => { existingById[p.id] = p; });
+
+    const formatted = products.map(p => {
+      // معرّف ثابت: id/sku من المصدر إن وجد، وإلا هاش ثابت مبني على الاسم بدل معرّف عشوائي
+      // (Math.random) كان يولّد id جديد بكل مزامنة ويفصل المنتج عن أي تعديل يدوي سابق.
+      const stableId = p.id || p.sku || stableHash(p.name || p.title || '');
+      const existing = existingById[stableId];
+      const fresh = {
+        id: stableId,
+        name: p.name || p.title || 'منتج',
+        price: parseFloat(p.price) || 0,
+        cost: parseFloat(p.cost) || 0,
+        image: p.image || p.thumbnail || '',
+        description: p.description || '',
+        category: p.category || p.categories || ''
+      };
+      if (existing && existing.manualOverride) {
+        // نحافظ على القيم المعدَّلة يدوياً، ونحدّث باقي الحقول (الصورة/الوصف) من المصدر
+        return { ...fresh, name: existing.name, price: existing.price, cost: existing.cost, manualOverride: true };
+      }
+      return fresh;
+    });
+
+    await updateDoc(doc(db, "apiSources", apiId), { products: formatted });
+    showToast(`تم سحب ${formatted.length} منتج`);
+  }
+
+  document.getElementById("add-api-btn").addEventListener("click", () => openApiModal(null));
+  document.getElementById("api-cancel-btn").addEventListener("click", () => {
+    document.getElementById("api-modal-backdrop").classList.remove("active");
+  });
+
+  document.getElementById("api-token-toggle").addEventListener("click", () => {
+    const input = document.getElementById("api-token");
+    const btn = document.getElementById("api-token-toggle");
+    if (input.type === "password") { input.type = "text"; btn.textContent = "إخفاء"; }
+    else { input.type = "password"; btn.textContent = "إظهار"; }
+  });
+
+  function openApiModal(api) {
+    document.getElementById("api-modal-title").textContent = api ? "تعديل مصدر API" : "مصدر API جديد";
+    document.getElementById("api-edit-id").value = api?.id || "";
+    document.getElementById("api-url").value = api?.url || "";
+    document.getElementById("api-token").value = api?.token || "";
+    document.getElementById("api-token").type = "password";
+    document.getElementById("api-token-toggle").textContent = "إظهار";
+    document.getElementById("api-categories").value = api?.categories || "";
+    document.getElementById("api-modal-backdrop").classList.add("active");
+  }
+
+  document.getElementById("api-save-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("api-save-btn");
+    if (btn.disabled) return;
+    const id = document.getElementById("api-edit-id").value;
+    const url = document.getElementById("api-url").value.trim();
+    if (!url) { showToast("الرجاء كتابة رابط API", true); return; }
+    const token = document.getElementById("api-token").value.trim();
+    const categories = document.getElementById("api-categories").value.trim();
+    const data = { url, token, categories };
+    btn.disabled = true;
+    try {
+      if (id) await updateDoc(doc(db, "apiSources", id), data);
+      else await addDoc(collection(db, "apiSources"), data);
+      document.getElementById("api-modal-backdrop").classList.remove("active");
+      showToast("تم حفظ المصدر");
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // === مودال تعديل منتج API (بدل النوافذ المنبثقة prompt) ===
+  function openApiProductModal(apiId, prodId) {
+    const api = allApiSources.find(a => a.id === apiId);
+    const product = api?.products?.find(p => p.id === prodId);
+    if (!product) { showToast("المنتج غير موجود", true); return; }
+    document.getElementById("api-product-edit-apiid").value = apiId;
+    document.getElementById("api-product-edit-prodid").value = prodId;
+    document.getElementById("api-product-name").value = product.name || "";
+    document.getElementById("api-product-price").value = product.price ?? 0;
+    document.getElementById("api-product-cost").value = product.cost ?? 0;
+    document.getElementById("api-product-modal-backdrop").classList.add("active");
+  }
+
+  document.getElementById("api-product-cancel-btn").addEventListener("click", () => {
+    document.getElementById("api-product-modal-backdrop").classList.remove("active");
+  });
+
+  document.getElementById("api-product-save-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("api-product-save-btn");
+    if (btn.disabled) return;
+    const apiId = document.getElementById("api-product-edit-apiid").value;
+    const prodId = document.getElementById("api-product-edit-prodid").value;
+    const api = allApiSources.find(a => a.id === apiId);
+    const product = api?.products?.find(p => p.id === prodId);
+    if (!api || !product) { showToast("المنتج غير موجود", true); return; }
+
+    const newName = document.getElementById("api-product-name").value.trim();
+    const newPrice = parseFloat(document.getElementById("api-product-price").value);
+    const newCost = parseFloat(document.getElementById("api-product-cost").value);
+    if (!newName) { showToast("الرجاء كتابة اسم المنتج", true); return; }
+
+    btn.disabled = true;
+    try {
+      product.name = newName;
+      product.price = isNaN(newPrice) ? product.price : newPrice;
+      product.cost = isNaN(newCost) ? product.cost : newCost;
+      product.manualOverride = true;
+      await updateDoc(doc(db, "apiSources", apiId), { products: api.products });
+      document.getElementById("api-product-modal-backdrop").classList.remove("active");
+      showToast("تم تحديث المنتج");
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // === الطلبات ===
   function listenOrders() {
     onSnapshot(collection(db, "orders"), (snap) => {
       allOrders = [];
@@ -494,24 +1099,25 @@
   }
 
   function formatDisplayAmount(o) {
-    // نعرض للأدمن المبلغ بالدولار (الأساسي) وبجانبه المكافئ بالعملة التي اختارها المستخدم عند الطلب إن وجدت
-    const usd = `${escapeHTML((o.total || 0).toFixed ? o.total.toFixed(2) : o.total)} $`;
+    // نحسب الرقم الآمن أولاً (fallback 0) قبل استخدام toFixed حتى لا ينكسر العرض
+    // إذا كان الطلب بدون حقل total (كان الكود القديم بيحاول يستخدم o.total.toFixed مباشرة).
+    const total = Number(o.total) || 0;
+    const usd = `${escapeHTML(total.toFixed(2))} $`;
     if (o.currency === "SYR" && o.displayTotal) {
       return `${usd} <span style="color:var(--text-dim); font-weight:400;">(${Number(o.displayTotal).toLocaleString("en-US")} ل.س)</span>`;
     }
     return usd;
   }
 
-  // ===== أمان: كل حقل جاي من المستخدم (userName, gameId, contact, note, items.name) يُمرَّر عبر escapeHTML =====
   function orderCardHTML(o) {
     const itemsText = (o.items || []).map((i) => `${escapeHTML(i.name)} ×${escapeHTML(i.qty)}`).join(" — ");
     const receiptHTML = o.receiptImage ? `<img src="${o.receiptImage}" class="receipt-thumb" data-receipt="${escapeHTML(o.receiptImage)}">` : "";
-    const orderIdShort = escapeHTML(o.id.slice(0, 8).toUpperCase());
+    const shortId = o.id.slice(0, 8).toUpperCase();
     return `
       <div class="card" data-id="${o.id}">
         <div class="card-row">
           <div class="card-info">
-            <div class="order-id-tag">طلب #${orderIdShort}</div>
+            <div class="order-id-tag">طلب #${shortId}</div>
             <div class="t-name">${escapeHTML(o.userName || "مستخدم")} ${statusBadge(o.status)}</div>
             <div class="t-meta">${escapeHTML(o.userEmail || "")}</div>
             <div class="order-items-list">${itemsText}</div>
@@ -536,8 +1142,10 @@
   function matchesSearch(o, term) {
     if (!term) return true;
     const t = term.trim().toLowerCase();
+    const shortId = o.id.slice(0, 8).toLowerCase();
     return (
       o.id.toLowerCase().includes(t) ||
+      shortId.includes(t) ||
       (o.userName || "").toLowerCase().includes(t) ||
       (o.userEmail || "").toLowerCase().includes(t) ||
       (o.gameId || "").toLowerCase().includes(t) ||
@@ -567,9 +1175,6 @@
     renderOrders();
   });
 
-  // ===== أمان: منع الضغط المتكرر على أزرار تأكيد/رفض الطلب (يمنع تكرار العملية أو خصم مضاعف) =====
-  // ===== محاسبياً: إذا الطلب مدفوع من الرصيد ورُفض، يترجع المبلغ تلقائياً لرصيد المستخدم =====
-  // ===== وإذا رجّع الأدمن طلب "مرفوض" (رصيد) لحالة تانية، ينخصم المبلغ من جديد =====
   function attachOrderActions(container) {
     container.querySelectorAll(".card").forEach((card) => {
       const id = card.dataset.id;
@@ -604,14 +1209,13 @@
         const userRef = doc(db, "users", order.uid);
         const userSnap = await transaction.get(userRef);
         const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
+        const orderTotal = Number(order.total) || 0;
 
-        // كانت مرفوضة (تم رد المبلغ سابقاً) والآن رح تصير غير مرفوضة => نعيد خصم المبلغ
         if (oldStatus === "rejected" && newStatus !== "rejected") {
-          transaction.update(userRef, { balance: currentBalance - order.total });
+          transaction.update(userRef, { balance: currentBalance - orderTotal });
         }
-        // كانت غير مرفوضة والآن رح تصير مرفوضة => نرجع المبلغ للمستخدم
         else if (oldStatus !== "rejected" && newStatus === "rejected") {
-          transaction.update(userRef, { balance: currentBalance + order.total });
+          transaction.update(userRef, { balance: currentBalance + orderTotal });
         }
       }
       transaction.update(orderRef, { status: newStatus });
@@ -627,7 +1231,7 @@
   function renderOverview() {
     const pending = allOrders.filter((o) => o.status === "pending").length;
     const confirmed = allOrders.filter((o) => o.status === "confirmed").length;
-    const revenue = allOrders.filter((o) => o.status === "confirmed").reduce((s, o) => s + (o.total || 0), 0);
+    const revenue = allOrders.filter((o) => o.status === "confirmed").reduce((s, o) => s + (Number(o.total) || 0), 0);
     document.getElementById("stat-pending").textContent = pending;
     document.getElementById("stat-confirmed").textContent = confirmed;
     document.getElementById("stat-revenue").textContent = revenue.toFixed(2) + " $";
@@ -648,102 +1252,7 @@
     document.getElementById("receipt-modal-backdrop").classList.remove("active");
   });
 
-  function listenProducts() {
-    onSnapshot(collection(db, "products"), (snap) => {
-      allProducts = [];
-      snap.forEach((d) => allProducts.push({ id: d.id, ...d.data() }));
-      renderProducts();
-      document.getElementById("stat-products").textContent = allProducts.length;
-    });
-  }
-
-  // ===== أمان: بيانات المنتج يدخلها الأدمن نفسه، لكن نستخدم escapeHTML بكل الأحوال كطبقة حماية إضافية =====
-  function renderProducts() {
-    const list = document.getElementById("products-list");
-    if (allProducts.length === 0) { list.innerHTML = `<div class="empty-state">ما في منتجات بعد، أضف أول منتج</div>`; return; }
-    list.innerHTML = allProducts.map((p) => {
-      const imageSrc = p.imageData || p.imageUrl;
-      return `
-      <div class="card" data-id="${p.id}">
-        <div class="card-row">
-          <div class="card-thumb">${imageSrc ? `<img src="${imageSrc}">` : escapeHTML(p.icon || "🎮")}</div>
-          <div class="card-info">
-            <div class="t-name">${escapeHTML(p.name)}</div>
-            <div class="t-meta">${escapeHTML(p.category || "عام")} • ${escapeHTML(p.price)} $</div>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="icon-btn gold" data-action="edit">✎ تعديل</button>
-          <button class="icon-btn danger" data-action="delete">🗑 حذف</button>
-        </div>
-      </div>
-    `;
-    }).join("");
-
-    list.querySelectorAll(".card").forEach((card) => {
-      const id = card.dataset.id;
-      const product = allProducts.find((p) => p.id === id);
-      card.querySelector('[data-action="edit"]').addEventListener("click", () => openProductModal(product));
-      card.querySelector('[data-action="delete"]').addEventListener("click", async () => {
-        if (confirm(`متأكد بدك تحذف "${product.name}"؟`)) await deleteDoc(doc(db, "products", id));
-      });
-    });
-  }
-
-  function openProductModal(product) {
-    document.getElementById("product-modal-title").textContent = product ? "تعديل المنتج" : "منتج جديد";
-    document.getElementById("product-edit-id").value = product?.id || "";
-    document.getElementById("p-name").value = product?.name || "";
-    document.getElementById("p-price").value = product?.price ?? "";
-    document.getElementById("p-category").value = product?.category || "";
-    document.getElementById("p-icon").value = product?.icon || "🎮";
-    document.getElementById("p-desc").value = product?.description || "";
-    pImageData = product?.imageData || "";
-    if (pImageData) {
-      document.getElementById("p-image-preview-img").src = pImageData;
-      document.getElementById("p-image-preview").style.display = "block";
-    } else {
-      document.getElementById("p-image-preview").style.display = "none";
-    }
-    document.getElementById("product-modal-backdrop").classList.add("active");
-  }
-
-  document.getElementById("add-product-btn").addEventListener("click", () => openProductModal(null));
-  document.getElementById("product-cancel-btn").addEventListener("click", () => {
-    document.getElementById("product-modal-backdrop").classList.remove("active");
-  });
-
-  // ===== أمان: منع الحفظ المزدوج + التحقق من سعر صحيح (رقم غير سالب) =====
-  document.getElementById("product-save-btn").addEventListener("click", async () => {
-    const btn = document.getElementById("product-save-btn");
-    if (btn.disabled) return;
-
-    const id = document.getElementById("product-edit-id").value;
-    const price = parseFloat(document.getElementById("p-price").value);
-    const data = {
-      name: document.getElementById("p-name").value.trim(),
-      price: (isNaN(price) || price < 0) ? 0 : price,
-      category: document.getElementById("p-category").value.trim() || "عام",
-      imageData: pImageData || "",
-      icon: document.getElementById("p-icon").value.trim() || "🎮",
-      description: document.getElementById("p-desc").value.trim(),
-    };
-    if (!data.name) { showToast("الرجاء كتابة اسم المنتج", true); return; }
-
-    btn.disabled = true;
-    try {
-      if (id) await updateDoc(doc(db, "products", id), data);
-      else await addDoc(collection(db, "products"), data);
-      document.getElementById("product-modal-backdrop").classList.remove("active");
-      pImageData = "";
-      showToast("تم حفظ المنتج بنجاح!");
-    } catch (err) {
-      showToast("تعذر الحفظ: " + err.message, true);
-    } finally {
-      btn.disabled = false;
-    }
-  });
-
+  // === المستخدمين والمحفظة ===
   function listenUsers() {
     onSnapshot(collection(db, "users"), (snap) => {
       allUsers = [];
@@ -752,7 +1261,6 @@
     });
   }
 
-  // ===== أمان: اسم وإيميل المستخدم يُنظفان قبل الإدراج بالـ HTML =====
   function renderUsers() {
     const list = document.getElementById("users-list");
     if (allUsers.length === 0) { list.innerHTML = `<div class="empty-state">ما في مستخدمين بعد</div>`; return; }
@@ -786,7 +1294,6 @@
     document.getElementById("wallet-modal-backdrop").classList.add("active");
   }
 
-  // ===== أمان: منع الضغط المزدوج على إضافة/خصم الرصيد لتفادي عمليات مكررة =====
   async function adjustBalance(delta) {
     const addBtn = document.getElementById('wallet-add-btn');
     const deductBtn = document.getElementById('wallet-deduct-btn');
@@ -818,6 +1325,7 @@
   document.getElementById("wallet-add-btn").addEventListener("click", () => adjustBalance(1));
   document.getElementById("wallet-deduct-btn").addEventListener("click", () => adjustBalance(-1));
 
+  // === طلبات الشحن ===
   function listenTopups() {
     onSnapshot(collection(db, "topups"), (snap) => {
       allTopups = [];
@@ -830,14 +1338,15 @@
   function matchesTopupSearch(t, term) {
     if (!term) return true;
     const q = term.trim().toLowerCase();
+    const shortId = t.id.slice(0, 8).toLowerCase();
     return (
       t.id.toLowerCase().includes(q) ||
+      shortId.includes(q) ||
       (t.userName || "").toLowerCase().includes(q) ||
       (t.userEmail || "").toLowerCase().includes(q)
     );
   }
 
-  // ===== أمان: userName, note, amount كلها تُنظف قبل الإدراج بالـ HTML =====
   function renderTopups() {
     const list = document.getElementById("topups-list");
     const filtered = allTopups.filter((t) => matchesTopupSearch(t, topupsSearchTerm));
@@ -849,12 +1358,12 @@
       const receiptHTML = t.receiptImage ? `<img src="${t.receiptImage}" class="receipt-thumb" data-receipt="${escapeHTML(t.receiptImage)}">` : "";
       const amountUsd = (Number(t.amount) || 0).toFixed(2);
       const amountExtra = t.currency === "SYR" && t.originalAmount ? ` <span style="color:var(--text-dim); font-weight:400;">(${Number(t.originalAmount).toLocaleString("en-US")} ل.س)</span>` : "";
-      const topupIdShort = escapeHTML(t.id.slice(0, 8).toUpperCase());
+      const shortId = t.id.slice(0, 8).toUpperCase();
       return `
       <div class="card" data-id="${t.id}">
         <div class="card-row">
           <div class="card-info">
-            <div class="order-id-tag">طلب شحن #${topupIdShort}</div>
+            <div class="order-id-tag">طلب شحن #${shortId}</div>
             <div class="t-name">${escapeHTML(t.userName || "مستخدم")} ${statusBadge(t.status)}</div>
             <div class="t-meta">${escapeHTML(t.userEmail || "")}</div>
             ${t.note ? `<div class="t-meta">ملاحظة: ${escapeHTML(t.note)}</div>` : ""}
@@ -876,7 +1385,6 @@
       const topup = allTopups.find((t) => t.id === id);
       const confirmBtn = card.querySelector('[data-action="confirm"]');
       const rejectBtn = card.querySelector('[data-action="reject"]');
-      // ===== أمان: تعطيل الزرين فوراً عند الضغط لمنع تكرار إضافة الرصيد (خصوصاً بضغطة مزدوجة بالموبايل) =====
       if (confirmBtn) confirmBtn.addEventListener("click", () => {
         if (confirmBtn.disabled) return;
         confirmBtn.disabled = true;
@@ -919,7 +1427,6 @@
     const userRef = doc(db, "users", topup.uid);
     const topupRef = doc(db, "topups", topup.id);
     try {
-      // ===== أمان: نتحقق داخل نفس الـ transaction أن الطلب لسا pending، لمنع تأكيده مرتين =====
       await runTransaction(db, async (transaction) => {
         const topupSnap = await transaction.get(topupRef);
         if (!topupSnap.exists() || topupSnap.data().status !== "pending") {
@@ -927,7 +1434,6 @@
         }
         const userSnap = await transaction.get(userRef);
         const current = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-        // amount مخزّن دائماً بالدولار (تم تحويله من واجهة المستخدم حسب سعر الصرف وقت الطلب)
         transaction.update(userRef, { balance: current + (topup.amount || 0) });
         transaction.update(topupRef, { status: "confirmed" });
       });
@@ -937,7 +1443,7 @@
     }
   }
 
-  // ===== إدارة الإعلانات =====
+  // === الإعلانات ===
   function listenAds() {
     onSnapshot(collection(db, "ads"), (snap) => {
       allAds = [];
@@ -988,7 +1494,6 @@
     document.getElementById("ad-image-preview").style.display = "block";
   });
 
-  // ===== أمان: التأكد أن رابط الإعلان يبدأ بـ http/https فقط لمنع javascript: URIs =====
   document.getElementById("ad-save-btn").addEventListener("click", async () => {
     const btn = document.getElementById("ad-save-btn");
     if (btn.disabled) return;
@@ -1000,10 +1505,10 @@
     }
     btn.disabled = true;
     try {
-      await addDoc(collection(db, "ads"), { 
-        imageData: adImageData, 
+      await addDoc(collection(db, "ads"), {
+        imageData: adImageData,
         link: link || "#",
-        createdAt: serverTimestamp() 
+        createdAt: serverTimestamp()
       });
       document.getElementById("ad-upload-form").style.display = "none";
       adImageData = "";
@@ -1018,14 +1523,14 @@
     }
   });
 
-  // ===== التحكم في الإحالة =====
+  // === الإحالة ===
   function listenReferralSettings() {
     onSnapshot(doc(db, "settings", "referral"), (snap) => {
       if (snap.exists()) {
         referralSettings = snap.data();
         document.getElementById('ref-threshold').value = referralSettings.threshold || 20;
         document.getElementById('ref-reward').value = referralSettings.rewardAmount || 1;
-        
+
         const toggleBtn = document.getElementById('toggle-referral-btn');
         const statusLabel = document.getElementById('toggle-status-label');
         if (referralSettings.isActive === true) {
@@ -1044,6 +1549,27 @@
     });
   }
 
+  // إحصائيات الإحالة الفعلية: كانت البطاقتان بالواجهة موجودتين بدون أي كود يحدّثهما.
+  // هذا الكود يفترض وجود مجموعة "referrals" بها وثيقة لكل إحالة مكتملة تحتوي حقل rewardAmount.
+  // إذا كان اسم المجموعة أو الحقل مختلف عندك بمنصة النقاط/البوت، بدّل اسم المجموعة والحقل هون.
+  function listenReferralStats() {
+    onSnapshot(collection(db, "referrals"), (snap) => {
+      allReferrals = [];
+      snap.forEach((d) => allReferrals.push({ id: d.id, ...d.data() }));
+      renderReferralStats();
+    }, (err) => {
+      // لو المجموعة غير موجودة أو الصلاحيات ما بتسمح، ما بنكسر الصفحة، بس بنسيب القيم صفر
+      console.warn("تعذر تحميل إحصائيات الإحالة:", err.message);
+    });
+  }
+
+  function renderReferralStats() {
+    const total = allReferrals.length;
+    const paid = allReferrals.reduce((s, r) => s + (Number(r.rewardAmount) || 0), 0);
+    document.getElementById('stat-total-referrals').textContent = total;
+    document.getElementById('stat-total-paid').textContent = paid.toFixed(2) + ' $';
+  }
+
   document.getElementById('toggle-referral-btn').addEventListener('click', async () => {
     const newState = referralSettings.isActive === true ? false : true;
     await setDoc(doc(db, "settings", "referral"), { isActive: newState }, { merge: true });
@@ -1055,6 +1581,31 @@
     const reward = parseFloat(document.getElementById('ref-reward').value) || 1;
     await setDoc(doc(db, "settings", "referral"), { threshold: threshold, rewardAmount: reward }, { merge: true });
     showToast("تم حفظ الإعدادات بنجاح!");
+  });
+
+  // === إعدادات الدفع ===
+  async function loadPaymentSettings() {
+    const snap = await getDoc(doc(db, "settings", "payment"));
+    if (snap.exists()) {
+      const d = snap.data();
+      document.getElementById("pay-cash").value = d.cash || "";
+      document.getElementById("pay-usdt").value = d.usdt || "";
+      document.getElementById("pay-instructions").value = d.instructions || "";
+      document.getElementById("pay-exchange-rate").value = d.exchangeRate || 15000;
+    } else {
+      document.getElementById("pay-exchange-rate").value = 15000;
+    }
+  }
+
+  document.getElementById("save-payment-btn").addEventListener("click", async () => {
+    const rate = parseFloat(document.getElementById("pay-exchange-rate").value);
+    await setDoc(doc(db, "settings", "payment"), {
+      cash: document.getElementById("pay-cash").value.trim(),
+      usdt: document.getElementById("pay-usdt").value.trim(),
+      instructions: document.getElementById("pay-instructions").value.trim(),
+      exchangeRate: (!isNaN(rate) && rate > 0) ? rate : 15000,
+    });
+    showToast("تم حفظ بيانات الدفع!");
   });
 </script>
 </body>
