@@ -669,7 +669,16 @@
   function listenAdsSlider() {
     onSnapshot(collection(db, "ads"), (snap) => {
       const ads = [];
-      snap.forEach((d) => ads.push({ img: d.data().imageData, link: d.data().link || '#' }));
+      snap.forEach((d) => {
+        const data = d.data();
+        // نتجاهل أي إعلان بدون صورة صالحة (imageData فاضي أو ناقص) بدل ما نعرض
+        // سلايد فاضي/مكسور بالشريط المتحرك — ونحطها بالكونسول للمساعدة بالتشخيص
+        if (!data.imageData || typeof data.imageData !== 'string' || !data.imageData.startsWith('data:image')) {
+          console.warn('إعلان بدون صورة صالحة تم تجاهله، معرّف الوثيقة:', d.id);
+          return;
+        }
+        ads.push({ img: data.imageData, link: data.link || '#' });
+      });
       const track = document.getElementById('ads-slider-track');
       const dotsWrap = document.getElementById('ads-slider-dots');
       if (adsIntervalId) { clearInterval(adsIntervalId); adsIntervalId = null; }
@@ -694,6 +703,9 @@
         img.src = ad.img;
         img.alt = "إعلان";
         img.loading = "eager";
+        // في حال كانت بيانات الصورة موجودة الشكل بس تالفة فعليًا (ما بتقدر تتحمّل)،
+        // نخفي السلايد كامل بدل ما يظهر مكان فاضي/أبيض بمنتصف الشريط
+        img.addEventListener("error", () => { slide.style.display = "none"; });
         a.appendChild(img);
         slide.appendChild(a);
         track.appendChild(slide);
