@@ -332,8 +332,8 @@
       </div>
       <div class="field" id="field-contact">
         <label>رقم واتساب أو تلغرام للتواصل</label>
-        <input type="text" id="checkout-contact" placeholder="مثال: 0933xxxxxx">
-        <div class="field-error">⚠️ إذا حدث عطل أو أرادت الإدارة الاستفسار سيكون هذا رقم التواصل معك، وإذا وضعت رقم خاطئ لن تتم معاملتك.</div>
+        <input type="text" id="checkout-contact" placeholder="مثال: 0933xxxxxx أو @username">
+        <div class="field-error">⚠️ الرجاء كتابة رقم هاتف صحيح (8-14 رقم) أو معرّف تلغرام يبدأ بـ @. إذا حدث عطل أو أرادت الإدارة الاستفسار سيكون هذا وسيلة التواصل معك، وإذا وضعت معلومة خاطئة لن تتم معاملتك.</div>
       </div>
       <div class="field"><label>ملاحظة (اختياري)</label><textarea id="checkout-note" placeholder="أي تفاصيل إضافية تحب تخبرنا فيها..."></textarea></div>
       <div class="field">
@@ -469,8 +469,8 @@
   let allProducts = [];
   let allCategories = [];
   let activeCategory = null; // null يعني الكل
+  let activeMainCategoryIds = null; // معرّفات القسم الرئيسي المختار + فروعه، تُستخدم عند الضغط على "الكل"
   let selectedPayMethod = "balance"; // الآن فقط من الرصيد
-  let receiptDataUrl = "";
   let topupReceiptDataUrl = "";
 
   let displayCurrency = "SYR";
@@ -743,6 +743,7 @@
           const childIds = children.map(c => c.id);
           const allIds = [id, ...childIds];
           activeCategory = allIds; // مصفوفة من المعرفات
+          activeMainCategoryIds = allIds; // نحفظها حتى نقدر نرجع لها من زر "الكل"
           renderProducts();
           // تمييز القسم النشط
           grid.querySelectorAll(".cat-box").forEach(b => b.classList.remove("active"));
@@ -768,12 +769,9 @@
       chip.addEventListener("click", () => {
         const id = chip.dataset.id;
         if (id === "all") {
-          // عرض كل منتجات القسم الرئيسي
-          if (activeCategory && Array.isArray(activeCategory)) {
-            // نعرض كل منتجات القسم الرئيسي والأقسام الفرعية
-            // لكننا سنعتمد الفلترة حسب activeCategory
-          }
-          // لا نحتاج تغيير activeCategory، سنقوم بعرض الكل بناءً على القسم الرئيسي المحدد
+          // نرجّع activeCategory لقائمة معرّفات القسم الرئيسي المحفوظة (كانت هذي الشرطة
+          // ما بتعمل شي وبتخلي activeCategory محتفظ بآخر قسم فرعي محدد بالغلط)
+          activeCategory = activeMainCategoryIds;
           renderProducts();
         } else {
           // تصفية حسب القسم الفرعي
@@ -969,6 +967,19 @@
     document.getElementById("open-topup-btn").click();
   });
 
+  // زرّي عملة مودال شحن الرصيد كانوا بدون أي مستمع نقر، فالمبلغ كان يُحسب دايمًا
+  // كليرة سورية حتى لو المستخدم ضغط "دولار" — بق مالي خطير تم إصلاحه هون.
+  document.getElementById("topup-cur-syr").addEventListener("click", () => {
+    topupCurrency = "SYR";
+    document.getElementById("topup-cur-syr").classList.add("active");
+    document.getElementById("topup-cur-usd").classList.remove("active");
+  });
+  document.getElementById("topup-cur-usd").addEventListener("click", () => {
+    topupCurrency = "USD";
+    document.getElementById("topup-cur-usd").classList.add("active");
+    document.getElementById("topup-cur-syr").classList.remove("active");
+  });
+
   async function loadPaymentBox(targetId) {
     const box = document.getElementById(targetId);
     try {
@@ -986,9 +997,10 @@
     const gameId = document.getElementById("checkout-game-id").value.trim();
     const contact = document.getElementById("checkout-contact").value.trim();
     const note = document.getElementById("checkout-note").value.trim();
-    const phoneRegex = /^[0-9]{10}$/;
+    // تحقق أوسع: رقم هاتف من 8 إلى 14 رقم (مع أو بدون +) أو معرّف تلغرام يبدأ بـ @
+    const contactRegex = /^(\+?[0-9]{8,14}|@[A-Za-z0-9_]{4,32})$/;
     const gameIdOk = validateField("field-game-id", gameId.length > 0 && gameId.length <= 100);
-    const contactOk = validateField("field-contact", phoneRegex.test(contact));
+    const contactOk = validateField("field-contact", contactRegex.test(contact));
     if (!gameIdOk || !contactOk) return;
     if (cart.length === 0) { showToast("سلتك فاضية", true); return; }
     if (note.length > 500) { showToast("الملاحظة طويلة جداً", true); return; }
@@ -1117,7 +1129,10 @@
     });
   }
 
-  setupFileUpload("receipt-drop", "receipt-input", "receipt-status", "receipt-remove", (val) => { receiptDataUrl = val; });
+  // تم حذف استدعاء receipt-drop/receipt-input/... لأن هذه العناصر غير موجودة بالـ HTML
+  // (كانت متبقية من نسخة قديمة فيها رفع إيصال للطلب نفسه). كان هذا السطر يرمي خطأ
+  // ويوقف تنفيذ كل الكود التالي بالسكربت (فتح/إغلاق/إرسال طلب الشحن، مودالات "من نحن"
+  // و"تواصل معنا"، وأزرار تلغرام/واتساب). أبقينا فقط رفع إيصال طلب شحن الرصيد.
   setupFileUpload("topup-receipt-drop", "topup-receipt-input", "topup-receipt-status", "topup-receipt-remove", (val) => { topupReceiptDataUrl = val; });
 
   function validateField(fieldId, isValid) {
@@ -1129,6 +1144,9 @@
   // ===== طلبات الشحن =====
   document.getElementById("open-topup-btn").addEventListener("click", async () => {
     await loadPaymentBox("topup-payment-box");
+    topupCurrency = "SYR";
+    document.getElementById("topup-cur-syr").classList.add("active");
+    document.getElementById("topup-cur-usd").classList.remove("active");
     document.getElementById("topup-modal-backdrop").classList.add("active");
   });
   document.getElementById("topup-close-btn").addEventListener("click", () => {
