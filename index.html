@@ -556,6 +556,7 @@
       listenTopups();
       listenAdsSlider();
       listenReferralStatus();
+      listenExchangeRate();
     } else {
       document.getElementById("login-screen").style.display = "block";
       document.getElementById("app").style.display = "none";
@@ -992,16 +993,42 @@
     document.getElementById("topup-cur-syr").classList.remove("active");
   });
 
-  async function loadPaymentBox(targetId) {
-    const box = document.getElementById(targetId);
-    try {
-      const snap = await getDoc(doc(db, "settings", "payment"));
-      if (snap.exists()) exchangeRate = Number(snap.data().exchangeRate) > 0 ? Number(snap.data().exchangeRate) : exchangeRate;
-      // ليس هناك حاجة لعرض بيانات الدفع، لأن الدفع من الرصيد
-      box.innerHTML = `رصيدك الحالي: <b>${fmt(lastKnownBalance)}</b><br>سيتم خصم المبلغ مباشرة من رصيدك، ويبقى الطلب قيد المراجعة لحين تأكيد الأدمن.`;
-    } catch (err) {
-      box.innerHTML = `تعذر تحميل الرصيد.`;
+  // سعر الصرف كان يُقرأ مرة وحدة فقط (getDoc) وبس لما تفتح صفحة الدفع أو الشحن —
+  // باقي الأماكن (الرصيد بالأعلى، بالقائمة الجانبية، بصفحة المحفظة، أسعار المنتجات)
+  // كانت تضل عم تستخدم القيمة القديمة/الافتراضية 15000 لحد ما يفتح المستخدم صفحة
+  // دفع فعليًا. هيك كان بيصير: 1) حساب رصيد/أسعار غلط بأي مكان تاني بالموقع،
+  // 2) الأخطر: مبلغ الدولار المحسوب لطلب شحن الرصيد (amount / exchangeRate) كان
+  // يعتمد على سعر قديم عالق بمتصفح الزبون، فيتحسبله مبلغ دولار غلط عن قصد أو غير قصد.
+  // هذا المستمع الحي بيحل المشكلتين من جذورهما.
+  function listenExchangeRate() {
+    onSnapshot(doc(db, "settings", "payment"), (snap) => {
+      if (snap.exists()) {
+        const rate = Number(snap.data().exchangeRate);
+        if (rate > 0) exchangeRate = rate;
+      }
+      // نعيد رسم كل مكان بالموقع يعتمد على سعر الصرف فورًا، بغض النظر أي صفحة
+      // فاتحها المستخدم حاليًا
+      renderBalanceDisplays();
+      renderProducts();
+      updateCartUI();
+      updateCheckoutTotalDisplay();
+      refreshQuickBuyPriceIfOpen();
+    }, (err) => {
+      console.warn("تعذر تحميل سعر الصرف الحي:", err.message);
+    });
+  }
+
+  function refreshQuickBuyPriceIfOpen() {
+    if (quickBuyProduct && document.getElementById("quick-buy-modal").classList.contains("active")) {
+      document.getElementById("quick-buy-price").textContent = fmt(quickBuyProduct.price * quickBuyQty);
     }
+  }
+
+  async function loadPaymentBox(targetId) {
+    // سعر الصرف صار محدَّث حيًا عبر listenExchangeRate، فما عاد في داعي لقراءة
+    // منفصلة (getDoc) هون في كل مرة تُفتح فيها صفحة الدفع أو الشحن
+    const box = document.getElementById(targetId);
+    box.innerHTML = `رصيدك الحالي: <b>${fmt(lastKnownBalance)}</b><br>سيتم خصم المبلغ مباشرة من رصيدك، ويبقى الطلب قيد المراجعة لحين تأكيد الأدمن.`;
   }
 
   // ===== تأكيد الطلب =====
@@ -1279,4 +1306,4 @@
   }
 </script>
 </body>
-</html> 
+</html>
