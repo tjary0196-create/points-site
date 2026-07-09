@@ -446,7 +446,6 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
   import { getFirestore, collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -461,7 +460,6 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const functions = getFunctions(app);
   const provider = new GoogleAuthProvider();
 
   let currentUser = null;
@@ -580,12 +578,27 @@
     }
   };
 
-  function checkReferralCode() {
+  // نتحقق من رابط الدعوة (?ref=CODE) ونربط المستخدم الجديد بصاحب الكود الفعلي
+  // (uid)، مش بس بنخزن نص الكود متل قبل. الشرط: يصير هذا مرة وحدة بس (ما بتتبدل
+  // لاحقًا)، وما يقدر حدا يستخدم كوده الخاص (إحالة ذاتية).
+  async function checkReferralCode() {
+    if (!currentUser) return;
     const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref');
-    if (ref && currentUser) {
-      const userRef = doc(db, "users", currentUser.uid);
-      setDoc(userRef, { referredBy: ref }, { merge: true });
+    const ref = (urlParams.get('ref') || '').trim().toUpperCase();
+    if (!ref) return;
+
+    const userRef = doc(db, "users", currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists() && userSnap.data().referredBy) return; // انربط بحدا قبل، ما منغيّرها
+
+    try {
+      const codeSnap = await getDoc(doc(db, "referralCodes", ref));
+      if (!codeSnap.exists()) return; // كود غير موجود، نتجاهل بصمت
+      const referrerUid = codeSnap.data().uid;
+      if (!referrerUid || referrerUid === currentUser.uid) return; // منع الإحالة الذاتية
+      await setDoc(userRef, { referredBy: referrerUid }, { merge: true });
+    } catch (err) {
+      console.warn("تعذر ربط كود الدعوة:", err.message);
     }
   }
 
@@ -594,16 +607,20 @@
     const snap = await getDoc(ref);
     if (!snap.exists()) {
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      await setDoc(ref, { name: user.displayName || "", email: user.email || "", balance: 0, referralCode: code, totalReferrals: 0, pendingReward: 0, claimedReward: 0, createdAt: serverTimestamp() });
+      await setDoc(ref, { name: user.displayName || "", email: user.email || "", balance: 0, referralCode: code, totalReferrals: 0, pendingReward: 0, claimedReward: 0, firstPurchaseCounted: false, thresholdRewardGranted: false, createdAt: serverTimestamp() });
+      // خريطة كود -> uid علنية القراءة، تُستخدم لاحقًا لربط أي شخص يدخل بنفس الكود
+      // بصاحبه الحقيقي (بدل تخزين نص الكود بس بدون معنى فعلي)
+      try { await setDoc(doc(db, "referralCodes", code), { uid: user.uid }); } catch (err) { console.warn("تعذر إنشاء خريطة كود الدعوة:", err.message); }
     } else {
       const data = snap.data();
       if (!data.referralCode) {
         const code = Math.random().toString(36).substring(2, 8).toUpperCase();
         await setDoc(ref, { referralCode: code }, { merge: true });
+        try { await setDoc(doc(db, "referralCodes", code), { uid: user.uid }); } catch (err) { console.warn("تعذر إنشاء خريطة كود الدعوة:", err.message); }
       }
       await setDoc(ref, { name: user.displayName || "", email: user.email || "" }, { merge: true });
     }
-    checkReferralCode();
+    await checkReferralCode();
   }
 
   function listenUserBalance(uid) {
@@ -637,6 +654,11 @@
     });
   }
 
+  // ما في خطة Blaze حاليًا، فما نقدر نستخدم Cloud Function. السحب هون معاملة
+  // Firestore مباشرة من المتصفح، ومحميّة بقاعدة أمان دقيقة بجانب السيرفر
+  // (شوف شرط "سحب المكافأة المعلّقة" بقواعد Firestore) بحيث الشرط الوحيد المسموح
+  // فيه تعديل balance/pendingReward/claimedReward ذاتيًا هو نقل كل pendingReward
+  // بالضبط لـ balance وتصفيرها — أي تلاعب بالأرقام برفضه Firestore نفسه.
   document.getElementById('withdraw-referral-btn').addEventListener('click', async () => {
     const errorEl = document.getElementById('referral-error-msg');
     const btn = document.getElementById('withdraw-referral-btn');
@@ -650,11 +672,20 @@
     btn.disabled = true;
     const originalText = btn.textContent;
     btn.textContent = "جاري المعالجة...";
-    showToast("جاري معالجة السحب...");
     try {
-        const withdrawFunction = httpsCallable(functions, 'withdrawReferral');
-        const result = await withdrawFunction();
-        showToast(result.data.message);
+        const userRef = doc(db, "users", currentUser.uid);
+        await runTransaction(db, async (transaction) => {
+          const snap = await transaction.get(userRef);
+          const data = snap.data() || {};
+          const pending = Number(data.pendingReward) || 0;
+          if (pending <= 0) throw new Error("ما في مبلغ معلّق للسحب حاليًا");
+          transaction.update(userRef, {
+            balance: (Number(data.balance) || 0) + pending,
+            pendingReward: 0,
+            claimedReward: (Number(data.claimedReward) || 0) + pending,
+          });
+        });
+        showToast("🎉 تم تحويل المكافأة إلى رصيدك بنجاح!");
     } catch (err) {
         errorEl.textContent = "خطأ في السحب: " + err.message;
         errorEl.style.display = 'block';
