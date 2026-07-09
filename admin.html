@@ -441,7 +441,6 @@
   let allAds = [];
   let allCategories = [];
   let allApiSources = [];
-  let allReferrals = [];
   let pImageData = "";
   let adImageData = "";
   let catImageData = "";
@@ -515,7 +514,6 @@
     listenAds();
     loadPaymentSettings();
     listenReferralSettings();
-    listenReferralStats();
     listenCategories();
     listenApiSources();
   });
@@ -1196,6 +1194,29 @@
     });
   }
 
+  // تجهّز تحديثات مكافأة الإحالة (قراءات فقط عبر transaction.get — يجب أن تُستدعى
+  // قبل أي transaction.update ضمن نفس المعاملة، لأن Firestore يفرض أن كل القراءات
+  // تسبق كل الكتابات بالمعاملة الواحدة). بترجع null إذا ما في شي يستأهل التحديث.
+  async function prepareReferralCredit(transaction, buyerUid, buyerData) {
+    const referredBy = buyerData.referredBy;
+    if (!referredBy || referredBy === buyerUid) return null;
+    const referrerRef = doc(db, "users", referredBy);
+    const referrerSnap = await transaction.get(referrerRef);
+    if (!referrerSnap.exists()) return null;
+    const refSettingsSnap = await transaction.get(doc(db, "settings", "referral"));
+    const threshold = refSettingsSnap.exists() ? (Number(refSettingsSnap.data().threshold) || 20) : 20;
+    const rewardAmount = refSettingsSnap.exists() ? (Number(refSettingsSnap.data().rewardAmount) || 1) : 1;
+    const rData = referrerSnap.data();
+    const newTotalReferrals = (Number(rData.totalReferrals) || 0) + 1;
+    const referrerUpdates = { totalReferrals: newTotalReferrals };
+    // مكافأة واحدة بس، أول ما يوصل صاحب الدعوة لعدد الدعوات المطلوب (مش مكافأة عن كل دعوة)
+    if (newTotalReferrals >= threshold && !rData.thresholdRewardGranted) {
+      referrerUpdates.pendingReward = (Number(rData.pendingReward) || 0) + rewardAmount;
+      referrerUpdates.thresholdRewardGranted = true;
+    }
+    return { referrerRef, referrerUpdates };
+  }
+
   async function changeOrderStatus(orderId, newStatus) {
     const orderRef = doc(db, "orders", orderId);
     await runTransaction(db, async (transaction) => {
@@ -1205,19 +1226,35 @@
       const oldStatus = order.status;
       if (oldStatus === newStatus) { transaction.update(orderRef, { status: newStatus }); return; }
 
-      if (order.paymentMethod === "balance") {
-        const userRef = doc(db, "users", order.uid);
-        const userSnap = await transaction.get(userRef);
-        const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-        const orderTotal = Number(order.total) || 0;
+      const userRef = doc(db, "users", order.uid);
+      const userSnap = await transaction.get(userRef);
+      const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
+      const orderTotal = Number(order.total) || 0;
 
+      // نظام الإحالة: أول مرة الطلب يصير "مؤكد" لهذا المستخدم، نحتسبها كأول عملية
+      // شراء فعلية ونكافئ صاحب الدعوة إذا استحق. كل القراءات هون (قبل أي كتابة تحت).
+      const becomingConfirmed = newStatus === "confirmed" && oldStatus !== "confirmed";
+      const firstPurchaseAlready = userSnap.exists() && userSnap.data().firstPurchaseCounted;
+      let referralPlan = null;
+      if (becomingConfirmed && userSnap.exists() && !firstPurchaseAlready) {
+        referralPlan = await prepareReferralCredit(transaction, order.uid, userSnap.data());
+      }
+
+      const buyerUpdates = {};
+      if (order.paymentMethod === "balance") {
         if (oldStatus === "rejected" && newStatus !== "rejected") {
-          transaction.update(userRef, { balance: currentBalance - orderTotal });
+          buyerUpdates.balance = currentBalance - orderTotal;
         }
         else if (oldStatus !== "rejected" && newStatus === "rejected") {
-          transaction.update(userRef, { balance: currentBalance + orderTotal });
+          buyerUpdates.balance = currentBalance + orderTotal;
         }
       }
+      if (becomingConfirmed && userSnap.exists() && !firstPurchaseAlready) {
+        buyerUpdates.firstPurchaseCounted = true;
+      }
+
+      if (Object.keys(buyerUpdates).length) transaction.update(userRef, buyerUpdates);
+      if (referralPlan) transaction.update(referralPlan.referrerRef, referralPlan.referrerUpdates);
       transaction.update(orderRef, { status: newStatus });
     });
   }
@@ -1258,6 +1295,7 @@
       allUsers = [];
       snap.forEach((d) => allUsers.push({ id: d.id, ...d.data() }));
       renderUsers();
+      renderReferralStats();
     });
   }
 
@@ -1434,7 +1472,20 @@
         }
         const userSnap = await transaction.get(userRef);
         const current = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-        transaction.update(userRef, { balance: current + (topup.amount || 0) });
+
+        // نظام الإحالة: أول عملية شحن مؤكدة تُحتسب أيضاً كأول عملية شراء فعلية
+        // (كل القراءات هون قبل أي كتابة تحت، متل ما تتطلب معاملات Firestore)
+        const firstPurchaseAlready = userSnap.exists() && userSnap.data().firstPurchaseCounted;
+        let referralPlan = null;
+        if (userSnap.exists() && !firstPurchaseAlready) {
+          referralPlan = await prepareReferralCredit(transaction, topup.uid, userSnap.data());
+        }
+
+        const userUpdates = { balance: current + (topup.amount || 0) };
+        if (userSnap.exists() && !firstPurchaseAlready) userUpdates.firstPurchaseCounted = true;
+
+        transaction.update(userRef, userUpdates);
+        if (referralPlan) transaction.update(referralPlan.referrerRef, referralPlan.referrerUpdates);
         transaction.update(topupRef, { status: "confirmed" });
       });
       showToast("🎉 تم تأكيد الشحن وإضافة الرصيد بنجاح!");
@@ -1549,23 +1600,12 @@
     });
   }
 
-  // إحصائيات الإحالة الفعلية: كانت البطاقتان بالواجهة موجودتين بدون أي كود يحدّثهما.
-  // هذا الكود يفترض وجود مجموعة "referrals" بها وثيقة لكل إحالة مكتملة تحتوي حقل rewardAmount.
-  // إذا كان اسم المجموعة أو الحقل مختلف عندك بمنصة النقاط/البوت، بدّل اسم المجموعة والحقل هون.
-  function listenReferralStats() {
-    onSnapshot(collection(db, "referrals"), (snap) => {
-      allReferrals = [];
-      snap.forEach((d) => allReferrals.push({ id: d.id, ...d.data() }));
-      renderReferralStats();
-    }, (err) => {
-      // لو المجموعة غير موجودة أو الصلاحيات ما بتسمح، ما بنكسر الصفحة، بس بنسيب القيم صفر
-      console.warn("تعذر تحميل إحصائيات الإحالة:", err.message);
-    });
-  }
-
+  // إحصائيات الإحالة الفعلية: تبيّن إنه نظام الإحالة بيخزّن totalReferrals و
+  // claimedReward كحقول على وثيقة كل مستخدم بـ users، مش بمجموعة منفصلة اسمها
+  // "referrals" (متل ما كان مفترض سابقاً بالغلط). نحسبها هون من allUsers مباشرة.
   function renderReferralStats() {
-    const total = allReferrals.length;
-    const paid = allReferrals.reduce((s, r) => s + (Number(r.rewardAmount) || 0), 0);
+    const total = allUsers.reduce((s, u) => s + (Number(u.totalReferrals) || 0), 0);
+    const paid = allUsers.reduce((s, u) => s + (Number(u.claimedReward) || 0), 0);
     document.getElementById('stat-total-referrals').textContent = total;
     document.getElementById('stat-total-paid').textContent = paid.toFixed(2) + ' $';
   }
