@@ -1,0 +1,184 @@
+<!-- ===== لوحة المزادات ===== -->
+<div class="panel" id="panel-auctions">
+  <div class="section-title">إدارة المزادات
+    <button class="add-btn" id="add-auction-btn">+ مزاد جديد</button>
+  </div>
+  <div class="search-box">
+    <input type="text" id="auctions-search" placeholder="ابحث برقم المزاد أو اسم الحساب...">
+    <button id="auctions-search-clear">مسح</button>
+  </div>
+  <div id="auctions-list"><div class="empty-state">جاري التحميل…</div></div>
+</div>
+
+<!-- ===== لوحة الإعلانات المدفوعة ===== -->
+<div class="panel" id="panel-paid-ads">
+  <div class="section-title">الإعلانات المدفوعة</div>
+  <p class="hint">أضف إعلانات مدفوعة تظهر للمستخدمين في الموقع</p>
+  <div class="card">
+    <div class="field">
+      <label>صورة الإعلان</label>
+      <div class="file-drop" id="paid-ad-drop">📎 اضغط لرفع صورة الإعلان</div>
+      <input type="file" id="paid-ad-input" accept="image/*" style="display:none;">
+      <div class="file-preview" id="paid-ad-preview"></div>
+    </div>
+    <div class="field">
+      <label>رابط الإعلان</label>
+      <input type="url" id="paid-ad-link" placeholder="https://example.com">
+    </div>
+    <div class="field">
+      <label>نص الشريط المتحرك (اختياري)</label>
+      <input type="text" id="paid-ad-ticker" placeholder="نص يظهر في شريط متحرك تحت الإعلان">
+    </div>
+    <button class="primary-btn" id="save-paid-ad-btn">💾 حفظ الإعلان</button>
+  </div>
+</div>
+
+<!-- ===== لوحة أكواد الشحن ===== -->
+<div class="panel" id="panel-recharge-codes">
+  <div class="section-title">أكواد الشحن
+    <button class="add-btn" id="generate-codes-btn">+ توليد أكواد جديدة</button>
+  </div>
+  <div class="card">
+    <div class="field">
+      <label>عدد الأكواد</label>
+      <input type="number" id="codes-count" value="10" min="1" max="100">
+    </div>
+    <div class="field">
+      <label>قيمة كل كود ($)</label>
+      <input type="number" id="code-amount" value="10" step="0.01" min="0.01">
+    </div>
+    <div class="field">
+      <label>تاريخ انتهاء الصلاحية (اختياري)</label>
+      <input type="date" id="code-expiry">
+    </div>
+    <button class="primary-btn" id="generate-codes-submit">🔑 توليد الأكواد</button>
+  </div>
+  <div class="section-title" style="margin-top:20px;">الأكواد المتاحة</div>
+  <div id="codes-list"><div class="empty-state">جاري التحميل…</div></div>
+</div>
+
+<!-- ===== لوحة نظام المستويات ===== -->
+<div class="panel" id="panel-loyalty">
+  <div class="section-title">إعدادات نظام المستويات</div>
+  <div class="card">
+    <h3 style="margin-bottom:12px;">مستوى برونزي 🥉</h3>
+    <div class="field">
+      <label>الحد الأدنى للإنفاق ($)</label>
+      <input type="number" id="bronze-min" value="0" step="0.01" disabled>
+    </div>
+    <div class="field">
+      <label>الحد الأقصى للإنفاق ($)</label>
+      <input type="number" id="bronze-max" value="50" step="0.01">
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="margin-bottom:12px;">مستوى فضي 🥈</h3>
+    <div class="field">
+      <label>الحد الأدنى للإنفاق ($)</label>
+      <input type="number" id="silver-min" value="50" step="0.01">
+    </div>
+    <div class="field">
+      <label>الحد الأقصى للإنفاق ($)</label>
+      <input type="number" id="silver-max" value="150" step="0.01">
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="margin-bottom:12px;">مستوى ذهبي 🏆</h3>
+    <div class="field">
+      <label>الحد الأدنى للإنفاق ($)</label>
+      <input type="number" id="gold-min" value="150" step="0.01">
+    </div>
+    <button class="primary-btn" id="save-loyalty-btn">💾 حفظ الإعدادات</button>
+  </div>
+</div>
+
+<!-- ===== لوحة المستخدمين ===== -->
+<div class="panel" id="panel-users">
+  <div class="section-title">إدارة المستخدمين</div>
+  <div class="search-box">
+    <input type="text" id="users-search" placeholder="ابحث باليوزرنيم أو الاسم أو البريد...">
+    <button id="users-search-clear">مسح</button>
+  </div>
+  <div id="users-list"><div class="empty-state">جاري التحميل…</div></div>
+</div>
+
+<!-- ===== أنماط CSS إضافية ===== -->
+<style>
+  .code-item {
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .code-text {
+    font-family: monospace;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 14px;
+  }
+  
+  .code-status {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  
+  .code-status.used {
+    color: var(--red);
+  }
+  
+  .user-item {
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .user-name {
+    font-weight: 700;
+    font-size: 14px;
+  }
+  
+  .user-username {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: monospace;
+  }
+  
+  .user-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .user-stat {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    padding: 6px;
+    text-align: center;
+    font-size: 12px;
+  }
+  
+  .user-stat .val {
+    font-weight: 700;
+    color: var(--gold);
+  }
+  
+  .user-stat .lbl {
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+</style>

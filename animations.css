@@ -1,0 +1,455 @@
+/* ===== تأثيرات النيون والشعارات المتحركة ===== */
+
+/* ===== تأثيرات النيون الأساسية ===== */
+@keyframes neonGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 30px #00d4ff;
+    box-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 30px #00d4ff;
+  }
+  50% {
+    text-shadow: 0 0 5px #00d4ff, 0 0 10px #00d4ff;
+    box-shadow: 0 0 5px #00d4ff, 0 0 10px #00d4ff;
+  }
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 212, 255, 0);
+  }
+}
+
+@keyframes neonFlicker {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff;
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow: 0 0 5px #00d4ff;
+  }
+}
+
+/* ===== تأثيرات الحركة المتقدمة ===== */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px) rotateY(20deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px) rotateY(-20deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== تأثيرات الألوان المتدرجة ===== */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes colorCycle {
+  0% {
+    color: #00d4ff;
+    text-shadow: 0 0 10px #00d4ff;
+  }
+  25% {
+    color: #c084fc;
+    text-shadow: 0 0 10px #c084fc;
+  }
+  50% {
+    color: #ff006e;
+    text-shadow: 0 0 10px #ff006e;
+  }
+  75% {
+    color: #c084fc;
+    text-shadow: 0 0 10px #c084fc;
+  }
+  100% {
+    color: #00d4ff;
+    text-shadow: 0 0 10px #00d4ff;
+  }
+}
+
+/* ===== تأثيرات الشعارات والأيقونات ===== */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wobble {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px);
+  }
+}
+
+/* ===== تأثيرات الضوء والظلال ===== */
+@keyframes shadowGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3), inset 0 0 10px rgba(0, 212, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.6), inset 0 0 20px rgba(0, 212, 255, 0.2);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* ===== تأثيرات الموجات ===== */
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes waveDelay1 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  animation-delay: 0.1s;
+}
+
+@keyframes waveDelay2 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  animation-delay: 0.2s;
+}
+
+/* ===== فئات التطبيق =====*/
+.neon-glow {
+  animation: neonGlow 2s ease-in-out infinite;
+}
+
+.neon-pulse {
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+.neon-flicker {
+  animation: neonFlicker 3s ease-in-out infinite;
+}
+
+.neon-color-cycle {
+  animation: colorCycle 4s ease-in-out infinite;
+  background-size: 300% 100%;
+}
+
+.slide-in-right {
+  animation: slideInFromRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slide-in-left {
+  animation: slideInFromLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fade-in-scale {
+  animation: fadeInScale 0.4s ease-out;
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.rotate {
+  animation: rotate 2s linear infinite;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.wobble {
+  animation: wobble 0.8s ease-in-out infinite;
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.shadow-glow {
+  animation: shadowGlow 2s ease-in-out infinite;
+}
+
+.shimmer-effect {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.wave {
+  animation: wave 0.6s ease-in-out infinite;
+}
+
+/* ===== تأثيرات الكروت والعناصر ===== */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+}
+
+.button-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.button-glow:hover::before {
+  left: 100%;
+}
+
+/* ===== تأثيرات النصوص ===== */
+.text-gradient {
+  background: linear-gradient(90deg, #00d4ff, #c084fc, #ff006e, #00d4ff);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientShift 4s linear infinite;
+}
+
+.text-neon {
+  color: #00d4ff;
+  text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff;
+  animation: neonFlicker 3s ease-in-out infinite;
+}
+
+/* ===== تأثيرات الخطوط ===== */
+.line-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.line-animation::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+  animation: slideInFromLeft 1s ease-in-out infinite;
+}
+
+/* ===== تأثيرات الخلفيات ===== */
+.animated-bg {
+  background: linear-gradient(-45deg, #0f0820, #1a0d35, #200a2e, #0f0820);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* ===== تأثيرات الظهور والاختفاء ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease-out;
+}
+
+/* ===== تأثيرات البطاقات المتقدمة ===== */
+.card-3d {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-3d:hover {
+  transform: rotateX(5deg) rotateY(5deg);
+}
+
+/* ===== تأثيرات الأزرار ===== */
+.btn-neon {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #00d4ff;
+  color: #00d4ff;
+  background: transparent;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #00d4ff;
+  z-index: -1;
+  transition: left 0.3s;
+}
+
+.btn-neon:hover {
+  color: #1A140A;
+  box-shadow: 0 0 20px #00d4ff;
+}
+
+.btn-neon:hover::before {
+  left: 0;
+}
+
+/* ===== تأثيرات الحدود ===== */
+.border-glow {
+  border: 2px solid #00d4ff;
+  box-shadow: 0 0 10px #00d4ff, inset 0 0 10px rgba(0, 212, 255, 0.1);
+  animation: shadowGlow 2s ease-in-out infinite;
+}
+
+/* ===== تأثيرات الرموز التعبيرية ===== */
+.emoji-float {
+  display: inline-block;
+  animation: float 2s ease-in-out infinite;
+}
+
+.emoji-spin {
+  display: inline-block;
+  animation: spin 2s linear infinite;
+}
+
+.emoji-bounce {
+  display: inline-block;
+  animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
