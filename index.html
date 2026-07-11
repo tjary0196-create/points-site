@@ -437,7 +437,29 @@
 
 <div class="notification-container" id="notification-container"></div>
 
-<section id="login-screen" class="container">
+<!-- رسالة الترحيب الملونة المتحركة - ظاهرة للجميع قبل وبعد تسجيل الدخول -->
+<div id="welcome-banner" style="position:fixed; top:0; left:0; right:0; z-index:9999; margin:0 auto; max-width:480px; padding:0 18px;">
+  <div style="background: linear-gradient(135deg, #ff006e 0%, #ff4d9a 25%, #00d2ff 50%, #3a7bd5 75%, #0052d4 100%); color: white; padding: 16px 20px; border-radius: 0 0 18px 18px; text-align: center; font-weight: 900; box-shadow: 0 8px 35px rgba(255,0,110,0.6); border: 3px solid rgba(255,255,255,0.5); animation: pulse-banner 1.2s ease-in-out infinite; position:relative; overflow:hidden;">
+    <div style="position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); animation: banner-shimmer 2s ease-in-out infinite; pointer-events:none;"></div>
+    <div style="position:relative; z-index:2;">
+      🚀🚀🚀 المتجر الجديد والمزاد مفعلة بالكامل! 🚀🚀🚀
+      <br>
+      <small style="font-size: 12px; opacity: 1; font-weight: bold; margin-top:4px; display:inline-block;">النسخة 2.0 النهائية - افتح القائمة الجانبية الآن!</small>
+    </div>
+  </div>
+</div>
+<style>
+  @keyframes pulse-banner {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 35px rgba(255,0,110,0.6); }
+    50% { transform: scale(1.02); box-shadow: 0 12px 50px rgba(0,210,255,0.6); }
+  }
+  @keyframes banner-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+</style>
+
+<section id="login-screen" class="container" style="margin-top:120px;">
   <div class="hero-coin">
     <svg viewBox="0 0 120 120">
       <circle cx="60" cy="60" r="56" fill="none" stroke="#D4A24C" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
@@ -467,18 +489,6 @@
     </div>
 
     <div class="view active" id="view-home">
-      <!-- رسالة تأكيد التحديث - النسخة النهايئة FINAL -->
-      <div style="background: linear-gradient(135deg, #ff006e 0%, #00d2ff 50%, #3a7bd5 100%); color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 20px; font-weight: 900; box-shadow: 0 12px 35px rgba(255,0,110,0.5); border: 4px solid rgba(255,255,255,0.4); animation: pulse-final 1.5s infinite;">
-        🚀🚀🚀 المتجر الجديد والمزاد مفعلة بالكامل! 🚀🚀🚀
-        <br>
-        <small style="font-size: 12px; opacity: 1; font-weight: bold;">النسخة 2.0 النهايئة - افتح القائمة الجانبية الآن!</small>
-      </div>
-      <style>
-        @keyframes pulse-final {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.05); opacity: 0.95; }
-        }
-      </style>
       <div class="section-title">الأقسام الرئيسية</div>
       <div class="category-grid" id="category-grid"></div>
       <div class="section-title">التصنيفات الفرعية</div>
