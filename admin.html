@@ -487,7 +487,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
     onSnapshot, query, where, runTransaction, serverTimestamp, writeBatch
@@ -495,7 +495,7 @@
 
   const firebaseConfig = {
     apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
-    authDomain: location.hostname === "points-site.vercel.app" ? "points-site.vercel.app" : "my-websit-2e275.firebaseapp.com",
+    authDomain: "my-websit-2e275.firebaseapp.com",
     projectId: "my-websit-2e275",
     storageBucket: "my-websit-2e275.firebasestorage.app",
     messagingSenderId: "1079052257822",
@@ -554,12 +554,39 @@
     setTimeout(() => t.classList.remove('show'), 4000);
   }
 
+  // معالجة نتيجة الـ redirect عند العودة من صفحة جوجل
+  getRedirectResult(auth).catch(err => {
+    if (err && err.code) {
+      showToast("خطأ تسجيل الدخول (redirect): " + err.code + " — " + err.message, true);
+      console.error("getRedirectResult error:", err);
+    }
+  });
+
+  // timeout احتياطي: إخفاء splash بعد 6 ثوانٍ حتى لو onAuthStateChanged لم يستجب
+  const splashTimeout = setTimeout(() => {
+    const splash = document.getElementById("splash");
+    if (splash && splash.style.display !== "none") {
+      splash.style.display = "none";
+      document.getElementById("login-screen").style.display = "block";
+    }
+  }, 6000);
+
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    try { await signInWithRedirect(auth, provider); }
-    catch (err) { showToast("تعذر تسجيل الدخول: " + err.message, true); }
+    // signInWithPopup أساسي (يعمل بالمتصفح العادي وPWA standalone)
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+        try { await signInWithRedirect(auth, provider); }
+        catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
+      } else if (err.code !== "auth/popup-closed-by-user") {
+        showToast("تعذر تسجيل الدخول: " + err.message, true);
+      }
+    }
   });
 
   onAuthStateChanged(auth, async (user) => {
+    clearTimeout(splashTimeout);
     document.getElementById("splash").style.display = "none";
     if (!user) {
       currentUser = null;

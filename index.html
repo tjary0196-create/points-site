@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Syria Store — V3.1 تسجيل دخول مستقر</title>
+<title>Digital Syria Store — متجر الألعاب والاشتراكات</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#D4A24C">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -106,8 +106,12 @@
   .hero-title{ font-size: 28px; font-weight:900; line-height:1.35; margin-bottom:10px; }
   .hero-title span{ color: var(--gold); }
   .hero-sub{ color: var(--text-dim); font-size:14.5px; line-height:1.7; margin-bottom:28px; }
-  .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; background:#D4A24C; color:#fff; font-weight:700; font-size:15px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; margin: 0 auto; width:100%; max-width:300px; }
-  .google-btn svg{ width:20px; height:20px; }
+  .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; background:#D4A24C; color:#fff; font-weight:700; font-size:15px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; margin: 0 auto; width:100%; max-width:300px; animation: btn-enter 0.45s cubic-bezier(0.34,1.56,0.64,1) both; transition: box-shadow 0.25s ease, transform 0.2s ease; }
+  .google-btn:hover{ box-shadow: 0 0 22px rgba(212,162,76,0.55), 0 4px 14px rgba(212,162,76,0.3); transform: translateY(-2px); }
+  .google-btn:active{ transform: translateY(0); box-shadow: none; }
+  .google-btn svg{ width:20px; height:20px; animation: icon-pulse 0.7s ease 0.45s both; }
+  @keyframes btn-enter{ from{ opacity:0; transform:scale(0.88); } to{ opacity:1; transform:scale(1); } }
+  @keyframes icon-pulse{ 0%{ transform:scale(1); } 40%{ transform:scale(1.18) rotate(-8deg); } 70%{ transform:scale(0.95) rotate(4deg); } 100%{ transform:scale(1) rotate(0); } }
   .trust-row{ display:flex; justify-content:center; gap:18px; margin-top: 24px; color: var(--text-dim); font-size:12px; }
   .trust-row span{ display:flex; align-items:center; gap:6px; }
   .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block; }
@@ -437,29 +441,10 @@
 
 <div class="notification-container" id="notification-container"></div>
 
-<!-- رسالة الترحيب الملونة المتحركة - ظاهرة للجميع قبل وبعد تسجيل الدخول -->
-<div id="welcome-banner" style="position:fixed; top:0; left:0; right:0; z-index:9999; margin:0 auto; max-width:480px; padding:0 18px;">
-  <div style="background: linear-gradient(135deg, #ff006e 0%, #ff4d9a 25%, #00d2ff 50%, #3a7bd5 75%, #0052d4 100%); color: white; padding: 16px 20px; border-radius: 0 0 18px 18px; text-align: center; font-weight: 900; box-shadow: 0 8px 35px rgba(255,0,110,0.6); border: 3px solid rgba(255,255,255,0.5); animation: pulse-banner 1.2s ease-in-out infinite; position:relative; overflow:hidden;">
-    <div style="position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); animation: banner-shimmer 2s ease-in-out infinite; pointer-events:none;"></div>
-    <div style="position:relative; z-index:2;">
-      🚀🚀🚀 المتجر الجديد والمزاد مفعلة بالكامل! 🚀🚀🚀
-      <br>
-      <small style="font-size: 12px; opacity: 1; font-weight: bold; margin-top:4px; display:inline-block;">النسخة V3.1 - جاهز للعمل 🚀 - افتح القائمة الجانبية الآن!</small>
-    </div>
-  </div>
-</div>
-<style>
-  @keyframes pulse-banner {
-    0%, 100% { transform: scale(1); box-shadow: 0 8px 35px rgba(255,0,110,0.6); }
-    50% { transform: scale(1.02); box-shadow: 0 12px 50px rgba(0,210,255,0.6); }
-  }
-  @keyframes banner-shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
-</style>
+<!-- رقم الإصدار الهادئ بزاوية الشاشة -->
+<div id="version-tag" style="position:fixed; top:10px; left:14px; z-index:100; font-size:10px; font-weight:400; color:var(--text-dim); opacity:0.55; pointer-events:none; font-family:'Tajawal', sans-serif; letter-spacing:0.5px;">v3.2</div>
 
-<section id="login-screen" class="container" style="margin-top:120px;">
+<section id="login-screen" class="container" style="margin-top:70px;">
   <div class="hero-coin">
     <svg viewBox="0 0 120 120">
       <circle cx="60" cy="60" r="56" fill="none" stroke="#D4A24C" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
@@ -471,7 +456,7 @@
   <p class="hero-sub">سجّل دخولك بحساب جوجل بثانية، تصفح المنتجات، وأكمل طلبك بسهولة وأمان.</p>
   <button class="google-btn" id="google-login-btn">
     <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25c0-1.5-.2-3-.9-4.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 18.9 13 24 13c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5c-7.8 0-14.5 4.5-17.7 11.2z"/><path fill="#4CAF50" d="M24 45.5c5.1 0 9.8-1.9 13.3-5l-6.1-5.2C29.3 36.7 26.8 37.5 24 37.5c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5C9.4 41 16.1 45.5 24 45.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.5l6.1 5.2C40.9 35.9 44.5 31 44.5 25c0-1.5-.2-3-.9-4.5z"/></svg>
-    اضغط هنا - تسجيل دخول V3.1
+    تسجيل الدخول بحساب جوجل
   </button>
   <div class="trust-row"><span><i class="dot"></i> تسجيل آمن عبر جوجل</span><span><i class="dot"></i> بدون كلمة سر</span></div>
   <a class="telegram-join" href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener"><svg viewBox="0 0 240 240" fill="none"><circle cx="120" cy="120" r="120" fill="#289fe0"/><path fill="#fff" d="M179 72l-24 113c-1.8 8-6.6 10-13.4 6.2l-37-27.3-17.8 17.2c-2 2-3.6 3.6-7.4 3.6l2.6-37.6 68.4-61.8c3-2.6-.6-4-4.6-1.4l-84.6 53.2-36.4-11.4c-7.9-2.5-8-7.6 1.6-11.2l143-55.2c6.6-2.4 12.4 1.5 9.6 11.7z"/></svg> انضم لقناتنا على تلغرام — اضغط هنا</a>
@@ -812,7 +797,7 @@
 
   const firebaseConfig = {
     apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
-    authDomain: location.hostname === "points-site.vercel.app" ? "points-site.vercel.app" : "my-websit-2e275.firebaseapp.com",
+    authDomain: "my-websit-2e275.firebaseapp.com",
     projectId: "my-websit-2e275",
     storageBucket: "my-websit-2e275.firebasestorage.app",
     messagingSenderId: "1079052257822",
@@ -889,16 +874,42 @@
     switchView(viewId);
   };
 
+  // معالجة نتيجة الـ redirect عند العودة من صفحة جوجل
+  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js").then(({ getRedirectResult }) => {
+    getRedirectResult(auth).catch(err => {
+      if (err && err.code) {
+        showToast("خطأ تسجيل الدخول (redirect): " + err.code + " — " + err.message, true);
+        console.error("getRedirectResult error:", err);
+      }
+    });
+  });
+
+  // timeout احتياطي: إخفاء splash بعد 6 ثوانٍ حتى لو onAuthStateChanged لم يستجب
+  const splashTimeout = setTimeout(() => {
+    const splash = document.getElementById("splash");
+    if (splash && splash.style.display !== "none") {
+      splash.style.display = "none";
+      document.getElementById("login-screen").style.display = "block";
+    }
+  }, 6000);
+
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    try { await signInWithRedirect(auth, provider); }
-    catch (err) {
+    // signInWithPopup أساسي (يعمل بالمتصفح العادي وPWA standalone)
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      // إذا حُظر الـ popup، نلجأ للـ redirect كاحتياطي
       if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
-        await signInWithRedirect(auth, provider);
-      } else { showToast("تعذر تسجيل الدخول: " + err.message, true); }
+        try { await signInWithRedirect(auth, provider); }
+        catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
+      } else if (err.code !== "auth/popup-closed-by-user") {
+        showToast("تعذر تسجيل الدخول: " + err.message, true);
+      }
     }
   });
 
   onAuthStateChanged(auth, async (user) => {
+    clearTimeout(splashTimeout);
     document.getElementById("splash").style.display = "none";
     currentUser = user;
     if (user) {

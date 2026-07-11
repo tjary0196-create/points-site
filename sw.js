@@ -1,4 +1,4 @@
-const CACHE_NAME = 'digital-syria-v1';
+const CACHE_NAME = 'digital-syria-v2';
 const urlsToCache = [
   '/',
   '/index.html',
