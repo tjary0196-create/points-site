@@ -1004,17 +1004,18 @@
       // حالة قديمة، لكن نتعامل معها
       filtered = allProducts.filter(p => p.categoryId === activeCategory);
     }
-    // إذا لم يكن هناك قسم محدد، نعرض الكل
+    // ترتيب المنتجات: المميزة أولاً
+    filtered.sort((a, b) => (b.isSponsored ? 1 : 0) - (a.isSponsored ? 1 : 0));
     document.getElementById("product-count").textContent = `(${filtered.length})`;
     if (filtered.length === 0) {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">لا توجد منتجات في هذا القسم</div>`;
       return;
     }
     grid.innerHTML = "";
-    filtered.forEach((p) => {
+    filtered.forEach((p, idx) => {
       const imageSrc = p.imageData || p.imageUrl;
       const card = document.createElement("div");
-      card.className = "product-card";
+      card.className = "product-card" + (p.isSponsored ? " sponsored" : "");
       card.innerHTML = `
         <div class="product-icon">${imageSrc ? `<img src="${imageSrc}" alt="${escapeHTML(p.name)}">` : (p.icon || "🎮")}</div>
         <div class="product-price-badge">${fmt(p.price)}</div>
@@ -1253,14 +1254,28 @@
       }
       const total = verifiedItems.reduce((sum, c) => sum + c.price * c.qty, 0);
 
+      // حساب الخصم والـ Cashback بناءً على مستوى الولاء
+      const userDocSnap = await getDoc(doc(db, "users", currentUser.uid));
+      const userData = userDocSnap.exists() ? userDocSnap.data() : {};
+      const totalSpent = userData.totalSpent || 0;
+      const loyaltyLevel = calculateLoyaltyLevel(totalSpent);
+      const levelData = LOYALTY_LEVELS[loyaltyLevel];
+      const discount = (total * levelData.discount) / 100;
+      const finalTotal = total - discount;
+      const cashbackAmount = (total * levelData.cashback) / 100;
+
       const orderData = {
         uid: currentUser.uid,
         userName: currentUser.displayName,
         userEmail: currentUser.email,
         items: verifiedItems,
-        total: total,
+        total: finalTotal,
+        originalTotal: total,
+        discount: discount,
+        cashback: cashbackAmount,
+        loyaltyLevel: loyaltyLevel,
         currency: checkoutCurrency,
-        displayTotal: checkoutCurrency === "SYR" ? Math.round(total * exchangeRate) : total,
+        displayTotal: checkoutCurrency === "SYR" ? Math.round(finalTotal * exchangeRate) : finalTotal,
         exchangeRateAtOrder: exchangeRate,
         gameId: gameId,
         contact: contact,
@@ -1275,8 +1290,14 @@
       await runTransaction(db, async (transaction) => {
         const userSnap = await transaction.get(userRef);
         const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-        if (currentBalance < total) throw new Error("رصيدك غير كافٍ لإتمام هذا الطلب");
-        transaction.update(userRef, { balance: currentBalance - total });
+        if (currentBalance < finalTotal) throw new Error("رصيدك غير كافِ لإتمام هذا الطلب");
+        const newBalance = currentBalance - finalTotal + cashbackAmount;
+        const newTotalSpent = (userData.totalSpent || 0) + finalTotal;
+        transaction.update(userRef, { 
+          balance: newBalance,
+          totalSpent: newTotalSpent,
+          lastOrderAt: serverTimestamp()
+        });
         const newOrderRef = doc(collection(db, "orders"));
         transaction.set(newOrderRef, orderData);
       });
@@ -1286,7 +1307,11 @@
       document.getElementById("checkout-game-id").value = "";
       document.getElementById("checkout-contact").value = "";
       document.getElementById("checkout-note").value = "";
-      showToast("تم خصم المبلغ من رصيدك، وطلبك الآن قيد المراجعة من الأدمن ⏳");
+      let toastMsg = "تم خصم المبلغ من رصيدك، وطلبك الآن قيد المراجعة من الأدمن ⏳";
+      if (discount > 0) toastMsg += ` | خصم: ${fmt(discount)} 🎉`;
+      if (cashbackAmount > 0) toastMsg += ` | Cashback: ${fmt(cashbackAmount)} 💰`;
+      showNotification('✅ تم الطلب بنجاح', `المستوى: ${levelData.name} | الخصم: ${levelData.discount}%`, 'success', '🎉');
+      showToast(toastMsg);
       switchView("view-orders");
     } catch (err) {
       showToast("حدث خطأ: " + err.message, true);
