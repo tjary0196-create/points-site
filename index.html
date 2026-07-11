@@ -294,9 +294,47 @@
   .product-card.sponsored::before{ content:'🔥 مميز'; position:absolute; top:6px; left:6px; background:linear-gradient(135deg, #ff9d5c, #ffa500); color:#1A140A; padding:4px 10px; border-radius:999px; font-size:10px; font-weight:800; z-index:15; }
 
   /* === أنيميشن محسّن للمنتجات === */
-  .product-card{ transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .product-card:hover{ transform:translateY(-6px) scale(1.02); box-shadow:0 12px 32px rgba(212,162,76,0.25); }
-  .product-card:active{ transform:scale(0.98); }
+  .product-card{ 
+    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    background: rgba(30, 27, 31, 0.7) !important;
+    border: 1px solid rgba(192, 132, 252, 0.2) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  .product-card:hover{ 
+    transform:translateY(-8px) scale(1.03); 
+    border-color: rgba(192, 132, 252, 0.8) !important;
+    box-shadow: 0 0 25px rgba(192, 132, 252, 0.4);
+  }
+  .product-card .product-price-badge {
+    background: linear-gradient(135deg, #c084fc, #ffd76a) !important;
+    box-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+    color: #1A140A !important;
+    font-weight: 900 !important;
+  }
+  .product-btn {
+    background: linear-gradient(90deg, rgba(192, 132, 252, 0.1), rgba(192, 132, 252, 0.2)) !important;
+    border: 1px solid rgba(192, 132, 252, 0.5) !important;
+    color: #c084fc !important;
+    text-shadow: 0 0 5px rgba(192, 132, 252, 0.5);
+    transition: all 0.3s;
+  }
+  .product-btn:hover {
+    background: #c084fc !important;
+    color: #fff !important;
+    box-shadow: 0 0 15px #c084fc;
+  }
+  body {
+    background-image: radial-gradient(circle at 50% 50%, #1c1a1d 0%, #131114 100%) !important;
+  }
+  .section-title {
+    background: linear-gradient(90deg, #fff, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-shadow: 0 0 30px rgba(192, 132, 252, 0.2);
+  }
 
   /* === Card Deck Animation === */
   @keyframes cardDeck{ 0%{ opacity:0; transform:translateY(20px) rotateX(20deg); } to{ opacity:1; transform:translateY(0) rotateX(0); } }
