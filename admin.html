@@ -7,11 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg: #0E0D0F; --bg-soft: #171517; --card: #1C1A1D;
-    --gold: #D4A24C; --gold-soft: rgba(212,162,76,0.14);
-    --text: #F2EFE9; --text-dim: #ADA9A4;
-    --green: #3FA66A; --red: #B4543A; --hairline: rgba(242,239,233,0.08);
+  :root {
+    --bg: #0a0e27; --bg-soft: #0f1435; --card: #1a1f3a;
+    --gold: #00d4ff; --gold-soft: rgba(0, 212, 255, 0.1);
+    --text: #e0e6ff; --text-dim: #a0a8cc;
+    --green: #00ff9d; --red: #ff006e; --hairline: rgba(0, 212, 255, 0.15);
+    --neon-blue: #00d4ff; --neon-purple: #c084fc; --neon-pink: #ff006e;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{ background: radial-gradient(circle at 50% -10%, #221c14 0%, var(--bg) 55%); color: var(--text); font-family:'Tajawal', sans-serif; min-height:100vh; }
@@ -32,7 +33,7 @@
   #app{ display:none; }
   .tabs{ display:flex; gap:8px; overflow-x:auto; padding:0 16px 12px; max-width:700px; margin:0 auto; }
   .tab{ flex-shrink:0; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); padding:9px 16px; border-radius:999px; font-size:13px; cursor:pointer; white-space:nowrap; }
-  .tab.active{ background:var(--gold); color:#1A140A; border-color:var(--gold); font-weight:700; }
+  .tab.active { background:var(--gold); color:#fff; border-color:var(--gold); font-weight:700; box-shadow: 0 0 15px var(--gold-soft); }
 
   .panel{ display:none; }
   .panel.active{ display:block; animation: fadeIn .25s ease; }
@@ -41,7 +42,7 @@
   .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:18px; }
   .stat-card{ background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:20px; position:relative; overflow:hidden; }
   .stat-card .icon{ font-size:30px; position:absolute; left:15px; top:15px; opacity:0.2; pointer-events:none; }
-  .stat-card .num{ font-family:'Cairo'; font-weight:900; font-size:28px; color:var(--gold); }
+  .stat-card .num { font-family:'Cairo'; font-weight:900; font-size:28px; color:var(--neon-blue); text-shadow: 0 0 10px rgba(0, 212, 255, 0.3); }
   .stat-card .lbl{ font-size:12px; color:var(--text-dim); margin-top:4px; }
   .stat-card.gold{ border-color:var(--gold); background: rgba(212,162,76,0.1); }
   .stat-card.green{ border-color:var(--green); background: rgba(63,166,106,0.1); }
@@ -51,8 +52,8 @@
   #toast.show{ opacity:1; transform:translateX(-50%) translateY(-10px); }
   #toast.error{ background:var(--red); color:white; }
 
-  .section-title{ font-family:'Cairo'; font-weight:800; font-size:16px; margin:18px 0 12px; display:flex; justify-content:space-between; align-items:center; }
-  .add-btn{ background:var(--gold); color:#1A140A; border:none; border-radius:10px; padding:8px 14px; font-weight:800; font-size:13px; cursor:pointer; }
+  .section-title { font-family:'Cairo'; font-weight:800; font-size:16px; margin:18px 0 12px; display:flex; justify-content:space-between; align-items:center; color: var(--neon-blue); }
+  .add-btn { background:var(--neon-blue); color:#fff; border:none; border-radius:10px; padding:8px 14px; font-weight:800; font-size:13px; cursor:pointer; box-shadow: 0 0 10px rgba(0, 212, 255, 0.4); }
 
   .search-box{ display:flex; gap:8px; margin-bottom:14px; }
   .search-box input{ flex:1; background:var(--bg-soft); border:1px solid var(--hairline); color:var(--text); border-radius:10px; padding:10px 12px; font-size:13.5px; font-family:'Tajawal'; }
@@ -97,7 +98,7 @@
   .modal{ background:var(--bg); border:1px solid var(--hairline); border-radius:24px 24px 0 0; padding:22px 18px 30px; width:100%; max-width:600px; max-height:85vh; overflow-y:auto; }
   .modal h3{ font-size:17px; margin-bottom:16px; }
   .modal-btn-row{ display:flex; gap:10px; margin-top:16px; }
-  .primary-btn{ flex:1; background: linear-gradient(135deg, var(--gold), #b9883e); color:#1A140A; font-weight:800; font-size:14.5px; padding:13px; border:none; border-radius:12px; cursor:pointer; }
+  .primary-btn { flex:1; background: linear-gradient(135deg, var(--neon-blue), #0088cc); color:#fff; font-weight:800; font-size:14.5px; padding:13px; border:none; border-radius:12px; cursor:pointer; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3); }
   .primary-btn:disabled{ opacity:0.5; cursor:not-allowed; }
   .secondary-btn{ flex:1; background:var(--card); color:var(--text-dim); font-weight:700; font-size:14.5px; padding:13px; border:1px solid var(--hairline); border-radius:12px; cursor:pointer; }
 
@@ -200,6 +201,108 @@
       <div class="section-title">رصيد المستخدمين</div>
       <p class="hint">تقدر تضيف أو تخصم رصيد يدوياً من أي مستخدم. الأرقام هنا بالدولار (وحدة الرصيد الأساسية).</p>
       <div id="users-list" style="margin-top:14px;"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <!-- لوحة إدارة المستخدمين (المعدلة) -->
+    <div class="panel" id="panel-users">
+      <div class="section-title">إدارة المستخدمين</div>
+      <div class="search-box">
+        <input type="text" id="users-mgmt-search" placeholder="ابحث باليوزرنيم أو الاسم أو البريد...">
+        <button id="users-mgmt-search-clear">مسح</button>
+      </div>
+      <div id="users-mgmt-list"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <!-- لوحة المزادات -->
+    <div class="panel" id="panel-auctions">
+      <div class="section-title">إدارة المزادات
+        <button class="add-btn" id="add-auction-btn">+ مزاد جديد</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="auctions-search" placeholder="ابحث برقم المزاد أو اسم الحساب...">
+        <button id="auctions-search-clear">مسح</button>
+      </div>
+      <div id="auctions-list"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <!-- لوحة الإعلانات المدفوعة -->
+    <div class="panel" id="panel-paid-ads">
+      <div class="section-title">الإعلانات المدفوعة</div>
+      <p class="hint">أضف إعلانات مدفوعة تظهر للمستخدمين في الموقع</p>
+      <div class="card">
+        <div class="field">
+          <label>صورة الإعلان</label>
+          <div class="file-drop" id="paid-ad-drop">📎 اضغط لرفع صورة الإعلان</div>
+          <input type="file" id="paid-ad-input" accept="image/*" style="display:none;">
+          <div class="file-preview" id="paid-ad-preview"></div>
+        </div>
+        <div class="field">
+          <label>رابط الإعلان</label>
+          <input type="url" id="paid-ad-link-input" placeholder="https://example.com">
+        </div>
+        <div class="field">
+          <label>نص الشريط المتحرك (اختياري)</label>
+          <input type="text" id="paid-ad-ticker-input" placeholder="نص يظهر في شريط متحرك تحت الإعلان">
+        </div>
+        <button class="primary-btn" id="save-paid-ad-btn">💾 حفظ الإعلان</button>
+      </div>
+    </div>
+
+    <!-- لوحة أكواد الشحن -->
+    <div class="panel" id="panel-recharge-codes">
+      <div class="section-title">أكواد الشحن</div>
+      <div class="card">
+        <div class="field">
+          <label>عدد الأكواد</label>
+          <input type="number" id="codes-count" value="10" min="1" max="100">
+        </div>
+        <div class="field">
+          <label>قيمة كل كود ($)</label>
+          <input type="number" id="code-amount" value="10" step="0.01" min="0.01">
+        </div>
+        <div class="field">
+          <label>تاريخ انتهاء الصلاحية (اختياري)</label>
+          <input type="date" id="code-expiry">
+        </div>
+        <button class="primary-btn" id="generate-codes-submit">🔑 توليد الأكواد</button>
+      </div>
+      <div class="section-title" style="margin-top:20px;">الأكواد المتاحة</div>
+      <div id="codes-list"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <!-- لوحة نظام المستويات -->
+    <div class="panel" id="panel-loyalty">
+      <div class="section-title">إعدادات نظام المستويات</div>
+      <div class="card">
+        <h3 style="margin-bottom:12px;">مستوى برونزي 🥉</h3>
+        <div class="field">
+          <label>الحد الأدنى للإنفاق ($)</label>
+          <input type="number" id="bronze-min" value="0" step="0.01" disabled>
+        </div>
+        <div class="field">
+          <label>الحد الأقصى للإنفاق ($)</label>
+          <input type="number" id="bronze-max" value="50" step="0.01">
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px;">مستوى فضي 🥈</h3>
+        <div class="field">
+          <label>الحد الأدنى للإنفاق ($)</label>
+          <input type="number" id="silver-min" value="50" step="0.01">
+        </div>
+        <div class="field">
+          <label>الحد الأقصى للإنفاق ($)</label>
+          <input type="number" id="silver-max" value="150" step="0.01">
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px;">مستوى ذهبي 🏆</h3>
+        <div class="field">
+          <label>الحد الأدنى للإنفاق ($)</label>
+          <input type="number" id="gold-min" value="150" step="0.01">
+        </div>
+        <button class="primary-btn" id="save-loyalty-btn">💾 حفظ الإعدادات</button>
+      </div>
     </div>
 
     <div class="panel" id="panel-topups">
@@ -490,7 +593,7 @@
   import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
-    onSnapshot, query, where, runTransaction, serverTimestamp, writeBatch
+    onSnapshot, query, where, runTransaction, serverTimestamp, writeBatch, limit
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -2044,193 +2147,204 @@
       btn.textContent = "🏆 توزيع الجوائز";
     }
   });
+
+  // === إدارة المستخدمين (لوحة الإدارة) ===
+  let allUsersMgmt = [];
+  function listenUsersMgmt() {
+    onSnapshot(collection(db, "users"), (snap) => {
+      allUsersMgmt = [];
+      snap.forEach(d => allUsersMgmt.push({ id: d.id, ...d.data() }));
+      renderUsersMgmt();
+    });
+  }
+
+  function renderUsersMgmt() {
+    const list = document.getElementById("users-mgmt-list");
+    const search = document.getElementById("users-mgmt-search").value.toLowerCase();
+    const filtered = allUsersMgmt.filter(u => 
+      (u.name || "").toLowerCase().includes(search) || 
+      (u.username || "").toLowerCase().includes(search) || 
+      (u.email || "").toLowerCase().includes(search)
+    );
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state">لا يوجد مستخدمون مطابقون.</div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(u => `
+      <div class="user-item">
+        <div class="user-header">
+          <div class="user-name">${escapeHTML(u.name || "بدون اسم")}</div>
+          <div class="user-username">@${escapeHTML(u.username || "no_username")}</div>
+        </div>
+        <div style="font-size:12px; color:var(--text-dim); margin-bottom:8px;">${escapeHTML(u.email || "")}</div>
+        <div class="user-stats">
+          <div class="user-stat"><div class="val">${(u.balance || 0).toFixed(2)}$</div><div class="lbl">الرصيد</div></div>
+          <div class="user-stat"><div class="val">${u.loyaltyLevel || "برونزي"}</div><div class="lbl">المستوى</div></div>
+          <div class="user-stat"><div class="val">${(u.totalSpent || 0).toFixed(2)}$</div><div class="lbl">الإنفاق</div></div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("users-mgmt-search").addEventListener("input", renderUsersMgmt);
+  document.getElementById("users-mgmt-search-clear").addEventListener("click", () => {
+    document.getElementById("users-mgmt-search").value = "";
+    renderUsersMgmt();
+  });
+  listenUsersMgmt();
+
+  // === أكواد الشحن (لوحة الإدارة) ===
+  document.getElementById("generate-codes-submit").addEventListener("click", async () => {
+    const btn = document.getElementById("generate-codes-submit");
+    const count = parseInt(document.getElementById("codes-count").value) || 0;
+    const amount = parseFloat(document.getElementById("code-amount").value) || 0;
+    const expiry = document.getElementById("code-expiry").value;
+
+    if (count <= 0 || amount <= 0) { showToast("يرجى إدخال قيم صحيحة", true); return; }
+    
+    btn.disabled = true;
+    try {
+      for (let i = 0; i < count; i++) {
+        const code = Math.random().toString(36).substring(2, 14).toUpperCase();
+        await setDoc(doc(db, "rechargeCodes", code), {
+          code,
+          amount,
+          used: false,
+          expiresAt: expiry ? new Date(expiry).toISOString() : null,
+          createdAt: serverTimestamp()
+        });
+      }
+      showToast(`تم توليد ${count} كود بنجاح`);
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  function listenRechargeCodes() {
+    onSnapshot(query(collection(db, "rechargeCodes"), limit(50)), (snap) => {
+      const list = document.getElementById("codes-list");
+      const codes = [];
+      snap.forEach(d => codes.push(d.data()));
+      codes.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      
+      if (codes.length === 0) {
+        list.innerHTML = `<div class="empty-state">لا توجد أكواد حالياً.</div>`;
+        return;
+      }
+
+      list.innerHTML = codes.map(c => `
+        <div class="code-item">
+          <div>
+            <div class="code-text">${c.code}</div>
+            <div style="font-size:11px; color:var(--text-dim);">${c.amount}$</div>
+          </div>
+          <div class="code-status ${c.used ? 'used' : ''}">${c.used ? 'تم استخدامه' : 'متاح'}</div>
+        </div>
+      `).join("");
+    });
+  }
+  listenRechargeCodes();
+
+  // === نظام المستويات (لوحة الإدارة) ===
+  document.getElementById("save-loyalty-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("save-loyalty-btn");
+    const settings = {
+      bronze: { min: 0, max: parseFloat(document.getElementById("bronze-max").value) || 50 },
+      silver: { min: parseFloat(document.getElementById("silver-min").value) || 50, max: parseFloat(document.getElementById("silver-max").value) || 150 },
+      gold: { min: parseFloat(document.getElementById("gold-min").value) || 150 }
+    };
+
+    btn.disabled = true;
+    try {
+      await setDoc(doc(db, "settings", "loyaltySettings"), settings);
+      showToast("تم حفظ إعدادات المستويات");
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  async function loadLoyaltySettings() {
+    const snap = await getDoc(doc(db, "settings", "loyaltySettings"));
+    if (snap.exists()) {
+      const s = snap.data();
+      document.getElementById("bronze-max").value = s.bronze?.max || 50;
+      document.getElementById("silver-min").value = s.silver?.min || 50;
+      document.getElementById("silver-max").value = s.silver?.max || 150;
+      document.getElementById("gold-min").value = s.gold?.min || 150;
+    }
+  }
+  loadLoyaltySettings();
+
+  // === الإعلانات المدفوعة (لوحة الإدارة) ===
+  let paidAdImageData = "";
+  document.getElementById("paid-ad-drop").addEventListener("click", () => document.getElementById("paid-ad-input").click());
+  document.getElementById("paid-ad-input").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      paidAdImageData = ev.target.result;
+      document.getElementById("paid-ad-preview").innerHTML = `<img src="${paidAdImageData}" style="max-width:100%; border-radius:8px;">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("save-paid-ad-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("save-paid-ad-btn");
+    const link = document.getElementById("paid-ad-link-input").value.trim();
+    const ticker = document.getElementById("paid-ad-ticker-input").value.trim();
+
+    if (!paidAdImageData) { showToast("يرجى اختيار صورة للإعلان", true); return; }
+
+    btn.disabled = true;
+    try {
+      await setDoc(doc(db, "settings", "paidAd"), {
+        imageData: paidAdImageData,
+        link,
+        ticker,
+        updatedAt: serverTimestamp()
+      });
+      showToast("تم حفظ الإعلان المدفوع");
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  async function loadPaidAdAdmin() {
+    const snap = await getDoc(doc(db, "settings", "paidAd"));
+    if (snap.exists()) {
+      const d = snap.data();
+      paidAdImageData = d.imageData || "";
+      if (paidAdImageData) document.getElementById("paid-ad-preview").innerHTML = `<img src="${paidAdImageData}" style="max-width:100%; border-radius:8px;">`;
+      document.getElementById("paid-ad-link-input").value = d.link || "";
+      document.getElementById("paid-ad-ticker-input").value = d.ticker || "";
+    }
+  }
+  loadPaidAdAdmin();
 </script>
 
-<!-- ===== لوحة المزادات ===== -->
-<div class="panel" id="panel-auctions">
-  <div class="section-title">إدارة المزادات
-    <button class="add-btn" id="add-auction-btn">+ مزاد جديد</button>
-  </div>
-  <div class="search-box">
-    <input type="text" id="auctions-search" placeholder="ابحث برقم المزاد أو اسم الحساب...">
-    <button id="auctions-search-clear">مسح</button>
-  </div>
-  <div id="auctions-list"><div class="empty-state">جاري التحميل…</div></div>
-</div>
-
-<!-- ===== لوحة الإعلانات المدفوعة ===== -->
-<div class="panel" id="panel-paid-ads">
-  <div class="section-title">الإعلانات المدفوعة</div>
-  <p class="hint">أضف إعلانات مدفوعة تظهر للمستخدمين في الموقع</p>
-  <div class="card">
-    <div class="field">
-      <label>صورة الإعلان</label>
-      <div class="file-drop" id="paid-ad-drop">📎 اضغط لرفع صورة الإعلان</div>
-      <input type="file" id="paid-ad-input" accept="image/*" style="display:none;">
-      <div class="file-preview" id="paid-ad-preview"></div>
-    </div>
-    <div class="field">
-      <label>رابط الإعلان</label>
-      <input type="url" id="paid-ad-link" placeholder="https://example.com">
-    </div>
-    <div class="field">
-      <label>نص الشريط المتحرك (اختياري)</label>
-      <input type="text" id="paid-ad-ticker" placeholder="نص يظهر في شريط متحرك تحت الإعلان">
-    </div>
-    <button class="primary-btn" id="save-paid-ad-btn">💾 حفظ الإعلان</button>
-  </div>
-</div>
-
-<!-- ===== لوحة أكواد الشحن ===== -->
-<div class="panel" id="panel-recharge-codes">
-  <div class="section-title">أكواد الشحن
-    <button class="add-btn" id="generate-codes-btn">+ توليد أكواد جديدة</button>
-  </div>
-  <div class="card">
-    <div class="field">
-      <label>عدد الأكواد</label>
-      <input type="number" id="codes-count" value="10" min="1" max="100">
-    </div>
-    <div class="field">
-      <label>قيمة كل كود ($)</label>
-      <input type="number" id="code-amount" value="10" step="0.01" min="0.01">
-    </div>
-    <div class="field">
-      <label>تاريخ انتهاء الصلاحية (اختياري)</label>
-      <input type="date" id="code-expiry">
-    </div>
-    <button class="primary-btn" id="generate-codes-submit">🔑 توليد الأكواد</button>
-  </div>
-  <div class="section-title" style="margin-top:20px;">الأكواد المتاحة</div>
-  <div id="codes-list"><div class="empty-state">جاري التحميل…</div></div>
-</div>
-
-<!-- ===== لوحة نظام المستويات ===== -->
-<div class="panel" id="panel-loyalty">
-  <div class="section-title">إعدادات نظام المستويات</div>
-  <div class="card">
-    <h3 style="margin-bottom:12px;">مستوى برونزي 🥉</h3>
-    <div class="field">
-      <label>الحد الأدنى للإنفاق ($)</label>
-      <input type="number" id="bronze-min" value="0" step="0.01" disabled>
-    </div>
-    <div class="field">
-      <label>الحد الأقصى للإنفاق ($)</label>
-      <input type="number" id="bronze-max" value="50" step="0.01">
-    </div>
-  </div>
-  <div class="card">
-    <h3 style="margin-bottom:12px;">مستوى فضي 🥈</h3>
-    <div class="field">
-      <label>الحد الأدنى للإنفاق ($)</label>
-      <input type="number" id="silver-min" value="50" step="0.01">
-    </div>
-    <div class="field">
-      <label>الحد الأقصى للإنفاق ($)</label>
-      <input type="number" id="silver-max" value="150" step="0.01">
-    </div>
-  </div>
-  <div class="card">
-    <h3 style="margin-bottom:12px;">مستوى ذهبي 🏆</h3>
-    <div class="field">
-      <label>الحد الأدنى للإنفاق ($)</label>
-      <input type="number" id="gold-min" value="150" step="0.01">
-    </div>
-    <button class="primary-btn" id="save-loyalty-btn">💾 حفظ الإعدادات</button>
-  </div>
-</div>
-
-<!-- ===== لوحة المستخدمين ===== -->
-<div class="panel" id="panel-users">
-  <div class="section-title">إدارة المستخدمين</div>
-  <div class="search-box">
-    <input type="text" id="users-search" placeholder="ابحث باليوزرنيم أو الاسم أو البريد...">
-    <button id="users-search-clear">مسح</button>
-  </div>
-  <div id="users-list"><div class="empty-state">جاري التحميل…</div></div>
-</div>
-
-<!-- CSS styles already in admin.html -->
-<style style="display:none;">
-  .code-item {
-    background: var(--card);
-    border: 1px solid var(--hairline);
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .code-text {
-    font-family: monospace;
-    font-weight: 700;
-    color: var(--gold);
-    font-size: 14px;
-  }
-  
-  .code-status {
-    font-size: 12px;
-    color: var(--text-dim);
-  }
-  
-  .code-status.used {
-    color: var(--red);
-  }
-  
-  .user-item {
-    background: var(--card);
-    border: 1px solid var(--hairline);
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 8px;
-  }
-  
-  .user-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  
-  .user-name {
-    font-weight: 700;
-    font-size: 14px;
-  }
-  
-  .user-username {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-family: monospace;
-  }
-  
-  .user-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 8px;
-  }
-  
-  .user-stat {
-    background: var(--bg-soft);
-    border-radius: 8px;
-    padding: 6px;
-    text-align: center;
-    font-size: 12px;
-  }
-  
-  .user-stat .val {
-    font-weight: 700;
-    color: var(--gold);
-  }
-  
-  .user-stat .lbl {
-    color: var(--text-dim);
-    font-size: 11px;
-  }
+<style>
+  .code-item { background: var(--card); border: 1px solid var(--hairline); border-radius: 12px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .code-text { font-family: monospace; font-weight: 700; color: var(--gold); font-size: 14px; }
+  .code-status { font-size: 12px; color: var(--text-dim); }
+  .code-status.used { color: var(--red); }
+  .user-item { background: var(--card); border: 1px solid var(--hairline); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
+  .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .user-name { font-weight: 700; font-size: 14px; }
+  .user-username { font-size: 12px; color: var(--text-dim); font-family: monospace; }
+  .user-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .user-stat { background: var(--bg-soft); border-radius: 8px; padding: 6px; text-align: center; font-size: 12px; }
+  .user-stat .val { font-weight: 700; color: var(--gold); }
+  .user-stat .lbl { color: var(--text-dim); font-size: 11px; }
 </style>
-
 
 </body>
 </html>

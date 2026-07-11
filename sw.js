@@ -1,9 +1,8 @@
-const CACHE_NAME = 'digital-syria-v2';
+const CACHE_NAME = 'digital-syria-v3';
 const urlsToCache = [
   '/',
   '/index.html',
   '/admin.html',
-  '/tournaments.html',
   '/manifest.json'
 ];
 
