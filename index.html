@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Digital Syria Store — شحن ألعاب واشتراكات</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#D4A24C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Digital Syria">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230E0D0F' width='192' height='192'/><circle fill='%23D4A24C' cx='96' cy='96' r='80'/><text x='96' y='115' text-anchor='middle' font-family='Arial' font-size='80' font-weight='bold' fill='%230E0D0F'>₪</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -244,6 +250,67 @@
   .tourn-progress-wrap{ background:var(--bg-soft); border-radius:999px; height:8px; overflow:hidden; margin-top:8px; }
   .tourn-progress-bar{ height:100%; border-radius:999px; background:linear-gradient(90deg,#c084fc,#ffd76a); box-shadow:0 0 8px rgba(192,132,252,0.6); transition:width 0.4s ease; }
   .tourn-countdown{ font-family:'Cairo'; font-weight:800; color:#c084fc; font-size:13px; }
+
+  /* === نظام المستويات والولاء === */
+  .loyalty-badge{ display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; font-weight:800; font-size:12px; margin-left:8px; }
+  .loyalty-badge.bronze{ background:rgba(205,127,50,0.2); color:#cd7f32; border:1px solid rgba(205,127,50,0.4); }
+  .loyalty-badge.silver{ background:rgba(192,192,192,0.2); color:#c0c0c0; border:1px solid rgba(192,192,192,0.4); }
+  .loyalty-badge.gold{ background:rgba(212,162,76,0.2); color:#d4a24c; border:1px solid rgba(212,162,76,0.4); }
+
+  .loyalty-card{ background:linear-gradient(135deg, rgba(212,162,76,0.1), rgba(192,132,252,0.1)); border:1px solid rgba(212,162,76,0.3); border-radius:16px; padding:16px; margin-bottom:16px; }
+  .loyalty-card h3{ font-size:15px; margin-bottom:8px; }
+  .loyalty-progress{ background:var(--bg-soft); border-radius:999px; height:10px; overflow:hidden; margin:8px 0; }
+  .loyalty-progress-bar{ height:100%; background:linear-gradient(90deg, #cd7f32, #c0c0c0, #d4a24c); transition:width 0.4s ease; box-shadow:0 0 12px rgba(212,162,76,0.5); }
+  .loyalty-info{ font-size:12px; color:var(--text-dim); margin-top:8px; }
+  .loyalty-perks{ margin-top:12px; }
+  .loyalty-perk{ display:flex; align-items:center; gap:8px; font-size:12px; margin:4px 0; }
+  .loyalty-perk .icon{ font-size:16px; }
+
+  /* === نظام الإشعارات === */
+  .notification-container{ position:fixed; top:20px; left:20px; z-index:999; max-width:320px; }
+  .notification{ background:var(--card); border:1px solid rgba(212,162,76,0.5); border-radius:14px; padding:14px 16px; margin-bottom:10px; display:flex; gap:12px; align-items:flex-start; animation:notifSlide 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+  @keyframes notifSlide{ from{ transform:translateX(-400px) rotate(-5deg); opacity:0; } to{ transform:translateX(0) rotate(0); opacity:1; } }
+  .notification .icon{ font-size:24px; flex-shrink:0; }
+  .notification .content{ flex:1; }
+  .notification .title{ font-weight:700; font-size:13px; }
+  .notification .message{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .notification.success{ border-color:rgba(63,166,106,0.5); }
+  .notification.success .icon{ color:#3fa66a; }
+  .notification.warning{ border-color:rgba(212,162,76,0.5); }
+  .notification.warning .icon{ color:#d4a24c; }
+  .notification.error{ border-color:rgba(180,84,58,0.5); }
+  .notification.error .icon{ color:#b4543a; }
+  .notification-close{ background:none; border:none; color:var(--text-dim); font-size:16px; cursor:pointer; padding:0; }
+
+  /* === تأثيرات نيون محسّنة === */
+  .neon-glow{ position:relative; }
+  .neon-glow::before{ content:''; position:absolute; inset:-2px; background:linear-gradient(90deg, #c084fc, #ffd76a, #ff9d5c, #c084fc); border-radius:inherit; opacity:0; animation:neonPulse 3s ease-in-out infinite; pointer-events:none; }
+  @keyframes neonPulse{ 0%,100%{ opacity:0; } 50%{ opacity:0.6; } }
+  .neon-glow{ z-index:1; }
+  .neon-glow > *{ position:relative; z-index:2; }
+
+  /* === منتجات مميزة (Sponsored) === */
+  .product-card.sponsored{ border:2px solid rgba(255,180,80,0.6); background:linear-gradient(135deg, rgba(255,180,80,0.08), rgba(255,140,60,0.05)); position:relative; }
+  .product-card.sponsored::before{ content:'🔥 مميز'; position:absolute; top:6px; left:6px; background:linear-gradient(135deg, #ff9d5c, #ffa500); color:#1A140A; padding:4px 10px; border-radius:999px; font-size:10px; font-weight:800; z-index:15; }
+
+  /* === أنيميشن محسّن للمنتجات === */
+  .product-card{ transition:all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .product-card:hover{ transform:translateY(-6px) scale(1.02); box-shadow:0 12px 32px rgba(212,162,76,0.25); }
+  .product-card:active{ transform:scale(0.98); }
+
+  /* === Card Deck Animation === */
+  @keyframes cardDeck{ 0%{ opacity:0; transform:translateY(20px) rotateX(20deg); } to{ opacity:1; transform:translateY(0) rotateX(0); } }
+  .product-grid .product-card{ animation:cardDeck 0.5s ease-out both; }
+  .product-grid .product-card:nth-child(1){ animation-delay:0.05s; }
+  .product-grid .product-card:nth-child(2){ animation-delay:0.1s; }
+  .product-grid .product-card:nth-child(3){ animation-delay:0.15s; }
+  .product-grid .product-card:nth-child(4){ animation-delay:0.2s; }
+  .product-grid .product-card:nth-child(5){ animation-delay:0.25s; }
+  .product-grid .product-card:nth-child(6){ animation-delay:0.3s; }
+
+  /* === Glassmorphism === */
+  .glass-card{ background:rgba(28,26,29,0.4); backdrop-filter:blur(10px); border:1px solid rgba(242,239,233,0.1); }
+
 </style>
 </head>
 <body>
@@ -269,7 +336,14 @@
     <div class="user-info">
       <div class="name" id="sidebar-username">زائر</div>
       <div class="balance">الرصيد: <b id="sidebar-balance">0</b></div>
+      <div class="loyalty-badge bronze" id="loyalty-badge-sidebar" style="margin-top:6px; margin-left:0;">🥉 برونزي</div>
     </div>
+  </div>
+  <div class="loyalty-card" id="loyalty-card-sidebar" style="display:none;">
+    <h3>🎯 مستوى الولاء</h3>
+    <div class="loyalty-progress"><div class="loyalty-progress-bar" id="loyalty-progress-bar" style="width:0%;"></div></div>
+    <div class="loyalty-info" id="loyalty-info-text">أنفق 50$ أكثر للوصول للمستوى الفضي</div>
+    <div class="loyalty-perks" id="loyalty-perks-list"></div>
   </div>
   <div class="currency-toggle">
     <button class="active" data-currency="SYR" onclick="setCurrency('SYR')">ل.س سوري</button>
@@ -304,6 +378,8 @@
     <div id="referral-error-msg"></div>
   </div>
 </aside>
+
+<div class="notification-container" id="notification-container"></div>
 
 <section id="login-screen" class="container">
   <div class="hero-coin">
@@ -1647,3 +1723,64 @@
 </script>
 </body>
 </html>
+
+  // === نظام المستويات والولاء ===
+  const LOYALTY_LEVELS = {
+    bronze: { name: '🥉 برونزي', minSpent: 0, discount: 0, cashback: 0, perks: ['بداية رحلتك معنا'] },
+    silver: { name: '🥈 فضي', minSpent: 50, discount: 2, cashback: 0.5, perks: ['خصم 2% على كل مشتريات', 'استرجاع 0.5% نقدي'] },
+    gold: { name: '🥇 ذهبي', minSpent: 150, discount: 5, cashback: 1.5, perks: ['خصم 5% على كل مشتريات', 'استرجاع 1.5% نقدي', 'هدايا شهرية حصرية'] }
+  };
+
+  function calculateLoyaltyLevel(totalSpent) {
+    if (totalSpent >= LOYALTY_LEVELS.gold.minSpent) return 'gold';
+    if (totalSpent >= LOYALTY_LEVELS.silver.minSpent) return 'silver';
+    return 'bronze';
+  }
+
+  function updateLoyaltyDisplay(totalSpent) {
+    const level = calculateLoyaltyLevel(totalSpent);
+    const levelData = LOYALTY_LEVELS[level];
+    const nextLevel = level === 'gold' ? 'gold' : (level === 'silver' ? 'gold' : 'silver');
+    const nextLevelData = LOYALTY_LEVELS[nextLevel];
+    const progressPercent = Math.min(100, (totalSpent / nextLevelData.minSpent) * 100);
+
+    document.getElementById('loyalty-badge-sidebar').textContent = levelData.name;
+    document.getElementById('loyalty-badge-sidebar').className = `loyalty-badge ${level}`;
+    document.getElementById('loyalty-progress-bar').style.width = progressPercent + '%';
+
+    if (level !== 'gold') {
+      const remaining = nextLevelData.minSpent - totalSpent;
+      document.getElementById('loyalty-info-text').textContent = `أنفق ${remaining.toFixed(2)}$ أكثر للوصول للمستوى ${nextLevelData.name}`;
+    } else {
+      document.getElementById('loyalty-info-text').textContent = '⭐ أنت بأعلى مستوى ولاء!';
+    }
+
+    const perksList = document.getElementById('loyalty-perks-list');
+    perksList.innerHTML = levelData.perks.map(perk => `<div class="loyalty-perk"><span class="icon">✓</span> ${perk}</div>`).join('');
+  }
+
+  // === نظام الإشعارات ===
+  function showNotification(title, message, type = 'success', icon = '✅') {
+    const container = document.getElementById('notification-container');
+    const notif = document.createElement('div');
+    notif.className = `notification ${type}`;
+    notif.innerHTML = `
+      <div class="icon">${icon}</div>
+      <div class="content">
+        <div class="title">${title}</div>
+        <div class="message">${message}</div>
+      </div>
+      <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(notif);
+    setTimeout(() => notif.remove(), 5000);
+  }
+
+  // تسجيل service worker لدعم PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      console.log('✅ Service Worker registered');
+    }).catch(err => {
+      console.log('⚠️ Service Worker registration failed:', err);
+    });
+  }
