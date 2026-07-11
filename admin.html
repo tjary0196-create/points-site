@@ -435,10 +435,15 @@
     <input type="hidden" id="t-edit-id">
     <div class="field"><label>اسم البطولة</label><input type="text" id="t-name"></div>
     <div class="field"><label>اللعبة</label><input type="text" id="t-game" placeholder="مثال: Free Fire"></div>
-    <div class="field"><label>صورة البطولة</label>
+    <div class="field"><label>صورة البطولة (16:9)</label>
       <div class="file-drop" id="t-image-drop">📷 اضغط لاختيار صورة</div>
       <input type="file" id="t-image-input" accept="image/*">
       <div class="file-preview" id="t-image-preview" style="display:none;"><img id="t-image-preview-img"></div>
+    </div>
+    <div class="field"><label>صورة الإعلان (21:6 - تظهر أسفل البطولة)</label>
+      <div class="file-drop" id="t-ad-image-drop">📢 اضغط لاختيار صورة إعلان</div>
+      <input type="file" id="t-ad-image-input" accept="image/*">
+      <div class="file-preview" id="t-ad-image-preview" style="display:none;"><img id="t-ad-image-preview-img"></div>
     </div>
     <div class="field"><label>رسم الدخول ($)</label><input type="number" id="t-entry-fee" step="0.01" placeholder="0 = مجاني"></div>
     <div class="field"><label>جوائز المراكز ($) — افصل بفاصلة حسب الترتيب</label><input type="text" id="t-prizes" placeholder="مثال: 10,5,3"></div>
@@ -508,6 +513,8 @@
   let pImageData = "";
   let adImageData = "";
   let catImageData = "";
+  let tImageData = "";
+  let tAdImageData = "";
   let referralSettings = {};
   let ordersSearchTerm = "";
   let topupsSearchTerm = "";
@@ -1836,6 +1843,15 @@
     document.getElementById("t-image-preview-img").src = tImageData;
     document.getElementById("t-image-preview").style.display = "block";
   });
+  document.getElementById("t-ad-image-drop").addEventListener("click", () => document.getElementById("t-ad-image-input").click());
+  document.getElementById("t-ad-image-input").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!validateImageFile(file)) { e.target.value = ""; return; }
+    tAdImageData = await compressImageToDataUrl(file);
+    document.getElementById("t-ad-image-preview-img").src = tAdImageData;
+    document.getElementById("t-ad-image-preview").style.display = "block";
+  });
 
   function openTournamentModal(t) {
     document.getElementById("tournament-modal-title").textContent = t ? "تعديل البطولة" : "بطولة جديدة";
@@ -1855,6 +1871,13 @@
     } else {
       document.getElementById("t-image-preview").style.display = "none";
     }
+    tAdImageData = t?.adImageData || "";
+    if (tAdImageData) {
+      document.getElementById("t-ad-image-preview-img").src = tAdImageData;
+      document.getElementById("t-ad-image-preview").style.display = "block";
+    } else {
+      document.getElementById("t-ad-image-preview").style.display = "none";
+    }
     document.getElementById("tournament-modal-backdrop").classList.add("active");
   }
 
@@ -1872,6 +1895,7 @@
       name,
       game: document.getElementById("t-game").value.trim(),
       imageData: tImageData || "",
+      adImageData: tAdImageData || "",
       entryFee: (!isNaN(entryFee) && entryFee >= 0) ? entryFee : 0,
       prizes,
       maxParticipants: maxRaw ? (parseInt(maxRaw) || null) : null,
@@ -1892,6 +1916,7 @@
       }
       document.getElementById("tournament-modal-backdrop").classList.remove("active");
       tImageData = "";
+      tAdImageData = "";
       showToast("تم حفظ البطولة بنجاح!");
     } catch (err) {
       showToast("خطأ: " + err.message, true);
