@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Syria Store — V3.0 الإصلاح الشامل</title>
+<title>Digital Syria Store — V3.1 تسجيل دخول مستقر</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#D4A24C">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -890,7 +890,7 @@
   };
 
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    try { await signInWithPopup(auth, provider); }
+    try { await signInWithRedirect(auth, provider); }
     catch (err) {
       if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
         await signInWithRedirect(auth, provider);

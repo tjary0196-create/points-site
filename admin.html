@@ -555,7 +555,7 @@
   }
 
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    try { await signInWithPopup(auth, provider); }
+    try { await signInWithRedirect(auth, provider); }
     catch (err) { showToast("تعذر تسجيل الدخول: " + err.message, true); }
   });
 

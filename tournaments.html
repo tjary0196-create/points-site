@@ -932,7 +932,7 @@ function checkInviteBanner() {
 
 // ===== تسجيل الدخول =====
 document.getElementById("google-login-btn").addEventListener("click", async () => {
-  try { await signInWithPopup(auth, provider); }
+  try { await signInWithRedirect(auth, provider); }
   catch (err) {
     if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
       await signInWithRedirect(auth, provider);
