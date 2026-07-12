@@ -1932,7 +1932,7 @@
 
       for (const file of files) {
         if (!file.type.startsWith("image/")) continue;
-        const dataUrl = await compressImageToDataUrl(file, 800, 0.6);
+        const dataUrl = await compressImageToDataUrl(file, 600, 0.4); // ضغط أكبر لضمان عدم تجاوز حد 1MB للوثيقة (5 صور)
         auctionImages.push(dataUrl);
       }
       renderAuctionImagesPreview();
@@ -2018,6 +2018,9 @@
     }
   });
 
+  let currentAuctionId = null;
+  let auctionDetailUnsub = null;
+
   window.listenAuctions = function() {
     onSnapshot(query(collection(db, "auctions"), where("status", "==", "active")), (snap) => {
       const grid = document.getElementById("auctions-grid");
@@ -2043,6 +2046,118 @@
       `).join("");
     });
   };
+
+  window.openAuctionDetail = function(id) {
+    currentAuctionId = id;
+    switchView('view-auction-detail');
+    
+    if (auctionDetailUnsub) auctionDetailUnsub();
+    
+    auctionDetailUnsub = onSnapshot(doc(db, "auctions", id), (snap) => {
+      if (!snap.exists()) { switchView('view-store'); return; }
+      const a = snap.data();
+      
+      document.getElementById("auction-detail-name").textContent = a.name;
+      document.getElementById("auction-detail-game").textContent = a.game;
+      document.getElementById("auction-detail-current-price").textContent = fmt(a.currentPrice);
+      document.getElementById("auction-detail-min-price").textContent = fmt(a.minPrice);
+      document.getElementById("auction-detail-bids-count").textContent = a.bidsCount || 0;
+      document.getElementById("auction-detail-seller").textContent = a.sellerName;
+      document.getElementById("auction-detail-description").textContent = a.description;
+      
+      // عرض الصور
+      const imgContainer = document.getElementById("auction-detail-images");
+      imgContainer.innerHTML = a.images.map(img => `
+        <img src="${img}" style="width:100%; border-radius:12px; margin-bottom:8px; border:1px solid var(--hairline);">
+      `).join("");
+
+      // تحديث الوقت المتبقي
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const end = a.expiresAt.toDate().getTime();
+        const diff = end - now;
+        if (diff <= 0) {
+          document.getElementById("auction-detail-time-left").textContent = "انتهى الوقت";
+          document.getElementById("place-bid-btn").disabled = true;
+          return;
+        }
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById("auction-detail-time-left").textContent = `${h}س ${m}د ${s}ث`;
+      };
+      updateTimer();
+      const timerInterval = setInterval(updateTimer, 1000);
+      
+      // تنظيف الـ interval عند إغلاق التفاصيل أو تحديثها
+      window.currentAuctionTimer = timerInterval;
+    });
+  };
+
+  // وضع مزايدة جديدة مع نظام الحجز (Escrow)
+  document.getElementById("place-bid-btn").addEventListener("click", async () => {
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+    
+    const newBid = parseFloat(document.getElementById("auction-new-bid").value);
+    if (isNaN(newBid) || newBid <= 0) { showToast("يرجى إدخال مبلغ صحيح", true); return; }
+
+    const btn = document.getElementById("place-bid-btn");
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري المزايدة…";
+
+    try {
+      const auctionRef = doc(db, "auctions", currentAuctionId);
+      const userRef = doc(db, "users", currentUser.uid);
+
+      await runTransaction(db, async (transaction) => {
+        const aSnap = await transaction.get(auctionRef);
+        const uSnap = await transaction.get(userRef);
+        
+        if (!aSnap.exists()) throw new Error("المزاد غير موجود");
+        const a = aSnap.data();
+        
+        if (a.status !== "active") throw new Error("هذا المزاد غير نشط حالياً");
+        if (new Date() > a.expiresAt.toDate()) throw new Error("انتهى وقت المزاد");
+        if (currentUser.uid === a.sellerUid) throw new Error("لا يمكنك المزايدة على مزادك الخاص");
+        if (newBid <= a.currentPrice) throw new Error(`يجب أن تكون المزايدة أعلى من السعر الحالي (${fmt(a.currentPrice)})`);
+        
+        const userData = uSnap.data();
+        const userBalance = Number(userData.balance) || 0;
+        if (userBalance < newBid) throw new Error("رصيدك غير كافٍ لتغطية هذه المزايدة");
+
+        // 1. إعادة المبلغ للمزايد السابق (إذا وجد)
+        if (a.lastBidderUid && a.lastBidAmount) {
+          const lastBidderRef = doc(db, "users", a.lastBidderUid);
+          const lastBidderSnap = await transaction.get(lastBidderRef);
+          if (lastBidderSnap.exists()) {
+            const lastBidderBalance = Number(lastBidderSnap.data().balance) || 0;
+            transaction.update(lastBidderRef, { balance: lastBidderBalance + a.lastBidAmount });
+          }
+        }
+
+        // 2. حجز المبلغ من المزايد الحالي
+        transaction.update(userRef, { balance: userBalance - newBid });
+
+        // 3. تحديث بيانات المزاد
+        transaction.update(auctionRef, {
+          currentPrice: newBid,
+          lastBidderUid: currentUser.uid,
+          lastBidAmount: newBid,
+          bidsCount: (a.bidsCount || 0) + 1,
+          updatedAt: serverTimestamp()
+        });
+      });
+
+      document.getElementById("auction-new-bid").value = "";
+      showToast(`✅ تمت المزايدة بنجاح! تم حجز ${fmt(newBid)} من رصيدك.`);
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
 
   window.listenPaidAd = function() {
     onSnapshot(doc(db, "settings", "paidAd"), (snap) => {
