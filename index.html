@@ -1638,7 +1638,7 @@
         const userSnap = await transaction.get(userRef);
         if (!userSnap.exists()) throw new Error("بيانات المستخدم غير موجودة");
 
-        const codeValue = Number(codeData.value) || 0;
+        const codeValue = Number(codeData.amount) || 0;
         const currentBalance = Number(userSnap.data().balance) || 0;
 
         // 1. تحديث رصيد المستخدم
