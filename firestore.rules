@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId);
+      allow update: if isAdmin() || (
+        isOwner(userId) && (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['username', 'fullName', 'contact', 'avatarUrl', 'referredBy']) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasAny(['balance', 'totalSpent', 'pendingReward', 'claimedReward']))
+        )
+      );
+    }
+
+    match /rechargeCodes/{code} { allow read, write: if isAdmin(); }
+    match /admins/{admin} { allow read, write: if isAdmin(); }
+    match /apiSources/{source} { allow read, write: if isAdmin(); }
+    match /orders/{order} { allow read, write: if isAdmin(); }
+    match /topups/{topup} { allow read, write: if isAdmin(); }
+    match /settings/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /categories/{catId} { allow read: if true; allow write: if isAdmin(); }
+    match /products/{prodId} { allow read: if true; allow write: if isAdmin(); }
+    match /ads/{adId} { allow read: if true; allow write: if isAdmin(); }
+
+    match /auctions/{auctionId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update: if isAdmin() || (isOwner(resource.data.sellerUid) || isSignedIn());
+      allow delete: if isAdmin();
+    }
+
+    match /referralCodes/{code} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+    match /tournaments/{tId} { allow read: if true; allow write: if isAdmin(); }
+    match /tournamentRegistrations/{regId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userUid == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.userUid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+  }
+}
