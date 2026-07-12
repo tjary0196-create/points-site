@@ -946,12 +946,14 @@
         document.getElementById('my-referral-code').textContent = data.referralCode || "جاري التحميل...";
         document.getElementById('referral-pending-balance').textContent = (data.pendingReward || 0).toFixed(2) + " $";
         
-        // عرض صورة المستخدم في القائمة الجانبية تلقائياً
+        // عرض صورة المستخدم في القائمة الجانبية والملف الشخصي تلقائياً
         if (data.avatarUrl) {
+          const imgHTML = `<img src="${data.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
           const sidebarAvatar = document.getElementById("sidebar-avatar");
-          if (sidebarAvatar) {
-            sidebarAvatar.innerHTML = `<img src="${data.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-          }
+          if (sidebarAvatar) sidebarAvatar.innerHTML = imgHTML;
+          
+          const profileDisplay = document.getElementById("profile-avatar-display");
+          if (profileDisplay) profileDisplay.innerHTML = imgHTML;
         }
       }
     });
