@@ -1606,6 +1606,90 @@
     }
   });
 
+  // ===== حفظ الملف الشخصي =====
+  document.getElementById("save-profile-btn").addEventListener("click", async () => {
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+
+    const usernameInput = document.getElementById("profile-username");
+    const fullnameInput = document.getElementById("profile-fullname");
+    const contactInput = document.getElementById("profile-contact");
+    const avatarInput = document.getElementById("profile-avatar-input");
+
+    const username = usernameInput.value.trim().toLowerCase();
+    const fullName = fullnameInput.value.trim();
+    const contact = contactInput.value.trim();
+
+    // التحقق من طول اليوزرنيم
+    if (username.length < 3 || username.length > 20) {
+      showToast("يجب أن يكون اليوزرنيم بين 3 و 20 حرفاً", true);
+      return;
+    }
+
+    // التحقق من صيغة اليوزرنيم (أحرف وأرقام ونقاط فقط)
+    if (!/^[a-z0-9._]+$/.test(username)) {
+      showToast("اليوزرنيم يجب أن يحتوي على أحرف صغيرة، أرقام، أو نقاط فقط", true);
+      return;
+    }
+
+    const btn = document.getElementById("save-profile-btn");
+    if (btn.disabled) return;
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري الحفظ…";
+
+    try {
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      const currentData = userSnap.exists() ? userSnap.data() : {};
+
+      // التحقق من تفرّد اليوزرنيم إذا تغير
+      if (username !== (currentData.username || "").toLowerCase()) {
+        const q = query(collection(db, "users"), where("username", "==", username));
+        const querySnap = await getDocs(q);
+        let exists = false;
+        querySnap.forEach(doc => {
+          if (doc.id !== currentUser.uid) exists = true;
+        });
+        if (exists) {
+          showToast("هذا اليوزرنيم مستخدم مسبقاً، اختر غيره", true);
+          btn.disabled = false;
+          btn.textContent = originalText;
+          return;
+        }
+      }
+
+      const updates = {
+        username: username,
+        fullName: fullName,
+        contact: contact,
+        updatedAt: serverTimestamp()
+      };
+
+      // معالجة الصورة إذا تم اختيار ملف جديد
+      if (avatarInput.files && avatarInput.files[0]) {
+        const compressedDataUrl = await compressImageToDataUrl(avatarInput.files[0]);
+        updates.avatarUrl = compressedDataUrl;
+      }
+
+      await setDoc(userRef, updates, { merge: true });
+
+      // تحديث العرض في الصفحة
+      if (updates.avatarUrl) {
+        document.getElementById("profile-avatar-display").innerHTML = `<img src="${updates.avatarUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+        // تحديث صورة القائمة الجانبية إذا كانت موجودة
+        const sidebarAvatar = document.getElementById("sidebar-avatar");
+        if (sidebarAvatar) sidebarAvatar.src = updates.avatarUrl;
+      }
+      
+      showToast("✅ تم حفظ التغييرات بنجاح!");
+    } catch (err) {
+      showToast("حدث خطأ أثناء الحفظ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
   // ===== تفعيل أكواد الشحن =====
   document.getElementById("redeem-code-btn").addEventListener("click", async () => {
     const codeInput = document.getElementById("recharge-code-input");
