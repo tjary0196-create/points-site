@@ -238,37 +238,7 @@
   .contact-banner.wa .cb-icon{ background:#25D366; }
   .contact-banner::after{ content:""; position:absolute; inset:0; background:linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent); background-size:200% 100%; animation: shimmer 2.6s linear infinite; pointer-events:none; }
   @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
-  /* ===== البطولات ===== */
-  .tourn-hero{ border-radius:18px; overflow:hidden; margin-bottom:16px; position:relative;
-    background: linear-gradient(135deg, #1b0f2e 0%, #2a1245 45%, #0E0D0F 100%); border:1px solid rgba(168,85,247,0.35); }
-  .tourn-hero-inner{ padding:20px 18px; text-align:center; position:relative; z-index:2; }
-  .tourn-hero h2{ font-size:22px; font-weight:900; background:linear-gradient(90deg,#ffd76a,#ff9d5c,#c084fc);
-    -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .tourn-hero p{ color:var(--text-dim); font-size:12.5px; margin-top:4px; }
-  .tourn-emoji{ display:inline-block; animation: tournBounce 1.6s ease-in-out infinite; font-size:26px; }
-  @keyframes tournBounce{ 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-5px) rotate(-6deg);} }
-  .tourn-hero::before{ content:""; position:absolute; inset:0; z-index:1;
-    background: radial-gradient(circle at 20% 20%, rgba(192,132,252,0.25), transparent 45%),
-                radial-gradient(circle at 85% 75%, rgba(255,180,80,0.2), transparent 45%); }
 
-  /* إعلان صفحة البطولات: صورة ثابتة + شريط متحرك تحتها */
-  .tourn-ad{ border-radius:14px; overflow:hidden; margin-bottom:18px; border:1px solid rgba(212,162,76,0.35); }
-  .tourn-ad img{ width:100%; display:block; cursor:pointer; }
-  .tourn-ad-ticker{ background:linear-gradient(90deg, #241533, #1b0f2e); overflow:hidden; white-space:nowrap; padding:8px 0; position:relative; }
-  .tourn-ad-ticker-track{ display:inline-block; padding-right:100%; animation: tournTicker 16s linear infinite; }
-  .tourn-ad-ticker span{ color:#ffd76a; font-size:12.5px; font-weight:700; padding:0 30px; }
-  @keyframes tournTicker{ 0%{ transform:translateX(0);} 100%{ transform:translateX(-100%);} }
-
-  .tourn-card{ background: linear-gradient(160deg, #1C1A1D 0%, #221430 100%); border:1px solid rgba(168,85,247,0.25);
-    border-radius:16px; padding:14px; margin-bottom:12px; position:relative; overflow:hidden; }
-  .tourn-card.hot{ border-color:rgba(255,140,60,0.5); }
-  .tourn-badge{ position:absolute; top:10px; left:10px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px;
-    background:rgba(255,140,60,0.18); color:#ffb066; border:1px solid rgba(255,140,60,0.4); }
-  .tourn-card .t-name{ font-family:'Cairo'; font-weight:800; font-size:15px; }
-  .tourn-prize{ color:#ffd76a; font-weight:900; font-family:'Cairo'; }
-  .tourn-progress-wrap{ background:var(--bg-soft); border-radius:999px; height:8px; overflow:hidden; margin-top:8px; }
-  .tourn-progress-bar{ height:100%; border-radius:999px; background:linear-gradient(90deg,#c084fc,#ffd76a); box-shadow:0 0 8px rgba(192,132,252,0.6); transition:width 0.4s ease; }
-  .tourn-countdown{ font-family:'Cairo'; font-weight:800; color:#c084fc; font-size:13px; }
 
   /* === نظام المستويات والولاء === */
   .loyalty-badge{ display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; font-weight:800; font-size:12px; margin-left:8px; }
@@ -415,7 +385,7 @@
     <a onclick="closeSidebarAndSwitch('view-wallet')">💰 محفظتي</a>
     <a onclick="closeSidebarAndSwitch('view-orders')">📦 طلباتي</a>
     <a onclick="closeSidebarAndSwitch('view-cart')">🛒 السلة</a>
-    <a href="tournaments.html">🏆 البطولات</a>
+
     <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
     <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
     <a onclick="handleLogout()" style="color:var(--red); font-weight:700;">🚪 تسجيل الخروج</a>
