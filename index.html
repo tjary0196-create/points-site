@@ -1606,6 +1606,67 @@
     }
   });
 
+  // ===== تفعيل أكواد الشحن =====
+  document.getElementById("redeem-code-btn").addEventListener("click", async () => {
+    const codeInput = document.getElementById("recharge-code-input");
+    const code = codeInput.value.trim().toUpperCase();
+    if (!code) { showToast("الرجاء إدخال كود الشحن", true); return; }
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+
+    const btn = document.getElementById("redeem-code-btn");
+    if (btn.disabled) return;
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري التحقق…";
+
+    try {
+      const codeRef = doc(db, "rechargeCodes", code);
+      const userRef = doc(db, "users", currentUser.uid);
+
+      await runTransaction(db, async (transaction) => {
+        const codeSnap = await transaction.get(codeRef);
+        if (!codeSnap.exists()) throw new Error("كود غير صحيح");
+
+        const codeData = codeSnap.data();
+        if (codeData.used === true) throw new Error("هذا الكود مستخدم مسبقاً");
+
+        if (codeData.expiresAt) {
+          const expiry = codeData.expiresAt.toDate ? codeData.expiresAt.toDate() : new Date(codeData.expiresAt);
+          if (expiry < new Date()) throw new Error("انتهت صلاحية هذا الكود");
+        }
+
+        const userSnap = await transaction.get(userRef);
+        if (!userSnap.exists()) throw new Error("بيانات المستخدم غير موجودة");
+
+        const codeValue = Number(codeData.value) || 0;
+        const currentBalance = Number(userSnap.data().balance) || 0;
+
+        // 1. تحديث رصيد المستخدم
+        transaction.update(userRef, {
+          balance: currentBalance + codeValue
+        });
+
+        // 2. تحديث حالة الكود
+        transaction.update(codeRef, {
+          used: true,
+          usedBy: currentUser.uid,
+          usedAt: serverTimestamp()
+        });
+
+        return codeValue;
+      }).then((addedValue) => {
+        codeInput.value = "";
+        showToast(`✅ تم تفعيل الكود بنجاح! تم إضافة ${fmt(addedValue)} لرصيدك.`);
+      });
+
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
   // ===== طلبات المستخدم =====
   function listenOrders() {
     const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid));
