@@ -426,75 +426,78 @@ a { color: inherit; text-decoration: none; }
 /* ===== قسم بطولاتي ===== */
 .my-tourn-card {
   background: var(--card); border: 1px solid var(--hairline);
-  border-radius: 16px; padding: 12px; margin-bottom: 10px;
+  border-radius: 16px; padding: 14px; margin-bottom: 10px;
   display: flex; align-items: center; gap: 12px;
 }
 .my-tourn-icon {
   width: 44px; height: 44px; border-radius: 12px;
-  background: rgba(168,85,247,0.15);
+  background: linear-gradient(135deg, var(--purple), var(--pink));
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
+  font-size: 22px; flex-shrink: 0;
 }
 .my-tourn-info { flex: 1; }
-.my-tourn-name { font-family: 'Cairo'; font-weight: 700; font-size: 14px; margin-bottom: 2px; }
-.my-tourn-meta { font-size: 11.5px; color: var(--text-dim); }
+.my-tourn-name { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+.my-tourn-meta { font-size: 12px; color: var(--text-dim); }
 .my-tourn-rank {
-  font-family: 'Cairo'; font-weight: 900; font-size: 18px;
-  color: var(--gold); background: rgba(240,192,64,0.1);
-  width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(240,192,64,0.3);
+  font-family: 'Cairo'; font-weight: 900; font-size: 15px;
+  color: var(--gold); text-align: center;
 }
 
-/* ===== مودال التفاصيل ===== */
+/* ===== المودالات ===== */
 .modal-backdrop {
   position: fixed; inset: 0;
-  background: rgba(8,6,16,0.7);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  z-index: 2000; display: flex; align-items: flex-end;
-  opacity: 0; pointer-events: none; transition: 0.3s;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
+  z-index: 200; display: none;
+  align-items: flex-end; justify-content: center;
+  padding: 0;
 }
-.modal-backdrop.active { opacity: 1; pointer-events: auto; }
+.modal-backdrop.active { display: flex; }
 .modal {
-  width: 100%; max-width: 520px; margin: 0 auto;
   background: var(--bg-soft);
-  border-radius: 30px 30px 0 0;
-  padding: 24px 20px 40px;
-  transform: translateY(100%); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 28px 28px 0 0;
+  width: 100%; max-width: 520px;
   max-height: 92vh; overflow-y: auto;
-  position: relative;
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+  padding: 24px 20px 36px;
+  animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 -20px 60px rgba(168,85,247,0.2);
 }
-.modal-backdrop.active .modal { transform: translateY(0); }
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .modal-handle {
-  width: 40px; height: 5px; background: rgba(255,255,255,0.1);
-  border-radius: 999px; margin: 0 auto 20px;
+  width: 40px; height: 4px; border-radius: 2px;
+  background: rgba(168,85,247,0.3);
+  margin: 0 auto 20px;
 }
 .modal-close {
-  position: absolute; top: 20px; left: 20px;
-  background: rgba(255,255,255,0.05); border: none;
-  color: var(--text-dim); width: 32px; height: 32px;
-  border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  float: left; background: rgba(168,85,247,0.1);
+  border: 1px solid rgba(168,85,247,0.25);
+  color: var(--text-dim); border-radius: 10px;
+  padding: 6px 12px; cursor: pointer; font-size: 12px;
+  transition: 0.2s;
 }
-.modal h3 { font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 18px; }
+.modal-close:hover { background: rgba(168,85,247,0.2); color: var(--text); }
+.modal h3 { font-family: 'Cairo'; font-size: 18px; font-weight: 900; margin-bottom: 16px; clear: both; }
+
+/* صورة المودال */
 .modal-img {
-  width: 100%; aspect-ratio: 16/9; object-fit: cover;
-  border-radius: 20px; margin-bottom: 18px;
-  border: 1px solid var(--hairline); display: none;
+  width: 100%; aspect-ratio: 16/9;
+  object-fit: cover; border-radius: 16px;
+  margin-bottom: 14px; display: none;
 }
 .modal-img.show { display: block; }
 
+/* بطاقة الإحصاءات بالمودال */
 .modal-stats {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-  margin-bottom: 18px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin: 14px 0;
 }
 .modal-stat {
   background: var(--card); border: 1px solid var(--hairline);
-  border-radius: 16px; padding: 12px; text-align: center;
+  border-radius: 14px; padding: 12px; text-align: center;
 }
 .modal-stat .ms-val {
-  font-family: 'Cairo'; font-weight: 800; font-size: 16px;
+  font-family: 'Cairo'; font-weight: 900; font-size: 18px;
   color: var(--gold);
 }
 .modal-stat .ms-lbl { font-size: 11.5px; color: var(--text-dim); margin-top: 3px; }
@@ -862,17 +865,16 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore, collection, getDocs, addDoc, query, where,
-  onSnapshot, doc, getDoc, runTransaction, serverTimestamp
+  onSnapshot, serverTimestamp, doc, getDoc, setDoc, runTransaction, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// التكوين
 const firebaseConfig = {
   apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
-  authDomain: location.hostname === "points-site.vercel.app" ? "points-site.vercel.app" : "my-websit-2e275.firebaseapp.com",
+  authDomain: "my-websit-2e275.firebaseapp.com",
   projectId: "my-websit-2e275",
-  storageBucket: "my-websit-2e275.appspot.com",
-  messagingSenderId: "364536769411",
-  appId: "1:364536769411:web:2879555776092770c800c8"
+  storageBucket: "my-websit-2e275.firebasestorage.app",
+  messagingSenderId: "1079052257822",
+  appId: "1:1079052257822:web:d3ef2e2d59d9ba40fc3c0f",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -881,65 +883,99 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 let currentUser = null;
-let allTournamentsData = [];
 let lastKnownBalance = 0;
+let allTournamentsData = [];
 let activeFilter = "all";
 let countdownInterval = null;
 let currentTournamentId = null;
 
-// نجوم الخلفية
+// ===== نجوم الخلفية =====
 function createStars() {
-  const bg = document.getElementById("stars-bg");
-  for (let i = 0; i < 50; i++) {
+  const container = document.getElementById("stars-bg");
+  for (let i = 0; i < 40; i++) {
     const star = document.createElement("div");
     star.className = "star";
-    star.style.left = Math.random() * 100 + "%";
-    star.style.top = Math.random() * 100 + "%";
-    const size = Math.random() * 2 + 1 + "px";
-    star.style.width = size; star.style.height = size;
-    star.style.setProperty("--dur", Math.random() * 3 + 2 + "s");
-    star.style.setProperty("--delay", Math.random() * 5 + "s");
-    bg.appendChild(star);
+    const size = Math.random() * 3 + 1;
+    star.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random() * 100}%;
+      left:${Math.random() * 100}%;
+      --dur:${Math.random() * 3 + 2}s;
+      --delay:${Math.random() * 3}s;
+    `;
+    container.appendChild(star);
   }
 }
 createStars();
 
+// ===== Toast =====
 function showToast(msg, isError = false) {
   const t = document.getElementById("toast");
   t.textContent = msg;
-  t.className = "toast " + (isError ? "error" : "success");
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 4000);
+  t.className = "toast " + (isError ? "error" : "success") + " show";
+  setTimeout(() => t.classList.remove("show"), 3500);
 }
 
-// تسجيل الدخول
-document.getElementById("google-login-btn").addEventListener("click", async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (err) {
-    if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
-      try { await signInWithRedirect(auth, provider); }
-      catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
-    } else if (err.code !== "auth/popup-closed-by-user") {
-      showToast("تعذر تسجيل الدخول: " + err.message, true);
-    }
+// ===== فحص رابط الدعوة =====
+function checkInviteBanner() {
+  const params = new URLSearchParams(window.location.search);
+  const tid = params.get("t");
+  if (tid) {
+    document.getElementById("invite-banner").classList.add("show");
+    // نفتح تفاصيل البطولة تلقائياً بعد التحميل
+    setTimeout(() => {
+      const t = allTournamentsData.find(x => x.id === tid);
+      if (t) openDetailModal(t);
+    }, 1500);
   }
-});
+}
 
+// ===== معالجة نتيجة الـ redirect عند العودة من صفحة جوجل =====
 getRedirectResult(auth).catch(err => {
   if (err && err.code) {
     showToast("خطأ تسجيل الدخول (redirect): " + err.code, true);
+    console.error("getRedirectResult error:", err);
   }
 });
 
+// timeout احتياطي: إخفاء splash حتى لو onAuthStateChanged لم يستجب
 const splashTimeout = setTimeout(() => {
   const splash = document.getElementById("splash");
   if (splash && splash.style.display !== "none") {
     splash.style.display = "none";
-    if (!currentUser) document.getElementById("login-screen").style.display = "block";
+    document.getElementById("login-screen").style.display = "block";
   }
 }, 6000);
 
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+}
+
+// ===== تسجيل الدخول =====
+document.getElementById("google-login-btn").addEventListener("click", async () => {
+  if (isMobileDevice()) {
+    // على الموبايل: استخدام redirect مباشرة، أكثر استقراراً من popup
+    try {
+      await signInWithRedirect(auth, provider);
+    } catch (err) {
+      showToast("تعذر تسجيل الدخول: " + err.message, true);
+    }
+  } else {
+    // على الكمبيوتر: popup أولاً، مع fallback إلى redirect
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+        try { await signInWithRedirect(auth, provider); }
+        catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
+      } else if (err.code !== "auth/popup-closed-by-user") {
+        showToast("تعذر تسجيل الدخول: " + err.message, true);
+      }
+    }
+  }
+});
+
+// ===== مراقبة حالة المستخدم =====
 onAuthStateChanged(auth, async (user) => {
   clearTimeout(splashTimeout);
   document.getElementById("splash").style.display = "none";
@@ -948,35 +984,28 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("app").style.display = "block";
     document.getElementById("bottom-nav").style.display = "flex";
-    
-    // إعداد الإحالة إذا وجد رابط
-    const urlParams = new URLSearchParams(window.location.search);
-    const refCode = urlParams.get('ref');
-    if (refCode) {
-      sessionStorage.setItem('pendingRefCode', refCode);
-      document.getElementById("invite-banner").classList.add("show");
-    }
-    
+    document.getElementById("balance-pill").classList.add("show");
     listenUserBalance(user.uid);
+    listenTournamentAd();
     listenTournamentsPublic();
     listenMyTournaments();
-    listenTournamentAd();
+    checkInviteBanner();
   } else {
     currentUser = null;
     document.getElementById("login-screen").style.display = "block";
     document.getElementById("app").style.display = "none";
     document.getElementById("bottom-nav").style.display = "none";
+    document.getElementById("balance-pill").classList.remove("show");
   }
 });
 
+// ===== رصيد المستخدم =====
 function listenUserBalance(uid) {
   onSnapshot(doc(db, "users", uid), (snap) => {
-    if (snap.exists()) {
-      lastKnownBalance = Number(snap.data().balance) || 0;
-      document.getElementById("balance-amount").textContent = lastKnownBalance.toFixed(2);
-      document.getElementById("balance-pill").classList.add("show");
-      if (currentTournamentId) document.getElementById("dm-balance").textContent = lastKnownBalance.toFixed(2) + " $";
-    }
+    const data = snap.data();
+    lastKnownBalance = data ? (Number(data.balance) || 0) : 0;
+    document.getElementById("balance-amount").textContent = lastKnownBalance.toFixed(2) + " $";
+    document.getElementById("dm-balance").textContent = lastKnownBalance.toFixed(2) + " $";
   });
 }
 
