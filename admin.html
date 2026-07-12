@@ -724,6 +724,9 @@
     listenApiSources();
     listenTournaments();
     loadTournamentAdSettings();
+    listenRechargeCodes();
+    loadLoyaltySettings();
+    loadPaidAdAdmin();
   });
 
   document.querySelectorAll(".tab").forEach((tab) => {
@@ -2247,8 +2250,6 @@
       `).join("");
     });
   }
-  listenRechargeCodes();
-
   // === نظام المستويات (لوحة الإدارة) ===
   document.getElementById("save-loyalty-btn").addEventListener("click", async () => {
     const btn = document.getElementById("save-loyalty-btn");
@@ -2279,8 +2280,6 @@
       document.getElementById("gold-min").value = s.gold?.min || 150;
     }
   }
-  loadLoyaltySettings();
-
   // === الإعلانات المدفوعة (لوحة الإدارة) ===
   let paidAdImageData = "";
   document.getElementById("paid-ad-drop").addEventListener("click", () => document.getElementById("paid-ad-input").click());
@@ -2328,7 +2327,6 @@
       document.getElementById("paid-ad-ticker-input").value = d.ticker || "";
     }
   }
-  loadPaidAdAdmin();
 </script>
 
 <style>

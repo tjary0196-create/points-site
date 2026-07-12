@@ -415,7 +415,7 @@
     <a onclick="closeSidebarAndSwitch('view-wallet')">💰 محفظتي</a>
     <a onclick="closeSidebarAndSwitch('view-orders')">📦 طلباتي</a>
     <a onclick="closeSidebarAndSwitch('view-cart')">🛒 السلة</a>
-    <a href="tournaments.html">🏆 البطولات</a>
+    <a onclick="closeSidebarAndSwitch('view-tournaments')">🏆 البطولات</a>
     <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
     <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
     <a onclick="handleLogout()" style="color:var(--red); font-weight:700;">🚪 تسجيل الخروج</a>
@@ -2048,6 +2048,43 @@
     container.appendChild(notif);
     setTimeout(() => notif.remove(), 5000);
   }
+
+  // ===== وظائف مفقودة (تمت إضافتها للإصلاح) =====
+  window.showPaidAdContact = function() {
+    document.getElementById('contact-modal-backdrop').classList.add('active');
+  };
+
+  window.listenLoyaltySettings = function() {
+    console.log("Loyalty settings listener placeholder");
+    // هنا يمكن إضافة منطق جلب إعدادات الولاء من Firestore إذا لزم الأمر
+  };
+
+  window.listenAuctions = function() {
+    console.log("Auctions listener placeholder");
+    // هنا يمكن إضافة منطق جلب المزادات من Firestore إذا لزم الأمر
+  };
+
+  window.listenPaidAd = function() {
+    onSnapshot(doc(db, "settings", "paidAd"), (snap) => {
+      const wrap = document.getElementById("paid-ad-wrap");
+      const tickerWrap = document.getElementById("paid-ad-ticker");
+      if (!snap.exists()) { wrap.style.display = "none"; tickerWrap.style.display = "none"; return; }
+      const d = snap.data();
+      if (d.imageData) {
+        document.getElementById("paid-ad-image").src = d.imageData;
+        document.getElementById("paid-ad-link").href = d.link || "#";
+        wrap.style.display = "block";
+      } else {
+        wrap.style.display = "none";
+      }
+      if (d.ticker) {
+        document.getElementById("paid-ad-ticker-track").innerHTML = `<span>${escapeHTML(d.ticker)}</span>`;
+        tickerWrap.style.display = "block";
+      } else {
+        tickerWrap.style.display = "none";
+      }
+    });
+  };
 
   // تسجيل service worker لدعم PWA
   if ('serviceWorker' in navigator) {
