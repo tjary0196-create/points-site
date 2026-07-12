@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Syria Store — V2.0 التحديث الجديد</title>
+<title>Digital Syria Store — متجر الألعاب والاشتراكات</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#D4A24C">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -31,14 +31,14 @@
   .container{ max-width: 480px; margin: 0 auto; padding: 0 18px 100px; }
 
   #splash{ position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; }
-  #splash .coin{ width:50px; height:50px; border-radius:50%; background: conic-gradient(from 180deg, var(--gold), #f1cf8a, var(--gold)); box-shadow:0 0 18px rgba(212,162,76,0.6); animation: spin 1s linear infinite; }
+  #splash .coin{ width:50px; height:50px; border-radius:50%; background: conic-gradient(from 180deg, var(--neon-blue), #80eaff, var(--neon-blue)); box-shadow:0 0 25px rgba(0, 212, 255, 0.7); animation: spin 1s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
   .topbar{ display:flex; align-items:center; justify-content:space-between; padding: 18px 18px 0; max-width: 480px; margin: 0 auto; gap:8px; }
   .brand{ display:flex; align-items:center; gap:8px; font-family:'Cairo'; font-weight:900; font-size:17px; flex-shrink:0; }
-  .brand .coin{ width:22px; height:22px; border-radius:50%; background: conic-gradient(from 180deg, var(--gold), #f1cf8a, var(--gold)); box-shadow: 0 0 12px rgba(212,162,76,0.55); }
+  .brand .coin{ width:22px; height:22px; border-radius:50%; background: conic-gradient(from 180deg, var(--neon-blue), #80eaff, var(--neon-blue)); box-shadow: 0 0 12px rgba(0, 212, 255, 0.6); }
   .topbar-actions{ display:flex; gap:8px; align-items:center; }
-  .balance-pill{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:800; color:var(--gold); border:1px solid var(--gold); background:var(--gold-soft); padding:6px 12px; border-radius:999px; display:none; }
+  .balance-pill{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:800; color:var(--neon-blue); border:1px solid var(--neon-blue); background:rgba(0, 212, 255, 0.1); padding:6px 12px; border-radius:999px; display:none; box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
   .menu-btn{ background:var(--card); border:1px solid var(--hairline); border-radius:10px; padding:6px 10px; cursor:pointer; font-size:18px; color:var(--text); display:none; }
   .cart-btn{ position:relative; width:36px; height:36px; border-radius:12px; background:var(--card); border:1px solid var(--hairline); display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; display:none;}
   .cart-badge{ position:absolute; top:-6px; left:-6px; background:var(--gold); color:#1A140A; font-size:10.5px; font-weight:800; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; }
@@ -106,8 +106,12 @@
   .hero-title{ font-size: 28px; font-weight:900; line-height:1.35; margin-bottom:10px; }
   .hero-title span{ color: var(--gold); }
   .hero-sub{ color: var(--text-dim); font-size:14.5px; line-height:1.7; margin-bottom:28px; }
-  .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#1A140A; font-weight:700; font-size:15px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; margin: 0 auto; width:100%; max-width:300px; }
-  .google-btn svg{ width:20px; height:20px; }
+  .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; background:#D4A24C; color:#fff; font-weight:700; font-size:15px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; margin: 0 auto; width:100%; max-width:300px; animation: btn-enter 0.45s cubic-bezier(0.34,1.56,0.64,1) both; transition: box-shadow 0.25s ease, transform 0.2s ease; }
+  .google-btn:hover{ box-shadow: 0 0 22px rgba(212,162,76,0.55), 0 4px 14px rgba(212,162,76,0.3); transform: translateY(-2px); }
+  .google-btn:active{ transform: translateY(0); box-shadow: none; }
+  .google-btn svg{ width:20px; height:20px; animation: icon-pulse 0.7s ease 0.45s both; }
+  @keyframes btn-enter{ from{ opacity:0; transform:scale(0.88); } to{ opacity:1; transform:scale(1); } }
+  @keyframes icon-pulse{ 0%{ transform:scale(1); } 40%{ transform:scale(1.18) rotate(-8deg); } 70%{ transform:scale(0.95) rotate(4deg); } 100%{ transform:scale(1) rotate(0); } }
   .trust-row{ display:flex; justify-content:center; gap:18px; margin-top: 24px; color: var(--text-dim); font-size:12px; }
   .trust-row span{ display:flex; align-items:center; gap:6px; }
   .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block; }
@@ -234,37 +238,7 @@
   .contact-banner.wa .cb-icon{ background:#25D366; }
   .contact-banner::after{ content:""; position:absolute; inset:0; background:linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent); background-size:200% 100%; animation: shimmer 2.6s linear infinite; pointer-events:none; }
   @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
-  /* ===== البطولات ===== */
-  .tourn-hero{ border-radius:18px; overflow:hidden; margin-bottom:16px; position:relative;
-    background: linear-gradient(135deg, #1b0f2e 0%, #2a1245 45%, #0E0D0F 100%); border:1px solid rgba(168,85,247,0.35); }
-  .tourn-hero-inner{ padding:20px 18px; text-align:center; position:relative; z-index:2; }
-  .tourn-hero h2{ font-size:22px; font-weight:900; background:linear-gradient(90deg,#ffd76a,#ff9d5c,#c084fc);
-    -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .tourn-hero p{ color:var(--text-dim); font-size:12.5px; margin-top:4px; }
-  .tourn-emoji{ display:inline-block; animation: tournBounce 1.6s ease-in-out infinite; font-size:26px; }
-  @keyframes tournBounce{ 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-5px) rotate(-6deg);} }
-  .tourn-hero::before{ content:""; position:absolute; inset:0; z-index:1;
-    background: radial-gradient(circle at 20% 20%, rgba(192,132,252,0.25), transparent 45%),
-                radial-gradient(circle at 85% 75%, rgba(255,180,80,0.2), transparent 45%); }
 
-  /* إعلان صفحة البطولات: صورة ثابتة + شريط متحرك تحتها */
-  .tourn-ad{ border-radius:14px; overflow:hidden; margin-bottom:18px; border:1px solid rgba(212,162,76,0.35); }
-  .tourn-ad img{ width:100%; display:block; cursor:pointer; }
-  .tourn-ad-ticker{ background:linear-gradient(90deg, #241533, #1b0f2e); overflow:hidden; white-space:nowrap; padding:8px 0; position:relative; }
-  .tourn-ad-ticker-track{ display:inline-block; padding-right:100%; animation: tournTicker 16s linear infinite; }
-  .tourn-ad-ticker span{ color:#ffd76a; font-size:12.5px; font-weight:700; padding:0 30px; }
-  @keyframes tournTicker{ 0%{ transform:translateX(0);} 100%{ transform:translateX(-100%);} }
-
-  .tourn-card{ background: linear-gradient(160deg, #1C1A1D 0%, #221430 100%); border:1px solid rgba(168,85,247,0.25);
-    border-radius:16px; padding:14px; margin-bottom:12px; position:relative; overflow:hidden; }
-  .tourn-card.hot{ border-color:rgba(255,140,60,0.5); }
-  .tourn-badge{ position:absolute; top:10px; left:10px; font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px;
-    background:rgba(255,140,60,0.18); color:#ffb066; border:1px solid rgba(255,140,60,0.4); }
-  .tourn-card .t-name{ font-family:'Cairo'; font-weight:800; font-size:15px; }
-  .tourn-prize{ color:#ffd76a; font-weight:900; font-family:'Cairo'; }
-  .tourn-progress-wrap{ background:var(--bg-soft); border-radius:999px; height:8px; overflow:hidden; margin-top:8px; }
-  .tourn-progress-bar{ height:100%; border-radius:999px; background:linear-gradient(90deg,#c084fc,#ffd76a); box-shadow:0 0 8px rgba(192,132,252,0.6); transition:width 0.4s ease; }
-  .tourn-countdown{ font-family:'Cairo'; font-weight:800; color:#c084fc; font-size:13px; }
 
   /* === نظام المستويات والولاء === */
   .loyalty-badge{ display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; font-weight:800; font-size:12px; margin-left:8px; }
@@ -437,7 +411,10 @@
 
 <div class="notification-container" id="notification-container"></div>
 
-<section id="login-screen" class="container">
+<!-- رقم الإصدار الهادئ بزاوية الشاشة -->
+<div id="version-tag" style="position:fixed; top:10px; left:14px; z-index:100; font-size:10px; font-weight:400; color:var(--text-dim); opacity:0.55; pointer-events:none; font-family:'Tajawal', sans-serif; letter-spacing:0.5px;">v3.3</div>
+
+<section id="login-screen" class="container" style="margin-top:70px;">
   <div class="hero-coin">
     <svg viewBox="0 0 120 120">
       <circle cx="60" cy="60" r="56" fill="none" stroke="#D4A24C" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
@@ -467,12 +444,6 @@
     </div>
 
     <div class="view active" id="view-home">
-      <!-- رسالة تأكيد التحديث -->
-      <div style="background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%); color: white; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,210,255,0.4); border: 2px solid rgba(255,255,255,0.2);">
-        🚀 تم تفعيل تحديث المتجر والمزاد الجديد بنجاح!
-        <br>
-        <small style="font-size: 10px; opacity: 0.8;">افتح القائمة الجانبية لتجد الأقسام الجديدة</small>
-      </div>
       <div class="section-title">الأقسام الرئيسية</div>
       <div class="category-grid" id="category-grid"></div>
       <div class="section-title">التصنيفات الفرعية</div>
@@ -614,30 +585,7 @@
     </div>
 
 
-    <div class="view" id="view-tournaments">
-      <div class="tourn-hero">
-        <div class="tourn-hero-inner">
-          <span class="tourn-emoji">🏆</span>
-          <h2>بطولات الألعاب</h2>
-          <p>سجّل، نافس، واربح رصيد فوري 🔥</p>
-        </div>
-      </div>
 
-      <!-- إعلان صفحة البطولات: صورة ثابتة (اضغط ينقلك لرابط) + شريط نص متحرك تحتها -->
-      <div class="tourn-ad" id="tourn-ad-wrap" style="display:none;">
-        <a id="tourn-ad-link" href="#" target="_blank" rel="noopener">
-          <img id="tourn-ad-image" src="" alt="إعلان">
-        </a>
-        <div class="tourn-ad-ticker">
-          <div class="tourn-ad-ticker-track" id="tourn-ad-ticker-track"></div>
-        </div>
-      </div>
-
-      <div class="section-title">البطولات المتاحة</div>
-      <div id="tournaments-grid"><div class="empty-state">جاري تحميل البطولات…</div></div>
-      <div class="section-title" style="margin-top:26px;">بطولاتي</div>
-      <div id="my-tournaments-list"><div class="empty-state">ما اشتركت بأي بطولة بعد</div></div>
-    </div>
 
     <div class="view" id="view-cart">
       <div class="section-title">سلتي</div>
@@ -686,9 +634,18 @@
     </div>
 
     <div class="view" id="view-wallet">
-      <div class="section-title">محفظتي</div>
+      <div class="section-title">💰 محفظتي</div>
       <div class="summary-card"><div class="summary-row total"><span>رصيدك الحالي</span><span id="wallet-balance-amount">0</span></div></div>
       <button class="primary-btn" id="open-topup-btn">طلب شحن رصيد</button>
+      
+      <div class="summary-card" style="margin-top:16px;">
+        <div class="section-title" style="font-size:14px; margin-bottom:12px;">🔑 شحن كود رصيد</div>
+        <div class="field">
+          <input type="text" id="recharge-code-input" placeholder="أدخل كود الشحن هنا..." style="text-align:center; font-family:monospace; letter-spacing:1px;">
+        </div>
+        <button class="primary-btn" id="redeem-code-btn" style="width:100%;">✅ تفعيل الكود</button>
+      </div>
+
       <div class="section-title">طلبات الشحن السابقة</div>
       <div id="topups-list"><div class="empty-state">ما عندك طلبات شحن بعد</div></div>
     </div>
@@ -715,26 +672,7 @@
   </div>
 </div>
 
-<!-- TOPUP MODAL -->
-<div class="modal-backdrop" id="tournament-detail-modal">
-  <div class="modal">
-    <button class="modal-close" id="tournament-detail-close">إغلاق ✕</button>
-    <h3 id="td-name"></h3>
-    <img id="td-image" style="width:100%; border-radius:12px; margin:10px 0; display:none;">
-    <p class="hint" id="td-game"></p>
-    <div class="tourn-countdown" id="td-countdown" style="margin-top:6px;"></div>
-    <div class="tourn-progress-wrap"><div class="tourn-progress-bar" id="td-progress-bar" style="width:0%;"></div></div>
-    <div class="summary-card">
-      <div class="summary-row"><span>رسم الدخول</span><span id="td-fee"></span></div>
-      <div class="summary-row"><span>الجوائز</span><span class="tourn-prize" id="td-prizes"></span></div>
-      <div class="summary-row"><span>المشتركون</span><span id="td-count"></span></div>
-    </div>
-    <p class="hint" id="td-rules" style="margin-top:12px; white-space:pre-line;"></p>
-    <div class="field"><label>معرّفك باللعبة</label><input type="text" id="td-game-id" placeholder="مثال: 123456789"></div>
-    <button class="primary-btn" id="td-register-btn">سجّل الآن</button>
-    <input type="hidden" id="td-tournament-id">
-  </div>
-</div>
+
 
 <div class="modal-backdrop" id="topup-modal-backdrop">
   <div class="modal"><button class="modal-close" id="topup-close-btn">إغلاق ✕</button>
@@ -796,7 +734,7 @@
 
   const firebaseConfig = {
     apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
-    authDomain: "my-websit-2e275.firebaseapp.com",
+    authDomain: location.hostname === "points-site.vercel.app" ? "points-site.vercel.app" : "my-websit-2e275.firebaseapp.com",
     projectId: "my-websit-2e275",
     storageBucket: "my-websit-2e275.firebasestorage.app",
     messagingSenderId: "1079052257822",
@@ -873,16 +811,42 @@
     switchView(viewId);
   };
 
+  // معالجة نتيجة الـ redirect عند العودة من صفحة جوجل
+  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js").then(({ getRedirectResult }) => {
+    getRedirectResult(auth).catch(err => {
+      if (err && err.code) {
+        showToast("خطأ تسجيل الدخول (redirect): " + err.code + " — " + err.message, true);
+        console.error("getRedirectResult error:", err);
+      }
+    });
+  });
+
+  // timeout احتياطي: إخفاء splash بعد 6 ثوانٍ حتى لو onAuthStateChanged لم يستجب
+  const splashTimeout = setTimeout(() => {
+    const splash = document.getElementById("splash");
+    if (splash && splash.style.display !== "none") {
+      splash.style.display = "none";
+      document.getElementById("login-screen").style.display = "block";
+    }
+  }, 6000);
+
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    try { await signInWithPopup(auth, provider); }
-    catch (err) {
+    // signInWithPopup أساسي (يعمل بالمتصفح العادي وPWA standalone)
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      // إذا حُظر الـ popup، نلجأ للـ redirect كاحتياطي
       if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
-        await signInWithRedirect(auth, provider);
-      } else { showToast("تعذر تسجيل الدخول: " + err.message, true); }
+        try { await signInWithRedirect(auth, provider); }
+        catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
+      } else if (err.code !== "auth/popup-closed-by-user") {
+        showToast("تعذر تسجيل الدخول: " + err.message, true);
+      }
     }
   });
 
   onAuthStateChanged(auth, async (user) => {
+    clearTimeout(splashTimeout);
     document.getElementById("splash").style.display = "none";
     currentUser = user;
     if (user) {
@@ -899,11 +863,12 @@
       listenOrders();
       listenTopups();
       listenAdsSlider();
-      listenTournamentAd();
-      listenTournamentsPublic();
-      listenMyTournaments();
+
       listenReferralStatus();
       listenExchangeRate();
+      listenLoyaltySettings();
+      listenAuctions();
+      listenPaidAd();
     } else {
       document.getElementById("login-screen").style.display = "block";
       document.getElementById("app").style.display = "none";
@@ -980,13 +945,23 @@
       if(data) {
         document.getElementById('my-referral-code').textContent = data.referralCode || "جاري التحميل...";
         document.getElementById('referral-pending-balance').textContent = (data.pendingReward || 0).toFixed(2) + " $";
+        
+        // عرض صورة المستخدم في القائمة الجانبية والملف الشخصي تلقائياً
+        if (data.avatarUrl) {
+          const imgHTML = `<img src="${data.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+          const sidebarAvatar = document.getElementById("sidebar-avatar");
+          if (sidebarAvatar) sidebarAvatar.innerHTML = imgHTML;
+          
+          const profileDisplay = document.getElementById("profile-avatar-display");
+          if (profileDisplay) profileDisplay.innerHTML = imgHTML;
+        }
       }
     });
   }
 
   window.copyReferral = function() {
     const code = document.getElementById('my-referral-code').textContent;
-    navigator.clipboard.writeText(`https://points-site.vercel.app/?ref=${code}`);
+    navigator.clipboard.writeText(`https://${location.hostname}/?ref=${code}`);
     showToast("تم نسخ رابط الدعوة!");
   }
 
@@ -1641,6 +1616,152 @@
     }
   });
 
+  // ===== حفظ الملف الشخصي =====
+  document.getElementById("save-profile-btn").addEventListener("click", async () => {
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+
+    const usernameInput = document.getElementById("profile-username");
+    const fullnameInput = document.getElementById("profile-fullname");
+    const contactInput = document.getElementById("profile-contact");
+    const avatarInput = document.getElementById("profile-avatar-input");
+
+    const username = usernameInput.value.trim().toLowerCase();
+    const fullName = fullnameInput.value.trim();
+    const contact = contactInput.value.trim();
+
+    // التحقق من طول اليوزرنيم
+    if (username.length < 3 || username.length > 20) {
+      showToast("يجب أن يكون اليوزرنيم بين 3 و 20 حرفاً", true);
+      return;
+    }
+
+    // التحقق من صيغة اليوزرنيم (أحرف وأرقام ونقاط فقط)
+    if (!/^[a-z0-9._]+$/.test(username)) {
+      showToast("اليوزرنيم يجب أن يحتوي على أحرف صغيرة، أرقام، أو نقاط فقط", true);
+      return;
+    }
+
+    const btn = document.getElementById("save-profile-btn");
+    if (btn.disabled) return;
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري الحفظ…";
+
+    try {
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      const currentData = userSnap.exists() ? userSnap.data() : {};
+
+      // التحقق من تفرّد اليوزرنيم إذا تغير
+      if (username !== (currentData.username || "").toLowerCase()) {
+        const q = query(collection(db, "users"), where("username", "==", username));
+        const querySnap = await getDocs(q);
+        let exists = false;
+        querySnap.forEach(doc => {
+          if (doc.id !== currentUser.uid) exists = true;
+        });
+        if (exists) {
+          showToast("هذا اليوزرنيم مستخدم مسبقاً، اختر غيره", true);
+          btn.disabled = false;
+          btn.textContent = originalText;
+          return;
+        }
+      }
+
+      const updates = {
+        username: username,
+        fullName: fullName,
+        contact: contact,
+        updatedAt: serverTimestamp()
+      };
+
+      // معالجة الصورة إذا تم اختيار ملف جديد
+      if (avatarInput.files && avatarInput.files[0]) {
+        const compressedDataUrl = await compressImageToDataUrl(avatarInput.files[0]);
+        updates.avatarUrl = compressedDataUrl;
+      }
+
+      await setDoc(userRef, updates, { merge: true });
+
+      // تحديث العرض في الصفحة
+      if (updates.avatarUrl) {
+        const imgHTML = `<img src="${updates.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        document.getElementById("profile-avatar-display").innerHTML = imgHTML;
+        // تحديث صورة القائمة الجانبية إذا كانت موجودة
+        const sidebarAvatar = document.getElementById("sidebar-avatar");
+        if (sidebarAvatar) sidebarAvatar.innerHTML = imgHTML;
+      }
+      
+      showToast("✅ تم حفظ التغييرات بنجاح!");
+    } catch (err) {
+      showToast("حدث خطأ أثناء الحفظ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
+  // ===== تفعيل أكواد الشحن =====
+  document.getElementById("redeem-code-btn").addEventListener("click", async () => {
+    const codeInput = document.getElementById("recharge-code-input");
+    const code = codeInput.value.trim().toUpperCase();
+    if (!code) { showToast("الرجاء إدخال كود الشحن", true); return; }
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+
+    const btn = document.getElementById("redeem-code-btn");
+    if (btn.disabled) return;
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري التحقق…";
+
+    try {
+      const codeRef = doc(db, "rechargeCodes", code);
+      const userRef = doc(db, "users", currentUser.uid);
+
+      await runTransaction(db, async (transaction) => {
+        const codeSnap = await transaction.get(codeRef);
+        if (!codeSnap.exists()) throw new Error("كود غير صحيح");
+
+        const codeData = codeSnap.data();
+        if (codeData.used === true) throw new Error("هذا الكود مستخدم مسبقاً");
+
+        if (codeData.expiresAt) {
+          const expiry = codeData.expiresAt.toDate ? codeData.expiresAt.toDate() : new Date(codeData.expiresAt);
+          if (expiry < new Date()) throw new Error("انتهت صلاحية هذا الكود");
+        }
+
+        const userSnap = await transaction.get(userRef);
+        if (!userSnap.exists()) throw new Error("بيانات المستخدم غير موجودة");
+
+        const codeValue = Number(codeData.amount) || 0;
+        const currentBalance = Number(userSnap.data().balance) || 0;
+
+        // 1. تحديث رصيد المستخدم
+        transaction.update(userRef, {
+          balance: currentBalance + codeValue
+        });
+
+        // 2. تحديث حالة الكود
+        transaction.update(codeRef, {
+          used: true,
+          usedBy: currentUser.uid,
+          usedAt: serverTimestamp()
+        });
+
+        return codeValue;
+      }).then((addedValue) => {
+        codeInput.value = "";
+        showToast(`✅ تم تفعيل الكود بنجاح! تم إضافة ${fmt(addedValue)} لرصيدك.`);
+      });
+
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
   // ===== طلبات المستخدم =====
   function listenOrders() {
     const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid));
@@ -1707,238 +1828,28 @@
 
   function switchView(viewId) {
     document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
-    document.getElementById(viewId).classList.add("active");
-  }
-
-  // ===== إعلان صفحة البطولات =====
-  function listenTournamentAd() {
-    onSnapshot(doc(db, "settings", "tournamentAd"), (snap) => {
-      const wrap = document.getElementById("tourn-ad-wrap");
-      if (!snap.exists() || !snap.data().imageData) { wrap.style.display = "none"; return; }
-      const d = snap.data();
-      document.getElementById("tourn-ad-image").src = d.imageData;
-      const safeLink = /^https?:\/\//i.test(d.link) ? d.link : "#";
-      document.getElementById("tourn-ad-link").href = safeLink;
-      const track = document.getElementById("tourn-ad-ticker-track");
-      track.innerHTML = d.ticker ? `<span>${escapeHTML(d.ticker)}</span>` : "";
-      wrap.style.display = d.ticker || d.imageData ? "block" : "none";
-    });
-  }
-
-  // ===== البطولات (واجهة المستخدم) =====
-  let allTournamentsData = [];
-  let tournamentsCountCache = {}; // tournamentId -> عدد المشتركين (لعرض سريع بالبطاقات)
-  let tournamentCountdownInterval = null;
-
-  function listenTournamentsPublic() {
-    onSnapshot(collection(db, "tournaments"), (snap) => {
-      allTournamentsData = [];
-      snap.forEach(d => allTournamentsData.push({ id: d.id, ...d.data() }));
-      renderTournamentsGrid();
-    });
-  }
-
-  function renderTournamentsGrid() {
-    const grid = document.getElementById("tournaments-grid");
-    const openList = allTournamentsData.filter(t => t.status !== "completed");
-    if (openList.length === 0) { grid.innerHTML = `<div class="empty-state">لا توجد بطولات حالياً</div>`; return; }
-
-    grid.innerHTML = "";
-    openList.forEach((t) => {
-      const count = Number(t.currentParticipants) || 0;
-      const full = t.maxParticipants && count >= t.maxParticipants;
-      const closed = t.status === "closed";
-      const pct = t.maxParticipants ? Math.min(100, Math.round((count / t.maxParticipants) * 100)) : 0;
-      const isHot = t.maxParticipants && pct >= 70 && !full;
-
-      const card = document.createElement("div");
-      card.className = "tourn-card" + (isHot ? " hot" : "");
-      card.innerHTML = `
-        ${isHot ? `<span class="tourn-badge">🔥 يوشك يكتمل</span>` : ""}
-        <div class="card-row" style="margin-top:${isHot ? '18px' : '0'};">
-          <div class="card-thumb" style="width:56px; height:56px;">${t.imageData ? `<img src="${t.imageData}">` : "🏆"}</div>
-          <div class="card-info">
-            <div class="t-name">${escapeHTML(t.name)}</div>
-            <div class="t-meta">${escapeHTML(t.game)} • رسم الدخول: ${fmt(t.entryFee || 0)}</div>
-            <div class="t-meta tourn-prize">🏆 ${escapeHTML((t.prizes || []).join(' / ') || '—')} $</div>
-          </div>
-        </div>
-        ${t.maxParticipants ? `<div class="tourn-progress-wrap"><div class="tourn-progress-bar" style="width:${pct}%;"></div></div>
-        <div class="t-meta" style="margin-top:4px;">👥 ${count} / ${t.maxParticipants}</div>` : `<div class="t-meta" style="margin-top:6px;">👥 ${count} مشترك</div>`}
-        <div class="card-actions">
-          <button class="icon-btn gold" data-action="view">${full ? 'اكتمل العدد' : (closed ? 'التسجيل مغلق' : 'عرض والتسجيل')}</button>
-        </div>
-      `;
-      const viewBtn = card.querySelector('[data-action="view"]');
-      if (full || closed) viewBtn.disabled = true;
-      viewBtn.addEventListener("click", () => openTournamentDetail(t));
-      grid.appendChild(card);
-    });
-  }
-
-  function formatCountdown(startDateStr) {
-    if (!startDateStr) return "";
-    const target = new Date(startDateStr).getTime();
-    const now = Date.now();
-    const diff = target - now;
-    if (isNaN(target)) return "";
-    if (diff <= 0) return "🔴 بدأت البطولة";
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const secs = Math.floor((diff % 60000) / 1000);
-    if (days > 0) return `⏳ تبدأ خلال ${days} يوم ${hours} ساعة`;
-    return `⏳ تبدأ خلال ${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-  }
-
-  function openTournamentDetail(t) {
-    document.getElementById("td-tournament-id").value = t.id;
-    document.getElementById("td-name").textContent = t.name;
-    document.getElementById("td-game").textContent = t.game;
-    if (t.imageData) {
-      document.getElementById("td-image").src = t.imageData;
-      document.getElementById("td-image").style.display = "block";
-    } else {
-      document.getElementById("td-image").style.display = "none";
-    }
-    document.getElementById("td-fee").textContent = fmt(t.entryFee || 0);
-    document.getElementById("td-prizes").textContent = (t.prizes || []).join(" / ") + " $";
-    const count = Number(t.currentParticipants) || 0;
-    document.getElementById("td-count").textContent = count + (t.maxParticipants ? "/" + t.maxParticipants : "");
-    document.getElementById("td-progress-bar").style.width = t.maxParticipants ? Math.min(100, Math.round((count / t.maxParticipants) * 100)) + "%" : "0%";
-    document.getElementById("td-rules").textContent = t.rules || "لا توجد قوانين إضافية.";
-
-    if (tournamentCountdownInterval) clearInterval(tournamentCountdownInterval);
-    const countdownEl = document.getElementById("td-countdown");
-    countdownEl.textContent = formatCountdown(t.startDate);
-    if (t.startDate) {
-      tournamentCountdownInterval = setInterval(() => { countdownEl.textContent = formatCountdown(t.startDate); }, 1000);
-    }
-
-    const btn = document.getElementById("td-register-btn");
-    const gameIdField = document.getElementById("td-game-id");
-    const full = t.maxParticipants && count >= t.maxParticipants;
-    checkAlreadyJoined(t.id).then((alreadyJoined) => {
-      if (alreadyJoined) {
-        btn.textContent = "أنت مسجّل بالفعل ✓";
-        btn.disabled = true;
-        gameIdField.style.display = "none";
-      } else if (t.status === "closed" || full) {
-        btn.textContent = full ? "اكتمل عدد المشاركين" : "التسجيل غير متاح حالياً";
-        btn.disabled = true;
-        gameIdField.style.display = "block";
-      } else {
-        btn.textContent = "سجّل الآن";
-        btn.disabled = false;
-        gameIdField.style.display = "block";
-        gameIdField.value = "";
-      }
-    });
-
-    document.getElementById("tournament-detail-modal").classList.add("active");
-  }
-
-  async function checkAlreadyJoined(tournamentId) {
-    try {
-      const regRef = doc(db, "tournamentRegistrations", `${tournamentId}_${currentUser.uid}`);
-      const snap = await getDoc(regRef);
-      return snap.exists();
-    } catch (err) {
-      return false;
-    }
-  }
-
-  document.getElementById("tournament-detail-close").addEventListener("click", () => {
-    document.getElementById("tournament-detail-modal").classList.remove("active");
-    if (tournamentCountdownInterval) { clearInterval(tournamentCountdownInterval); tournamentCountdownInterval = null; }
-  });
-
-  document.getElementById("td-register-btn").addEventListener("click", async () => {
-    const btn = document.getElementById("td-register-btn");
-    if (btn.disabled) return;
-    const tournamentId = document.getElementById("td-tournament-id").value;
-    const gameId = document.getElementById("td-game-id").value.trim();
-    if (!gameId) { showToast("الرجاء كتابة معرّفك باللعبة", true); return; }
-    if (gameId.length > 100) { showToast("معرّف اللعبة طويل جداً", true); return; }
-
-    btn.disabled = true;
-    btn.textContent = "جاري التسجيل…";
-    try {
-      const tournamentRef = doc(db, "tournaments", tournamentId);
-      // معرّف الوثيقة ثابت (tournamentId_uid) حتى منع التسجيل المزدوج يصير بشكل ذرّي
-      // ضمن نفس المعاملة (مش خطوة تحقق منفصلة ممكن يتجاوزها تسجيلين متزامنين)
-      const regRef = doc(db, "tournamentRegistrations", `${tournamentId}_${currentUser.uid}`);
-      const userRef = doc(db, "users", currentUser.uid);
-
-      await runTransaction(db, async (transaction) => {
-        // كل القراءات أولاً
-        const tourSnap = await transaction.get(tournamentRef);
-        if (!tourSnap.exists()) throw new Error("البطولة غير موجودة");
-        const tourData = tourSnap.data();
-        if (tourData.status === "closed") throw new Error("التسجيل بهذه البطولة مغلق");
-        if (tourData.status === "completed") throw new Error("هذه البطولة انتهت");
-
-        const regSnap = await transaction.get(regRef);
-        if (regSnap.exists()) throw new Error("أنت مسجّل بهذه البطولة أصلاً");
-
-        const currentCount = Number(tourData.currentParticipants) || 0;
-        if (tourData.maxParticipants && currentCount >= tourData.maxParticipants) {
-          throw new Error("اكتمل عدد المشاركين بهذه البطولة");
-        }
-
-        // رسم الدخول يُقرأ من وثيقة البطولة بقاعدة البيانات مباشرة ضمن نفس المعاملة،
-        // مش من نسخة الموقع المحفوظة بالمتصفح — حتى ما يقدر حدا يتلاعب فيها من جهازه
-        const entryFee = Number(tourData.entryFee) || 0;
-        const userSnap = await transaction.get(userRef);
-        const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-        if (currentBalance < entryFee) throw new Error("رصيدك غير كافٍ لدفع رسم الدخول");
-
-        // الآن الكتابة
-        if (entryFee > 0) transaction.update(userRef, { balance: currentBalance - entryFee });
-        transaction.update(tournamentRef, { currentParticipants: currentCount + 1 });
-        transaction.set(regRef, {
-          tournamentId,
-          uid: currentUser.uid,
-          userName: currentUser.displayName,
-          userEmail: currentUser.email,
-          gameId,
-          entryFeePaid: entryFee,
-          rank: null,
-          prizeAwarded: false,
-          registeredAt: serverTimestamp(),
+    const target = document.getElementById(viewId);
+    if (target) {
+      target.classList.add("active");
+      if (viewId === 'view-profile' && currentUser) {
+        // تحديث بيانات الملف الشخصي عند الفتح
+        getDoc(doc(db, "users", currentUser.uid)).then(snap => {
+          if (snap.exists()) {
+            const d = snap.data();
+            document.getElementById("profile-username").value = d.username || "";
+            document.getElementById("profile-fullname").value = d.fullName || "";
+            document.getElementById("profile-contact").value = d.contact || "";
+            document.getElementById("profile-email").value = currentUser.email || "";
+            if (d.avatarUrl) document.getElementById("profile-avatar-display").innerHTML = `<img src="${d.avatarUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+            updateLoyaltyDisplay(d);
+          }
         });
-      });
-
-      showToast("🎉 تم تسجيلك بالبطولة بنجاح!");
-      document.getElementById("tournament-detail-modal").classList.remove("active");
-    } catch (err) {
-      showToast("حدث خطأ: " + err.message, true);
-    } finally {
-      btn.disabled = false;
+      }
     }
-  });
-
-  function listenMyTournaments() {
-    const q = query(collection(db, "tournamentRegistrations"), where("uid", "==", currentUser.uid));
-    onSnapshot(q, (snap) => {
-      const list = document.getElementById("my-tournaments-list");
-      if (snap.empty) { list.innerHTML = `<div class="empty-state">ما اشتركت بأي بطولة بعد</div>`; return; }
-      const regs = [];
-      snap.forEach(d => regs.push({ id: d.id, ...d.data() }));
-      list.innerHTML = regs.map(r => {
-        const t = allTournamentsData.find(x => x.id === r.tournamentId);
-        const tName = t ? t.name : "بطولة";
-        let rankText = r.rank ? `المركز: ${r.rank}` : "بانتظار النتيجة ⏳";
-        let prizeText = r.prizeAwarded ? ` — 🏆 حصلت على ${fmt(r.prizeAmount)}` : "";
-        return `
-          <div class="order-card">
-            <div class="order-row"><span style="font-weight:700; font-size:13.5px;">${escapeHTML(tName)}</span></div>
-            <div style="color:var(--text-dim); font-size:12.5px;">${rankText}${prizeText}</div>
-          </div>
-        `;
-      }).join("");
-    });
   }
+  window.switchView = switchView;
+
+
 
   // === نظام المستويات والولاء ===
   const LOYALTY_LEVELS = {
@@ -1991,6 +1902,289 @@
     container.appendChild(notif);
     setTimeout(() => notif.remove(), 5000);
   }
+
+  // ===== وظائف مفقودة (تمت إضافتها للإصلاح) =====
+  window.showPaidAdContact = function() {
+    document.getElementById('contact-modal-backdrop').classList.add('active');
+  };
+
+  window.listenLoyaltySettings = function() {
+    console.log("Loyalty settings listener placeholder");
+    // هنا يمكن إضافة منطق جلب إعدادات الولاء من Firestore إذا لزم الأمر
+  };
+
+  // ===== نظام المزادات (إنشاء وعرض) =====
+  let auctionImages = [];
+
+  // تفعيل رفع الصور للمزاد
+  const auctionDrop = document.getElementById("auction-images-drop");
+  const auctionInput = document.getElementById("auction-images-input");
+  const auctionPreview = document.getElementById("auction-images-preview");
+
+  if (auctionDrop) {
+    auctionDrop.addEventListener("click", () => auctionInput.click());
+    auctionInput.addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files);
+      if (auctionImages.length + files.length > 5) {
+        showToast("الحد الأقصى هو 5 صور فقط", true);
+        return;
+      }
+
+      for (const file of files) {
+        if (!file.type.startsWith("image/")) continue;
+        const dataUrl = await compressImageToDataUrl(file, 600, 0.4); // ضغط أكبر لضمان عدم تجاوز حد 1MB للوثيقة (5 صور)
+        auctionImages.push(dataUrl);
+      }
+      renderAuctionImagesPreview();
+      auctionInput.value = "";
+    });
+  }
+
+  function renderAuctionImagesPreview() {
+    auctionPreview.innerHTML = auctionImages.map((img, idx) => `
+      <div style="position:relative; width:80px; height:80px; border-radius:8px; overflow:hidden; border:1px solid var(--hairline);">
+        <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
+        <button onclick="removeAuctionImage(${idx})" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:12px;">✕</button>
+      </div>
+    `).join("");
+  }
+
+  window.removeAuctionImage = function(idx) {
+    auctionImages.splice(idx, 1);
+    renderAuctionImagesPreview();
+  };
+
+  // إنشاء مزاد جديد
+  document.getElementById("create-auction-btn").addEventListener("click", async () => {
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+    
+    const name = document.getElementById("auction-name").value.trim();
+    const game = document.getElementById("auction-game").value.trim();
+    const startPrice = parseFloat(document.getElementById("auction-start-price").value);
+    const minPrice = parseFloat(document.getElementById("auction-min-price").value);
+    const duration = parseInt(document.getElementById("auction-duration").value);
+    const description = document.getElementById("auction-description").value.trim();
+
+    if (!name || !game || isNaN(startPrice) || isNaN(duration)) {
+      showToast("يرجى ملء جميع الحقول المطلوبة", true);
+      return;
+    }
+
+    const btn = document.getElementById("create-auction-btn");
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري إنشاء المزاد…";
+
+    try {
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + duration);
+
+      const auctionData = {
+        name,
+        game,
+        description,
+        startPrice,
+        minPrice: isNaN(minPrice) ? startPrice : minPrice,
+        currentPrice: startPrice,
+        durationHours: duration,
+        images: auctionImages,
+        sellerUid: currentUser.uid,
+        sellerName: currentUser.displayName || "مستخدم",
+        status: "active",
+        bidsCount: 0,
+        createdAt: serverTimestamp(),
+        expiresAt: Timestamp.fromDate(expiresAt)
+      };
+
+      await addDoc(collection(db, "auctions"), auctionData);
+      
+      // إعادة تعيين النموذج
+      document.getElementById("auction-name").value = "";
+      document.getElementById("auction-game").value = "";
+      document.getElementById("auction-start-price").value = "";
+      document.getElementById("auction-min-price").value = "";
+      document.getElementById("auction-duration").value = "";
+      document.getElementById("auction-description").value = "";
+      auctionImages = [];
+      renderAuctionImagesPreview();
+
+      showToast("✅ تم إنشاء المزاد بنجاح!");
+      switchView("view-store");
+    } catch (err) {
+      showToast("خطأ أثناء الإنشاء: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
+  let currentAuctionId = null;
+  let auctionDetailUnsub = null;
+
+  window.listenAuctions = function() {
+    onSnapshot(query(collection(db, "auctions"), where("status", "==", "active")), (snap) => {
+      const grid = document.getElementById("auctions-grid");
+      if (snap.empty) {
+        grid.innerHTML = `<div class="empty-state">لا توجد مزادات حية حالياً.</div>`;
+        return;
+      }
+
+      const auctions = [];
+      snap.forEach(d => auctions.push({ id: d.id, ...d.data() }));
+      
+      grid.innerHTML = auctions.map(a => `
+        <div class="product-card" onclick="openAuctionDetail('${a.id}')">
+          <div class="badge" style="background:var(--neon-pink);">🔥 مزاد حامي</div>
+          <img src="${a.images[0] || 'https://via.placeholder.com/150?text=No+Image'}" alt="${a.name}">
+          <div class="p-info">
+            <div class="p-name">${escapeHTML(a.name)}</div>
+            <div class="p-category">${escapeHTML(a.game)}</div>
+            <div class="p-price" style="color:var(--neon-pink);">${fmt(a.currentPrice)}</div>
+            <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">⏱ ينتهي: ${new Date(a.expiresAt.toDate()).toLocaleString('ar-EG')}</div>
+          </div>
+        </div>
+      `).join("");
+    });
+  };
+
+  window.openAuctionDetail = function(id) {
+    currentAuctionId = id;
+    switchView('view-auction-detail');
+    
+    if (auctionDetailUnsub) auctionDetailUnsub();
+    
+    auctionDetailUnsub = onSnapshot(doc(db, "auctions", id), (snap) => {
+      if (!snap.exists()) { switchView('view-store'); return; }
+      const a = snap.data();
+      
+      document.getElementById("auction-detail-name").textContent = a.name;
+      document.getElementById("auction-detail-game").textContent = a.game;
+      document.getElementById("auction-detail-current-price").textContent = fmt(a.currentPrice);
+      document.getElementById("auction-detail-min-price").textContent = fmt(a.minPrice);
+      document.getElementById("auction-detail-bids-count").textContent = a.bidsCount || 0;
+      document.getElementById("auction-detail-seller").textContent = a.sellerName;
+      document.getElementById("auction-detail-description").textContent = a.description;
+      
+      // عرض الصور
+      const imgContainer = document.getElementById("auction-detail-images");
+      imgContainer.innerHTML = a.images.map(img => `
+        <img src="${img}" style="width:100%; border-radius:12px; margin-bottom:8px; border:1px solid var(--hairline);">
+      `).join("");
+
+      // تحديث الوقت المتبقي
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const end = a.expiresAt.toDate().getTime();
+        const diff = end - now;
+        if (diff <= 0) {
+          document.getElementById("auction-detail-time-left").textContent = "انتهى الوقت";
+          document.getElementById("place-bid-btn").disabled = true;
+          return;
+        }
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById("auction-detail-time-left").textContent = `${h}س ${m}د ${s}ث`;
+      };
+      updateTimer();
+      const timerInterval = setInterval(updateTimer, 1000);
+      
+      // تنظيف الـ interval عند إغلاق التفاصيل أو تحديثها
+      window.currentAuctionTimer = timerInterval;
+    });
+  };
+
+  // وضع مزايدة جديدة مع نظام الحجز (Escrow)
+  document.getElementById("place-bid-btn").addEventListener("click", async () => {
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+    
+    const newBid = parseFloat(document.getElementById("auction-new-bid").value);
+    if (isNaN(newBid) || newBid <= 0) { showToast("يرجى إدخال مبلغ صحيح", true); return; }
+
+    const btn = document.getElementById("place-bid-btn");
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري المزايدة…";
+
+    try {
+      const auctionRef = doc(db, "auctions", currentAuctionId);
+      const userRef = doc(db, "users", currentUser.uid);
+
+      await runTransaction(db, async (transaction) => {
+        const aSnap = await transaction.get(auctionRef);
+        const uSnap = await transaction.get(userRef);
+        
+        if (!aSnap.exists()) throw new Error("المزاد غير موجود");
+        const a = aSnap.data();
+        
+        if (a.status !== "active") throw new Error("هذا المزاد غير نشط حالياً");
+        if (new Date() > a.expiresAt.toDate()) throw new Error("انتهى وقت المزاد");
+        if (currentUser.uid === a.sellerUid) throw new Error("لا يمكنك المزايدة على مزادك الخاص");
+        if (newBid <= a.currentPrice) throw new Error(`يجب أن تكون المزايدة أعلى من السعر الحالي (${fmt(a.currentPrice)})`);
+        
+        const userData = uSnap.data() || {};
+        const userBalance = Number(userData.balance) || 0;
+        const isSelfOutbid = (a.lastBidderUid === currentUser.uid);
+        
+        // الرصيد المتاح فعلياً هو الرصيد الحالي + المبلغ المحجوز مسبقاً لهذا المستخدم (إن وجد)
+        const effectiveBalance = userBalance + (isSelfOutbid ? a.lastBidAmount : 0);
+        if (effectiveBalance < newBid) throw new Error("رصيدك غير كافٍ لتغطية هذه المزايدة");
+
+        // 1. إعادة المبلغ للمزايد السابق (فقط إذا لم يكن هو نفسه المزايد الحالي)
+        if (a.lastBidderUid && a.lastBidAmount && !isSelfOutbid) {
+          const lastBidderRef = doc(db, "users", a.lastBidderUid);
+          const lastBidderSnap = await transaction.get(lastBidderRef);
+          if (lastBidderSnap.exists()) {
+            const lastBidderBalance = Number(lastBidderSnap.data().balance) || 0;
+            transaction.update(lastBidderRef, { balance: lastBidderBalance + a.lastBidAmount });
+          }
+        }
+
+        // 2. حجز المبلغ من المزايد الحالي (تحديث واحد للرصيد الصافي النهائي)
+        const finalBalance = effectiveBalance - newBid;
+        transaction.update(userRef, { balance: finalBalance });
+
+        // 3. تحديث بيانات المزاد
+        transaction.update(auctionRef, {
+          currentPrice: newBid,
+          lastBidderUid: currentUser.uid,
+          lastBidAmount: newBid,
+          bidsCount: (a.bidsCount || 0) + 1,
+          updatedAt: serverTimestamp()
+        });
+      });
+
+      document.getElementById("auction-new-bid").value = "";
+      showToast(`✅ تمت المزايدة بنجاح! تم حجز ${fmt(newBid)} من رصيدك.`);
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
+  window.listenPaidAd = function() {
+    onSnapshot(doc(db, "settings", "paidAd"), (snap) => {
+      const wrap = document.getElementById("paid-ad-wrap");
+      const tickerWrap = document.getElementById("paid-ad-ticker");
+      if (!snap.exists()) { wrap.style.display = "none"; tickerWrap.style.display = "none"; return; }
+      const d = snap.data();
+      if (d.imageData) {
+        document.getElementById("paid-ad-image").src = d.imageData;
+        document.getElementById("paid-ad-link").href = d.link || "#";
+        wrap.style.display = "block";
+      } else {
+        wrap.style.display = "none";
+      }
+      if (d.ticker) {
+        document.getElementById("paid-ad-ticker-track").innerHTML = `<span>${escapeHTML(d.ticker)}</span>`;
+        tickerWrap.style.display = "block";
+      } else {
+        tickerWrap.style.display = "none";
+      }
+    });
+  };
 
   // تسجيل service worker لدعم PWA
   if ('serviceWorker' in navigator) {
