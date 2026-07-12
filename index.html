@@ -1913,9 +1913,135 @@
     // هنا يمكن إضافة منطق جلب إعدادات الولاء من Firestore إذا لزم الأمر
   };
 
+  // ===== نظام المزادات (إنشاء وعرض) =====
+  let auctionImages = [];
+
+  // تفعيل رفع الصور للمزاد
+  const auctionDrop = document.getElementById("auction-images-drop");
+  const auctionInput = document.getElementById("auction-images-input");
+  const auctionPreview = document.getElementById("auction-images-preview");
+
+  if (auctionDrop) {
+    auctionDrop.addEventListener("click", () => auctionInput.click());
+    auctionInput.addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files);
+      if (auctionImages.length + files.length > 5) {
+        showToast("الحد الأقصى هو 5 صور فقط", true);
+        return;
+      }
+
+      for (const file of files) {
+        if (!file.type.startsWith("image/")) continue;
+        const dataUrl = await compressImageToDataUrl(file, 800, 0.6);
+        auctionImages.push(dataUrl);
+      }
+      renderAuctionImagesPreview();
+      auctionInput.value = "";
+    });
+  }
+
+  function renderAuctionImagesPreview() {
+    auctionPreview.innerHTML = auctionImages.map((img, idx) => `
+      <div style="position:relative; width:80px; height:80px; border-radius:8px; overflow:hidden; border:1px solid var(--hairline);">
+        <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
+        <button onclick="removeAuctionImage(${idx})" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:12px;">✕</button>
+      </div>
+    `).join("");
+  }
+
+  window.removeAuctionImage = function(idx) {
+    auctionImages.splice(idx, 1);
+    renderAuctionImagesPreview();
+  };
+
+  // إنشاء مزاد جديد
+  document.getElementById("create-auction-btn").addEventListener("click", async () => {
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+    
+    const name = document.getElementById("auction-name").value.trim();
+    const game = document.getElementById("auction-game").value.trim();
+    const startPrice = parseFloat(document.getElementById("auction-start-price").value);
+    const minPrice = parseFloat(document.getElementById("auction-min-price").value);
+    const duration = parseInt(document.getElementById("auction-duration").value);
+    const description = document.getElementById("auction-description").value.trim();
+
+    if (!name || !game || isNaN(startPrice) || isNaN(duration)) {
+      showToast("يرجى ملء جميع الحقول المطلوبة", true);
+      return;
+    }
+
+    const btn = document.getElementById("create-auction-btn");
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري إنشاء المزاد…";
+
+    try {
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + duration);
+
+      const auctionData = {
+        name,
+        game,
+        description,
+        startPrice,
+        minPrice: isNaN(minPrice) ? startPrice : minPrice,
+        currentPrice: startPrice,
+        durationHours: duration,
+        images: auctionImages,
+        sellerUid: currentUser.uid,
+        sellerName: currentUser.displayName || "مستخدم",
+        status: "active",
+        bidsCount: 0,
+        createdAt: serverTimestamp(),
+        expiresAt: Timestamp.fromDate(expiresAt)
+      };
+
+      await addDoc(collection(db, "auctions"), auctionData);
+      
+      // إعادة تعيين النموذج
+      document.getElementById("auction-name").value = "";
+      document.getElementById("auction-game").value = "";
+      document.getElementById("auction-start-price").value = "";
+      document.getElementById("auction-min-price").value = "";
+      document.getElementById("auction-duration").value = "";
+      document.getElementById("auction-description").value = "";
+      auctionImages = [];
+      renderAuctionImagesPreview();
+
+      showToast("✅ تم إنشاء المزاد بنجاح!");
+      switchView("view-store");
+    } catch (err) {
+      showToast("خطأ أثناء الإنشاء: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
   window.listenAuctions = function() {
-    console.log("Auctions listener placeholder");
-    // هنا يمكن إضافة منطق جلب المزادات من Firestore إذا لزم الأمر
+    onSnapshot(query(collection(db, "auctions"), where("status", "==", "active")), (snap) => {
+      const grid = document.getElementById("auctions-grid");
+      if (snap.empty) {
+        grid.innerHTML = `<div class="empty-state">لا توجد مزادات حية حالياً.</div>`;
+        return;
+      }
+
+      const auctions = [];
+      snap.forEach(d => auctions.push({ id: d.id, ...d.data() }));
+      
+      grid.innerHTML = auctions.map(a => `
+        <div class="product-card" onclick="openAuctionDetail('${a.id}')">
+          <div class="badge" style="background:var(--neon-pink);">🔥 مزاد حامي</div>
+          <img src="${a.images[0] || 'https://via.placeholder.com/150?text=No+Image'}" alt="${a.name}">
+          <div class="p-info">
+            <div class="p-name">${escapeHTML(a.name)}</div>
+            <div class="p-category">${escapeHTML(a.game)}</div>
+            <div class="p-price" style="color:var(--neon-pink);">${fmt(a.currentPrice)}</div>
+            <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">⏱ ينتهي: ${new Date(a.expiresAt.toDate()).toLocaleString('ar-EG')}</div>
+          </div>
+        </div>
+      `).join("");
+    });
   };
 
   window.listenPaidAd = function() {
