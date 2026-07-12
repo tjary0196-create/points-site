@@ -415,7 +415,7 @@
     <a onclick="closeSidebarAndSwitch('view-wallet')">💰 محفظتي</a>
     <a onclick="closeSidebarAndSwitch('view-orders')">📦 طلباتي</a>
     <a onclick="closeSidebarAndSwitch('view-cart')">🛒 السلة</a>
-    <a onclick="closeSidebarAndSwitch('view-tournaments')">🏆 البطولات</a>
+    <a href="tournaments.html">🏆 البطولات</a>
     <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
     <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
     <a onclick="handleLogout()" style="color:var(--red); font-weight:700;">🚪 تسجيل الخروج</a>
@@ -615,30 +615,7 @@
     </div>
 
 
-    <div class="view" id="view-tournaments">
-      <div class="tourn-hero">
-        <div class="tourn-hero-inner">
-          <span class="tourn-emoji">🏆</span>
-          <h2>بطولات الألعاب</h2>
-          <p>سجّل، نافس، واربح رصيد فوري 🔥</p>
-        </div>
-      </div>
 
-      <!-- إعلان صفحة البطولات: صورة ثابتة (اضغط ينقلك لرابط) + شريط نص متحرك تحتها -->
-      <div class="tourn-ad" id="tourn-ad-wrap" style="display:none;">
-        <a id="tourn-ad-link" href="#" target="_blank" rel="noopener">
-          <img id="tourn-ad-image" src="" alt="إعلان">
-        </a>
-        <div class="tourn-ad-ticker">
-          <div class="tourn-ad-ticker-track" id="tourn-ad-ticker-track"></div>
-        </div>
-      </div>
-
-      <div class="section-title">البطولات المتاحة</div>
-      <div id="tournaments-grid"><div class="empty-state">جاري تحميل البطولات…</div></div>
-      <div class="section-title" style="margin-top:26px;">بطولاتي</div>
-      <div id="my-tournaments-list"><div class="empty-state">ما اشتركت بأي بطولة بعد</div></div>
-    </div>
 
     <div class="view" id="view-cart">
       <div class="section-title">سلتي</div>
@@ -725,26 +702,7 @@
   </div>
 </div>
 
-<!-- TOPUP MODAL -->
-<div class="modal-backdrop" id="tournament-detail-modal">
-  <div class="modal">
-    <button class="modal-close" id="tournament-detail-close">إغلاق ✕</button>
-    <h3 id="td-name"></h3>
-    <img id="td-image" style="width:100%; border-radius:12px; margin:10px 0; display:none;">
-    <p class="hint" id="td-game"></p>
-    <div class="tourn-countdown" id="td-countdown" style="margin-top:6px;"></div>
-    <div class="tourn-progress-wrap"><div class="tourn-progress-bar" id="td-progress-bar" style="width:0%;"></div></div>
-    <div class="summary-card">
-      <div class="summary-row"><span>رسم الدخول</span><span id="td-fee"></span></div>
-      <div class="summary-row"><span>الجوائز</span><span class="tourn-prize" id="td-prizes"></span></div>
-      <div class="summary-row"><span>المشتركون</span><span id="td-count"></span></div>
-    </div>
-    <p class="hint" id="td-rules" style="margin-top:12px; white-space:pre-line;"></p>
-    <div class="field"><label>معرّفك باللعبة</label><input type="text" id="td-game-id" placeholder="مثال: 123456789"></div>
-    <button class="primary-btn" id="td-register-btn">سجّل الآن</button>
-    <input type="hidden" id="td-tournament-id">
-  </div>
-</div>
+
 
 <div class="modal-backdrop" id="topup-modal-backdrop">
   <div class="modal"><button class="modal-close" id="topup-close-btn">إغلاق ✕</button>
@@ -935,9 +893,7 @@
       listenOrders();
       listenTopups();
       listenAdsSlider();
-      listenTournamentAd();
-      listenTournamentsPublic();
-      listenMyTournaments();
+
       listenReferralStatus();
       listenExchangeRate();
       listenLoyaltySettings();
@@ -1767,235 +1723,7 @@
   }
   window.switchView = switchView;
 
-  // ===== إعلان صفحة البطولات =====
-  function listenTournamentAd() {
-    onSnapshot(doc(db, "settings", "tournamentAd"), (snap) => {
-      const wrap = document.getElementById("tourn-ad-wrap");
-      if (!snap.exists() || !snap.data().imageData) { wrap.style.display = "none"; return; }
-      const d = snap.data();
-      document.getElementById("tourn-ad-image").src = d.imageData;
-      const safeLink = /^https?:\/\//i.test(d.link) ? d.link : "#";
-      document.getElementById("tourn-ad-link").href = safeLink;
-      const track = document.getElementById("tourn-ad-ticker-track");
-      track.innerHTML = d.ticker ? `<span>${escapeHTML(d.ticker)}</span>` : "";
-      wrap.style.display = d.ticker || d.imageData ? "block" : "none";
-    });
-  }
 
-  // ===== البطولات (واجهة المستخدم) =====
-  let allTournamentsData = [];
-  let tournamentsCountCache = {}; // tournamentId -> عدد المشتركين (لعرض سريع بالبطاقات)
-  let tournamentCountdownInterval = null;
-
-  function listenTournamentsPublic() {
-    onSnapshot(collection(db, "tournaments"), (snap) => {
-      allTournamentsData = [];
-      snap.forEach(d => allTournamentsData.push({ id: d.id, ...d.data() }));
-      renderTournamentsGrid();
-    });
-  }
-
-  function renderTournamentsGrid() {
-    const grid = document.getElementById("tournaments-grid");
-    const openList = allTournamentsData.filter(t => t.status !== "completed");
-    if (openList.length === 0) { grid.innerHTML = `<div class="empty-state">لا توجد بطولات حالياً</div>`; return; }
-
-    grid.innerHTML = "";
-    openList.forEach((t) => {
-      const count = Number(t.currentParticipants) || 0;
-      const full = t.maxParticipants && count >= t.maxParticipants;
-      const closed = t.status === "closed";
-      const pct = t.maxParticipants ? Math.min(100, Math.round((count / t.maxParticipants) * 100)) : 0;
-      const isHot = t.maxParticipants && pct >= 70 && !full;
-
-      const card = document.createElement("div");
-      card.className = "tourn-card" + (isHot ? " hot" : "");
-      card.innerHTML = `
-        ${isHot ? `<span class="tourn-badge">🔥 يوشك يكتمل</span>` : ""}
-        <div class="card-row" style="margin-top:${isHot ? '18px' : '0'};">
-          <div class="card-thumb" style="width:56px; height:56px;">${t.imageData ? `<img src="${t.imageData}">` : "🏆"}</div>
-          <div class="card-info">
-            <div class="t-name">${escapeHTML(t.name)}</div>
-            <div class="t-meta">${escapeHTML(t.game)} • رسم الدخول: ${fmt(t.entryFee || 0)}</div>
-            <div class="t-meta tourn-prize">🏆 ${escapeHTML((t.prizes || []).join(' / ') || '—')} $</div>
-          </div>
-        </div>
-        ${t.maxParticipants ? `<div class="tourn-progress-wrap"><div class="tourn-progress-bar" style="width:${pct}%;"></div></div>
-        <div class="t-meta" style="margin-top:4px;">👥 ${count} / ${t.maxParticipants}</div>` : `<div class="t-meta" style="margin-top:6px;">👥 ${count} مشترك</div>`}
-        <div class="card-actions">
-          <button class="icon-btn gold" data-action="view">${full ? 'اكتمل العدد' : (closed ? 'التسجيل مغلق' : 'عرض والتسجيل')}</button>
-        </div>
-      `;
-      const viewBtn = card.querySelector('[data-action="view"]');
-      if (full || closed) viewBtn.disabled = true;
-      viewBtn.addEventListener("click", () => openTournamentDetail(t));
-      grid.appendChild(card);
-    });
-  }
-
-  function formatCountdown(startDateStr) {
-    if (!startDateStr) return "";
-    const target = new Date(startDateStr).getTime();
-    const now = Date.now();
-    const diff = target - now;
-    if (isNaN(target)) return "";
-    if (diff <= 0) return "🔴 بدأت البطولة";
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const secs = Math.floor((diff % 60000) / 1000);
-    if (days > 0) return `⏳ تبدأ خلال ${days} يوم ${hours} ساعة`;
-    return `⏳ تبدأ خلال ${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-  }
-
-  function openTournamentDetail(t) {
-    document.getElementById("td-tournament-id").value = t.id;
-    document.getElementById("td-name").textContent = t.name;
-    document.getElementById("td-game").textContent = t.game;
-    if (t.imageData) {
-      document.getElementById("td-image").src = t.imageData;
-      document.getElementById("td-image").style.display = "block";
-    } else {
-      document.getElementById("td-image").style.display = "none";
-    }
-    document.getElementById("td-fee").textContent = fmt(t.entryFee || 0);
-    document.getElementById("td-prizes").textContent = (t.prizes || []).join(" / ") + " $";
-    const count = Number(t.currentParticipants) || 0;
-    document.getElementById("td-count").textContent = count + (t.maxParticipants ? "/" + t.maxParticipants : "");
-    document.getElementById("td-progress-bar").style.width = t.maxParticipants ? Math.min(100, Math.round((count / t.maxParticipants) * 100)) + "%" : "0%";
-    document.getElementById("td-rules").textContent = t.rules || "لا توجد قوانين إضافية.";
-
-    if (tournamentCountdownInterval) clearInterval(tournamentCountdownInterval);
-    const countdownEl = document.getElementById("td-countdown");
-    countdownEl.textContent = formatCountdown(t.startDate);
-    if (t.startDate) {
-      tournamentCountdownInterval = setInterval(() => { countdownEl.textContent = formatCountdown(t.startDate); }, 1000);
-    }
-
-    const btn = document.getElementById("td-register-btn");
-    const gameIdField = document.getElementById("td-game-id");
-    const full = t.maxParticipants && count >= t.maxParticipants;
-    checkAlreadyJoined(t.id).then((alreadyJoined) => {
-      if (alreadyJoined) {
-        btn.textContent = "أنت مسجّل بالفعل ✓";
-        btn.disabled = true;
-        gameIdField.style.display = "none";
-      } else if (t.status === "closed" || full) {
-        btn.textContent = full ? "اكتمل عدد المشاركين" : "التسجيل غير متاح حالياً";
-        btn.disabled = true;
-        gameIdField.style.display = "block";
-      } else {
-        btn.textContent = "سجّل الآن";
-        btn.disabled = false;
-        gameIdField.style.display = "block";
-        gameIdField.value = "";
-      }
-    });
-
-    document.getElementById("tournament-detail-modal").classList.add("active");
-  }
-
-  async function checkAlreadyJoined(tournamentId) {
-    try {
-      const regRef = doc(db, "tournamentRegistrations", `${tournamentId}_${currentUser.uid}`);
-      const snap = await getDoc(regRef);
-      return snap.exists();
-    } catch (err) {
-      return false;
-    }
-  }
-
-  document.getElementById("tournament-detail-close").addEventListener("click", () => {
-    document.getElementById("tournament-detail-modal").classList.remove("active");
-    if (tournamentCountdownInterval) { clearInterval(tournamentCountdownInterval); tournamentCountdownInterval = null; }
-  });
-
-  document.getElementById("td-register-btn").addEventListener("click", async () => {
-    const btn = document.getElementById("td-register-btn");
-    if (btn.disabled) return;
-    const tournamentId = document.getElementById("td-tournament-id").value;
-    const gameId = document.getElementById("td-game-id").value.trim();
-    if (!gameId) { showToast("الرجاء كتابة معرّفك باللعبة", true); return; }
-    if (gameId.length > 100) { showToast("معرّف اللعبة طويل جداً", true); return; }
-
-    btn.disabled = true;
-    btn.textContent = "جاري التسجيل…";
-    try {
-      const tournamentRef = doc(db, "tournaments", tournamentId);
-      // معرّف الوثيقة ثابت (tournamentId_uid) حتى منع التسجيل المزدوج يصير بشكل ذرّي
-      // ضمن نفس المعاملة (مش خطوة تحقق منفصلة ممكن يتجاوزها تسجيلين متزامنين)
-      const regRef = doc(db, "tournamentRegistrations", `${tournamentId}_${currentUser.uid}`);
-      const userRef = doc(db, "users", currentUser.uid);
-
-      await runTransaction(db, async (transaction) => {
-        // كل القراءات أولاً
-        const tourSnap = await transaction.get(tournamentRef);
-        if (!tourSnap.exists()) throw new Error("البطولة غير موجودة");
-        const tourData = tourSnap.data();
-        if (tourData.status === "closed") throw new Error("التسجيل بهذه البطولة مغلق");
-        if (tourData.status === "completed") throw new Error("هذه البطولة انتهت");
-
-        const regSnap = await transaction.get(regRef);
-        if (regSnap.exists()) throw new Error("أنت مسجّل بهذه البطولة أصلاً");
-
-        const currentCount = Number(tourData.currentParticipants) || 0;
-        if (tourData.maxParticipants && currentCount >= tourData.maxParticipants) {
-          throw new Error("اكتمل عدد المشاركين بهذه البطولة");
-        }
-
-        // رسم الدخول يُقرأ من وثيقة البطولة بقاعدة البيانات مباشرة ضمن نفس المعاملة،
-        // مش من نسخة الموقع المحفوظة بالمتصفح — حتى ما يقدر حدا يتلاعب فيها من جهازه
-        const entryFee = Number(tourData.entryFee) || 0;
-        const userSnap = await transaction.get(userRef);
-        const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-        if (currentBalance < entryFee) throw new Error("رصيدك غير كافٍ لدفع رسم الدخول");
-
-        // الآن الكتابة
-        if (entryFee > 0) transaction.update(userRef, { balance: currentBalance - entryFee });
-        transaction.update(tournamentRef, { currentParticipants: currentCount + 1 });
-        transaction.set(regRef, {
-          tournamentId,
-          uid: currentUser.uid,
-          userName: currentUser.displayName,
-          userEmail: currentUser.email,
-          gameId,
-          entryFeePaid: entryFee,
-          rank: null,
-          prizeAwarded: false,
-          registeredAt: serverTimestamp(),
-        });
-      });
-
-      showToast("🎉 تم تسجيلك بالبطولة بنجاح!");
-      document.getElementById("tournament-detail-modal").classList.remove("active");
-    } catch (err) {
-      showToast("حدث خطأ: " + err.message, true);
-    } finally {
-      btn.disabled = false;
-    }
-  });
-
-  function listenMyTournaments() {
-    const q = query(collection(db, "tournamentRegistrations"), where("uid", "==", currentUser.uid));
-    onSnapshot(q, (snap) => {
-      const list = document.getElementById("my-tournaments-list");
-      if (snap.empty) { list.innerHTML = `<div class="empty-state">ما اشتركت بأي بطولة بعد</div>`; return; }
-      const regs = [];
-      snap.forEach(d => regs.push({ id: d.id, ...d.data() }));
-      list.innerHTML = regs.map(r => {
-        const t = allTournamentsData.find(x => x.id === r.tournamentId);
-        const tName = t ? t.name : "بطولة";
-        let rankText = r.rank ? `المركز: ${r.rank}` : "بانتظار النتيجة ⏳";
-        let prizeText = r.prizeAwarded ? ` — 🏆 حصلت على ${fmt(r.prizeAmount)}` : "";
-        return `
-          <div class="order-card">
-            <div class="order-row"><span style="font-weight:700; font-size:13.5px;">${escapeHTML(tName)}</span></div>
-            <div style="color:var(--text-dim); font-size:12.5px;">${rankText}${prizeText}</div>
-          </div>
-        `;
-      }).join("");
-    });
-  }
 
   // === نظام المستويات والولاء ===
   const LOYALTY_LEVELS = {
