@@ -2122,12 +2122,16 @@
         if (currentUser.uid === a.sellerUid) throw new Error("لا يمكنك المزايدة على مزادك الخاص");
         if (newBid <= a.currentPrice) throw new Error(`يجب أن تكون المزايدة أعلى من السعر الحالي (${fmt(a.currentPrice)})`);
         
-        const userData = uSnap.data();
+        const userData = uSnap.data() || {};
         const userBalance = Number(userData.balance) || 0;
-        if (userBalance < newBid) throw new Error("رصيدك غير كافٍ لتغطية هذه المزايدة");
+        const isSelfOutbid = (a.lastBidderUid === currentUser.uid);
+        
+        // الرصيد المتاح فعلياً هو الرصيد الحالي + المبلغ المحجوز مسبقاً لهذا المستخدم (إن وجد)
+        const effectiveBalance = userBalance + (isSelfOutbid ? a.lastBidAmount : 0);
+        if (effectiveBalance < newBid) throw new Error("رصيدك غير كافٍ لتغطية هذه المزايدة");
 
-        // 1. إعادة المبلغ للمزايد السابق (إذا وجد)
-        if (a.lastBidderUid && a.lastBidAmount) {
+        // 1. إعادة المبلغ للمزايد السابق (فقط إذا لم يكن هو نفسه المزايد الحالي)
+        if (a.lastBidderUid && a.lastBidAmount && !isSelfOutbid) {
           const lastBidderRef = doc(db, "users", a.lastBidderUid);
           const lastBidderSnap = await transaction.get(lastBidderRef);
           if (lastBidderSnap.exists()) {
@@ -2136,8 +2140,9 @@
           }
         }
 
-        // 2. حجز المبلغ من المزايد الحالي
-        transaction.update(userRef, { balance: userBalance - newBid });
+        // 2. حجز المبلغ من المزايد الحالي (تحديث واحد للرصيد الصافي النهائي)
+        const finalBalance = effectiveBalance - newBid;
+        transaction.update(userRef, { balance: finalBalance });
 
         // 3. تحديث بيانات المزاد
         transaction.update(auctionRef, {
