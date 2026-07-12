@@ -764,7 +764,7 @@
 
   const firebaseConfig = {
     apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
-    authDomain: "my-websit-2e275.firebaseapp.com",
+    authDomain: location.hostname === "points-site.vercel.app" ? "points-site.vercel.app" : "my-websit-2e275.firebaseapp.com",
     projectId: "my-websit-2e275",
     storageBucket: "my-websit-2e275.firebasestorage.app",
     messagingSenderId: "1079052257822",
@@ -981,7 +981,7 @@
 
   window.copyReferral = function() {
     const code = document.getElementById('my-referral-code').textContent;
-    navigator.clipboard.writeText(`https://points-site.vercel.app/?ref=${code}`);
+    navigator.clipboard.writeText(`https://${location.hostname}/?ref=${code}`);
     showToast("تم نسخ رابط الدعوة!");
   }
 

@@ -868,7 +868,7 @@ import {
 // التكوين
 const firebaseConfig = {
   apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
-  authDomain: "my-websit-2e275.firebaseapp.com",
+  authDomain: location.hostname === "points-site.vercel.app" ? "points-site.vercel.app" : "my-websit-2e275.firebaseapp.com",
   projectId: "my-websit-2e275",
   storageBucket: "my-websit-2e275.appspot.com",
   messagingSenderId: "364536769411",

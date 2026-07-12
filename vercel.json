@@ -1,6 +1,9 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!tournaments.html|admin.html|sw.js|manifest.json|.*\\.css|.*\\.js|.*\\.png|.*\\.jpg|.*\\.svg).*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
