@@ -2227,6 +2227,124 @@
     }
   });
 
+  // === إدارة المزادات (لوحة الإدارة) ===
+  let allAuctionsAdmin = [];
+  function listenAuctionsAdmin() {
+    onSnapshot(collection(db, "auctions"), (snap) => {
+      allAuctionsAdmin = [];
+      snap.forEach(d => allAuctionsAdmin.push({ id: d.id, ...d.data() }));
+      allAuctionsAdmin.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      renderAuctionsAdmin();
+    });
+  }
+
+  function renderAuctionsAdmin() {
+    const list = document.getElementById("auctions-list");
+    const search = document.getElementById("auctions-search").value.toLowerCase();
+    const filtered = allAuctionsAdmin.filter(a => 
+      a.id.toLowerCase().includes(search) || 
+      (a.name || "").toLowerCase().includes(search) ||
+      (a.sellerName || "").toLowerCase().includes(search)
+    );
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state">لا توجد مزادات مطابقة.</div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(a => {
+      const isExpired = new Date() > a.expiresAt.toDate();
+      const statusText = { active: "نشط", closed: "مغلق (بانتظار التأكيد)", completed: "مكتمل ✅", cancelled: "ملغي ✕" }[a.status] || a.status;
+      const statusClass = { active: "status-confirmed", closed: "status-pending", completed: "status-confirmed", cancelled: "status-rejected" }[a.status] || "status-pending";
+      
+      return `
+        <div class="card" style="margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <div>
+              <div style="font-weight:700; font-size:14px;">${escapeHTML(a.name)} <span class="status-badge ${statusClass}">${statusText}</span></div>
+              <div style="font-size:12px; color:var(--text-dim);">البائع: ${escapeHTML(a.sellerName)} | المزايدات: ${a.bidsCount || 0}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="color:var(--gold); font-weight:800;">${fmt(a.currentPrice)}</div>
+              <div style="font-size:11px; color:var(--text-dim);">${isExpired ? 'انتهى الوقت' : 'جاري'}</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            ${a.status === 'active' || a.status === 'closed' ? `
+              <button class="icon-btn gold" onclick="completeAuction('${a.id}')">✅ تأكيد الفائز</button>
+              <button class="icon-btn danger" onclick="cancelAuction('${a.id}')">✕ إلغاء وإعادة الرصيد</button>
+            ` : ''}
+            <button class="icon-btn" onclick="deleteAuction('${a.id}')" style="background:var(--bg-soft);">🗑 حذف السجل</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  window.completeAuction = async function(id) {
+    const a = allAuctionsAdmin.find(x => x.id === id);
+    if (!a) return;
+    if (!confirm(`تأكيد فوز "${a.lastBidderUid || 'لا أحد'}" بمبلغ ${fmt(a.currentPrice)}؟ سيتم تحويل المبلغ للبائع.`)) return;
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const auctionRef = doc(db, "auctions", id);
+        const sellerRef = doc(db, "users", a.sellerUid);
+        
+        const sellerSnap = await transaction.get(sellerRef);
+        const sellerBalance = sellerSnap.exists() ? (sellerSnap.data().balance || 0) : 0;
+
+        // تحويل المبلغ المحجوز للبائع
+        if (a.lastBidderUid) {
+          transaction.update(sellerRef, { balance: sellerBalance + a.currentPrice });
+        }
+        
+        transaction.update(auctionRef, { status: "completed", updatedAt: serverTimestamp() });
+      });
+      showToast("✅ تم إكمال المزاد وتحويل المبلغ للبائع");
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    }
+  };
+
+  window.cancelAuction = async function(id) {
+    const a = allAuctionsAdmin.find(x => x.id === id);
+    if (!a) return;
+    if (!confirm("هل أنت متأكد من إلغاء المزاد؟ سيتم إعادة المبلغ المحجوز لآخر مزايد.")) return;
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const auctionRef = doc(db, "auctions", id);
+        if (a.lastBidderUid) {
+          const bidderRef = doc(db, "users", a.lastBidderUid);
+          const bidderSnap = await transaction.get(bidderRef);
+          if (bidderSnap.exists()) {
+            const balance = bidderSnap.data().balance || 0;
+            transaction.update(bidderRef, { balance: balance + a.currentPrice });
+          }
+        }
+        transaction.update(auctionRef, { status: "cancelled", updatedAt: serverTimestamp() });
+      });
+      showToast("✕ تم إلغاء المزاد وإعادة الرصيد");
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    }
+  };
+
+  window.deleteAuction = async function(id) {
+    if (confirm("حذف سجل المزاد نهائياً؟")) {
+      await deleteDoc(doc(db, "auctions", id));
+      showToast("تم حذف السجل");
+    }
+  };
+
+  document.getElementById("auctions-search").addEventListener("input", renderAuctionsAdmin);
+  document.getElementById("auctions-search-clear").addEventListener("click", () => {
+    document.getElementById("auctions-search").value = "";
+    renderAuctionsAdmin();
+  });
+  listenAuctionsAdmin();
+
   function listenRechargeCodes() {
     onSnapshot(query(collection(db, "rechargeCodes"), limit(50)), (snap) => {
       const list = document.getElementById("codes-list");
