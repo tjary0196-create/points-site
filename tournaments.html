@@ -860,7 +860,7 @@ a { color: inherit; text-decoration: none; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
@@ -930,18 +930,54 @@ function checkInviteBanner() {
   }
 }
 
+// ===== معالجة نتيجة الـ redirect عند العودة من صفحة جوجل =====
+getRedirectResult(auth).catch(err => {
+  if (err && err.code) {
+    showToast("خطأ تسجيل الدخول (redirect): " + err.code, true);
+    console.error("getRedirectResult error:", err);
+  }
+});
+
+// timeout احتياطي: إخفاء splash حتى لو onAuthStateChanged لم يستجب
+const splashTimeout = setTimeout(() => {
+  const splash = document.getElementById("splash");
+  if (splash && splash.style.display !== "none") {
+    splash.style.display = "none";
+    document.getElementById("login-screen").style.display = "block";
+  }
+}, 6000);
+
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+}
+
 // ===== تسجيل الدخول =====
 document.getElementById("google-login-btn").addEventListener("click", async () => {
-  try { await signInWithPopup(auth, provider); }
-  catch (err) {
-    if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+  if (isMobileDevice()) {
+    // على الموبايل: استخدام redirect مباشرة، أكثر استقراراً من popup
+    try {
       await signInWithRedirect(auth, provider);
-    } else { showToast("تعذر تسجيل الدخول: " + err.message, true); }
+    } catch (err) {
+      showToast("تعذر تسجيل الدخول: " + err.message, true);
+    }
+  } else {
+    // على الكمبيوتر: popup أولاً، مع fallback إلى redirect
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+        try { await signInWithRedirect(auth, provider); }
+        catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
+      } else if (err.code !== "auth/popup-closed-by-user") {
+        showToast("تعذر تسجيل الدخول: " + err.message, true);
+      }
+    }
   }
 });
 
 // ===== مراقبة حالة المستخدم =====
 onAuthStateChanged(auth, async (user) => {
+  clearTimeout(splashTimeout);
   document.getElementById("splash").style.display = "none";
   if (user) {
     currentUser = user;
