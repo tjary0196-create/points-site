@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
+<html lang="ar" dir="rtl"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Digital Syria Store — متجر الألعاب والاشتراكات</title>
@@ -9,9 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Digital Syria">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230E0D0F' width='192' height='192'/><circle fill='%23D4A24C' cx='96' cy='96' r='80'/><text x='96' y='115' text-anchor='middle' font-family='Arial' font-size='80' font-weight='bold' fill='%230E0D0F'>₪</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'&gt;&lt;rect fill='%230E0D0F' width='192' height='192'/&gt;&lt;circle fill='%23D4A24C' cx='96' cy='96' r='80'/&gt;&lt;text x='96' y='115' text-anchor='middle' font-family='Arial' font-size='80' font-weight='bold' fill='%230E0D0F'&gt;₪&lt;/text&gt;&lt;/svg&gt;">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&amp;family=Tajawal:wght@400;500;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="store-neon.css">
 <link rel="stylesheet" href="animations.css">
 <style>
@@ -341,14 +339,14 @@
 </style>
 </head>
 <body>
-<div id="splash"><div class="coin"></div></div>
+<div id="splash" style="display: none;"><div class="coin"></div></div>
 
 <div class="topbar">
   <div class="brand"><span class="coin"></span> Digital Syria Store</div>
   <div class="topbar-actions">
-    <div class="balance-pill" id="balance-pill">💰 <span id="balance-amount">0</span></div>
-    <button class="cart-btn" id="cart-trigger">🛒 <span class="cart-badge" id="cart-count">0</span></button>
-    <button class="menu-btn" id="open-sidebar">☰</button>
+    <div class="balance-pill" id="balance-pill" style="display: none;">💰 <span id="balance-amount">0</span></div>
+    <button class="cart-btn" id="cart-trigger" style="display: none;">🛒 <span class="cart-badge" id="cart-count">0</span></button>
+    <button class="menu-btn" id="open-sidebar" style="display: none;">☰</button>
   </div>
 </div>
 
@@ -412,28 +410,28 @@
 <div class="notification-container" id="notification-container"></div>
 
 <!-- رقم الإصدار الهادئ بزاوية الشاشة -->
-<div id="version-tag" style="position:fixed; top:10px; left:14px; z-index:100; font-size:10px; font-weight:400; color:var(--text-dim); opacity:0.55; pointer-events:none; font-family:'Tajawal', sans-serif; letter-spacing:0.5px;">v3.3</div>
+<div id="version-tag" style="position:fixed; top:10px; left:14px; z-index:100; font-size:10px; font-weight:400; color:var(--text-dim); opacity:0.55; pointer-events:none; font-family:'Tajawal', sans-serif; letter-spacing:0.5px;">v3.4</div>
 
-<section id="login-screen" class="container" style="margin-top:70px;">
+<section id="login-screen" class="container" style="margin-top: 70px; display: block;">
   <div class="hero-coin">
     <svg viewBox="0 0 120 120">
-      <circle cx="60" cy="60" r="56" fill="none" stroke="#D4A24C" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
-      <circle cx="60" cy="60" r="42" fill="#1C1A1D" stroke="#D4A24C" stroke-width="2"/>
+      <circle cx="60" cy="60" r="56" fill="none" stroke="#D4A24C" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"></circle>
+      <circle cx="60" cy="60" r="42" fill="#1C1A1D" stroke="#D4A24C" stroke-width="2"></circle>
       <text x="60" y="70" text-anchor="middle" font-family="Cairo" font-size="30" font-weight="900" fill="#D4A24C">₪</text>
     </svg>
   </div>
   <h1 class="hero-title">شحن ألعابك<br><span>وكل اشتراكاتك بمكان واحد</span></h1>
   <p class="hero-sub">سجّل دخولك بحساب جوجل بثانية، تصفح المنتجات، وأكمل طلبك بسهولة وأمان.</p>
   <button class="google-btn" id="google-login-btn">
-    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25c0-1.5-.2-3-.9-4.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 18.9 13 24 13c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5c-7.8 0-14.5 4.5-17.7 11.2z"/><path fill="#4CAF50" d="M24 45.5c5.1 0 9.8-1.9 13.3-5l-6.1-5.2C29.3 36.7 26.8 37.5 24 37.5c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5C9.4 41 16.1 45.5 24 45.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.5l6.1 5.2C40.9 35.9 44.5 31 44.5 25c0-1.5-.2-3-.9-4.5z"/></svg>
+    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25c0-1.5-.2-3-.9-4.5z"></path><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 18.9 13 24 13c2.8 0 5.3 1 7.3 2.7l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5c-7.8 0-14.5 4.5-17.7 11.2z"></path><path fill="#4CAF50" d="M24 45.5c5.1 0 9.8-1.9 13.3-5l-6.1-5.2C29.3 36.7 26.8 37.5 24 37.5c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5C9.4 41 16.1 45.5 24 45.5z"></path><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.5l6.1 5.2C40.9 35.9 44.5 31 44.5 25c0-1.5-.2-3-.9-4.5z"></path></svg>
     تسجيل الدخول بحساب جوجل
   </button>
   <div class="trust-row"><span><i class="dot"></i> تسجيل آمن عبر جوجل</span><span><i class="dot"></i> بدون كلمة سر</span></div>
-  <a class="telegram-join" href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener"><svg viewBox="0 0 240 240" fill="none"><circle cx="120" cy="120" r="120" fill="#289fe0"/><path fill="#fff" d="M179 72l-24 113c-1.8 8-6.6 10-13.4 6.2l-37-27.3-17.8 17.2c-2 2-3.6 3.6-7.4 3.6l2.6-37.6 68.4-61.8c3-2.6-.6-4-4.6-1.4l-84.6 53.2-36.4-11.4c-7.9-2.5-8-7.6 1.6-11.2l143-55.2c6.6-2.4 12.4 1.5 9.6 11.7z"/></svg> انضم لقناتنا على تلغرام — اضغط هنا</a>
+  <a class="telegram-join" href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener"><svg viewBox="0 0 240 240" fill="none"><circle cx="120" cy="120" r="120" fill="#289fe0"></circle><path fill="#fff" d="M179 72l-24 113c-1.8 8-6.6 10-13.4 6.2l-37-27.3-17.8 17.2c-2 2-3.6 3.6-7.4 3.6l2.6-37.6 68.4-61.8c3-2.6-.6-4-4.6-1.4l-84.6 53.2-36.4-11.4c-7.9-2.5-8-7.6 1.6-11.2l143-55.2c6.6-2.4 12.4 1.5 9.6 11.7z"></path></svg> انضم لقناتنا على تلغرام — اضغط هنا</a>
   <div class="footer-links"><button id="about-link-login">من نحن</button><button id="contact-link-login">تواصل مع الأدمن</button></div>
 </section>
 
-<div id="app">
+<div id="app" style="display: none;">
   <div class="container">
     <!-- AD SLIDER -->
     <div class="slider-wrapper" id="ads-slider-container">
@@ -472,7 +470,7 @@
         </div>
         <div class="field">
           <label>البريد الإلكتروني</label>
-          <input type="email" id="profile-email" placeholder="بريدك الإلكتروني..." disabled>
+          <input type="email" id="profile-email" placeholder="بريدك الإلكتروني..." disabled="">
         </div>
         <div class="field">
           <label>رقم الواتساب / التلغرام</label>
@@ -552,7 +550,7 @@
         <div class="field">
           <label>رفع صور (حتى 5 صور)</label>
           <div id="auction-images-drop" class="file-drop">📸 اضغط أو اسحب الصور هنا</div>
-          <input type="file" id="auction-images-input" accept="image/*" multiple style="display:none;">
+          <input type="file" id="auction-images-input" accept="image/*" multiple="" style="display:none;">
           <div id="auction-images-preview" style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;"></div>
         </div>
         <button class="primary-btn" id="create-auction-btn">🔨 إنشاء المزاد</button>
@@ -712,14 +710,14 @@
     <div class="contact-reveal">
       <button class="contact-reveal-btn" id="reveal-tg-btn">💬 اضغط هنا للتواصل عبر تلغرام</button>
       <a class="contact-banner tg" id="tg-banner" href="https://t.me/a_14271" target="_blank" rel="noopener">
-        <div class="cb-icon"><svg viewBox="0 0 240 240" fill="none"><circle cx="120" cy="120" r="120" fill="#289fe0"/><path fill="#fff" d="M179 72l-24 113c-1.8 8-6.6 10-13.4 6.2l-37-27.3-17.8 17.2c-2 2-3.6 3.6-7.4 3.6l2.6-37.6 68.4-61.8c3-2.6-.6-4-4.6-1.4l-84.6 53.2-36.4-11.4c-7.9-2.5-8-7.6 1.6-11.2l143-55.2c6.6-2.4 12.4 1.5 9.6 11.7z"/></svg></div>
+        <div class="cb-icon"><svg viewBox="0 0 240 240" fill="none"><circle cx="120" cy="120" r="120" fill="#289fe0"></circle><path fill="#fff" d="M179 72l-24 113c-1.8 8-6.6 10-13.4 6.2l-37-27.3-17.8 17.2c-2 2-3.6 3.6-7.4 3.6l2.6-37.6 68.4-61.8c3-2.6-.6-4-4.6-1.4l-84.6 53.2-36.4-11.4c-7.9-2.5-8-7.6 1.6-11.2l143-55.2c6.6-2.4 12.4 1.5 9.6 11.7z"></path></svg></div>
         <div class="cb-text"><div class="cb-title">تلغرام</div><div class="cb-sub">t.me/a_14271 — رد سريع</div></div>
         <div class="cb-arrow">◀</div>
       </a>
 
       <button class="contact-reveal-btn" id="reveal-wa-btn" style="margin-top:14px;">📱 اضغط هنا للتواصل عبر واتساب</button>
       <a class="contact-banner wa" id="wa-banner" href="https://wa.me/message/7KAA6T77SMHQG1?src=qr" target="_blank" rel="noopener">
-        <div class="cb-icon"><svg viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.2.6 4.3 1.7 6.1L4 29l8.1-1.6c1.7.9 3.7 1.4 5.9 1.4 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.4l-.4-.2-4.8 1 1-4.7-.2-.4C5.5 17.6 5 16.3 5 15c0-6.1 5-11 11-11s11 4.9 11 11-4.9 11-11 11zm6-8.2c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1.1-1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.6.1-.1.3-.4.5-.5.2-.2.2-.3.3-.5.1-.2 0-.4 0-.6-.1-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.3 5.2 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5-.1-.1-.3-.2-.6-.4z"/></svg></div>
+        <div class="cb-icon"><svg viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.2.6 4.3 1.7 6.1L4 29l8.1-1.6c1.7.9 3.7 1.4 5.9 1.4 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.4l-.4-.2-4.8 1 1-4.7-.2-.4C5.5 17.6 5 16.3 5 15c0-6.1 5-11 11-11s11 4.9 11 11-4.9 11-11 11zm6-8.2c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1.1-1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.6.1-.1.3-.4.5-.5.2-.2.2-.3.3-.5.1-.2 0-.4 0-.6-.1-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.3 5.2 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5-.1-.1-.3-.2-.6-.4z"></path></svg></div>
         <div class="cb-text"><div class="cb-title">واتساب</div><div class="cb-sub">تواصل مباشر عبر واتساب</div></div>
         <div class="cb-arrow">◀</div>
       </a>
@@ -730,11 +728,11 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp, doc, getDoc, setDoc, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
-    authDomain: location.hostname === "points-site.vercel.app" ? "points-site.vercel.app" : "my-websit-2e275.firebaseapp.com",
+    authDomain: "my-websit-2e275.firebaseapp.com",
     projectId: "my-websit-2e275",
     storageBucket: "my-websit-2e275.firebasestorage.app",
     messagingSenderId: "1079052257822",
@@ -830,17 +828,29 @@
     }
   }, 6000);
 
+  function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  }
+
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    // signInWithPopup أساسي (يعمل بالمتصفح العادي وPWA standalone)
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (err) {
-      // إذا حُظر الـ popup، نلجأ للـ redirect كاحتياطي
-      if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
-        try { await signInWithRedirect(auth, provider); }
-        catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
-      } else if (err.code !== "auth/popup-closed-by-user") {
+    if (isMobileDevice()) {
+      // على الموبايل: استخدام redirect مباشرة، أكثر استقراراً من popup
+      try {
+        await signInWithRedirect(auth, provider);
+      } catch (err) {
         showToast("تعذر تسجيل الدخول: " + err.message, true);
+      }
+    } else {
+      // على الكمبيوتر: popup أولاً، مع fallback إلى redirect
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+          try { await signInWithRedirect(auth, provider); }
+          catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
+        } else if (err.code !== "auth/popup-closed-by-user") {
+          showToast("تعذر تسجيل الدخول: " + err.message, true);
+        }
       }
     }
   });
@@ -1909,291 +1919,4 @@
   };
 
   window.listenLoyaltySettings = function() {
-    console.log("Loyalty settings listener placeholder");
-    // هنا يمكن إضافة منطق جلب إعدادات الولاء من Firestore إذا لزم الأمر
-  };
-
-  // ===== نظام المزادات (إنشاء وعرض) =====
-  let auctionImages = [];
-
-  // تفعيل رفع الصور للمزاد
-  const auctionDrop = document.getElementById("auction-images-drop");
-  const auctionInput = document.getElementById("auction-images-input");
-  const auctionPreview = document.getElementById("auction-images-preview");
-
-  if (auctionDrop) {
-    auctionDrop.addEventListener("click", () => auctionInput.click());
-    auctionInput.addEventListener("change", async (e) => {
-      const files = Array.from(e.target.files);
-      if (auctionImages.length + files.length > 5) {
-        showToast("الحد الأقصى هو 5 صور فقط", true);
-        return;
-      }
-
-      for (const file of files) {
-        if (!file.type.startsWith("image/")) continue;
-        const dataUrl = await compressImageToDataUrl(file, 600, 0.4); // ضغط أكبر لضمان عدم تجاوز حد 1MB للوثيقة (5 صور)
-        auctionImages.push(dataUrl);
-      }
-      renderAuctionImagesPreview();
-      auctionInput.value = "";
-    });
-  }
-
-  function renderAuctionImagesPreview() {
-    auctionPreview.innerHTML = auctionImages.map((img, idx) => `
-      <div style="position:relative; width:80px; height:80px; border-radius:8px; overflow:hidden; border:1px solid var(--hairline);">
-        <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
-        <button onclick="removeAuctionImage(${idx})" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:12px;">✕</button>
-      </div>
-    `).join("");
-  }
-
-  window.removeAuctionImage = function(idx) {
-    auctionImages.splice(idx, 1);
-    renderAuctionImagesPreview();
-  };
-
-  // إنشاء مزاد جديد
-  document.getElementById("create-auction-btn").addEventListener("click", async () => {
-    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
-    
-    const name = document.getElementById("auction-name").value.trim();
-    const game = document.getElementById("auction-game").value.trim();
-    const startPrice = parseFloat(document.getElementById("auction-start-price").value);
-    const minPrice = parseFloat(document.getElementById("auction-min-price").value);
-    const duration = parseInt(document.getElementById("auction-duration").value);
-    const description = document.getElementById("auction-description").value.trim();
-
-    if (!name || !game || isNaN(startPrice) || isNaN(duration)) {
-      showToast("يرجى ملء جميع الحقول المطلوبة", true);
-      return;
-    }
-
-    const btn = document.getElementById("create-auction-btn");
-    btn.disabled = true;
-    const originalText = btn.textContent;
-    btn.textContent = "جاري إنشاء المزاد…";
-
-    try {
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + duration);
-
-      const auctionData = {
-        name,
-        game,
-        description,
-        startPrice,
-        minPrice: isNaN(minPrice) ? startPrice : minPrice,
-        currentPrice: startPrice,
-        durationHours: duration,
-        images: auctionImages,
-        sellerUid: currentUser.uid,
-        sellerName: currentUser.displayName || "مستخدم",
-        status: "active",
-        bidsCount: 0,
-        createdAt: serverTimestamp(),
-        expiresAt: Timestamp.fromDate(expiresAt)
-      };
-
-      await addDoc(collection(db, "auctions"), auctionData);
-      
-      // إعادة تعيين النموذج
-      document.getElementById("auction-name").value = "";
-      document.getElementById("auction-game").value = "";
-      document.getElementById("auction-start-price").value = "";
-      document.getElementById("auction-min-price").value = "";
-      document.getElementById("auction-duration").value = "";
-      document.getElementById("auction-description").value = "";
-      auctionImages = [];
-      renderAuctionImagesPreview();
-
-      showToast("✅ تم إنشاء المزاد بنجاح!");
-      switchView("view-store");
-    } catch (err) {
-      showToast("خطأ أثناء الإنشاء: " + err.message, true);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = originalText;
-    }
-  });
-
-  let currentAuctionId = null;
-  let auctionDetailUnsub = null;
-
-  window.listenAuctions = function() {
-    onSnapshot(query(collection(db, "auctions"), where("status", "==", "active")), (snap) => {
-      const grid = document.getElementById("auctions-grid");
-      if (snap.empty) {
-        grid.innerHTML = `<div class="empty-state">لا توجد مزادات حية حالياً.</div>`;
-        return;
-      }
-
-      const auctions = [];
-      snap.forEach(d => auctions.push({ id: d.id, ...d.data() }));
-      
-      grid.innerHTML = auctions.map(a => `
-        <div class="product-card" onclick="openAuctionDetail('${a.id}')">
-          <div class="badge" style="background:var(--neon-pink);">🔥 مزاد حامي</div>
-          <img src="${a.images[0] || 'https://via.placeholder.com/150?text=No+Image'}" alt="${a.name}">
-          <div class="p-info">
-            <div class="p-name">${escapeHTML(a.name)}</div>
-            <div class="p-category">${escapeHTML(a.game)}</div>
-            <div class="p-price" style="color:var(--neon-pink);">${fmt(a.currentPrice)}</div>
-            <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">⏱ ينتهي: ${new Date(a.expiresAt.toDate()).toLocaleString('ar-EG')}</div>
-          </div>
-        </div>
-      `).join("");
-    });
-  };
-
-  window.openAuctionDetail = function(id) {
-    currentAuctionId = id;
-    switchView('view-auction-detail');
-    
-    if (auctionDetailUnsub) auctionDetailUnsub();
-    
-    auctionDetailUnsub = onSnapshot(doc(db, "auctions", id), (snap) => {
-      if (!snap.exists()) { switchView('view-store'); return; }
-      const a = snap.data();
-      
-      document.getElementById("auction-detail-name").textContent = a.name;
-      document.getElementById("auction-detail-game").textContent = a.game;
-      document.getElementById("auction-detail-current-price").textContent = fmt(a.currentPrice);
-      document.getElementById("auction-detail-min-price").textContent = fmt(a.minPrice);
-      document.getElementById("auction-detail-bids-count").textContent = a.bidsCount || 0;
-      document.getElementById("auction-detail-seller").textContent = a.sellerName;
-      document.getElementById("auction-detail-description").textContent = a.description;
-      
-      // عرض الصور
-      const imgContainer = document.getElementById("auction-detail-images");
-      imgContainer.innerHTML = a.images.map(img => `
-        <img src="${img}" style="width:100%; border-radius:12px; margin-bottom:8px; border:1px solid var(--hairline);">
-      `).join("");
-
-      // تحديث الوقت المتبقي
-      const updateTimer = () => {
-        const now = new Date().getTime();
-        const end = a.expiresAt.toDate().getTime();
-        const diff = end - now;
-        if (diff <= 0) {
-          document.getElementById("auction-detail-time-left").textContent = "انتهى الوقت";
-          document.getElementById("place-bid-btn").disabled = true;
-          return;
-        }
-        const h = Math.floor(diff / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-        document.getElementById("auction-detail-time-left").textContent = `${h}س ${m}د ${s}ث`;
-      };
-      updateTimer();
-      const timerInterval = setInterval(updateTimer, 1000);
-      
-      // تنظيف الـ interval عند إغلاق التفاصيل أو تحديثها
-      window.currentAuctionTimer = timerInterval;
-    });
-  };
-
-  // وضع مزايدة جديدة مع نظام الحجز (Escrow)
-  document.getElementById("place-bid-btn").addEventListener("click", async () => {
-    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
-    
-    const newBid = parseFloat(document.getElementById("auction-new-bid").value);
-    if (isNaN(newBid) || newBid <= 0) { showToast("يرجى إدخال مبلغ صحيح", true); return; }
-
-    const btn = document.getElementById("place-bid-btn");
-    btn.disabled = true;
-    const originalText = btn.textContent;
-    btn.textContent = "جاري المزايدة…";
-
-    try {
-      const auctionRef = doc(db, "auctions", currentAuctionId);
-      const userRef = doc(db, "users", currentUser.uid);
-
-      await runTransaction(db, async (transaction) => {
-        const aSnap = await transaction.get(auctionRef);
-        const uSnap = await transaction.get(userRef);
-        
-        if (!aSnap.exists()) throw new Error("المزاد غير موجود");
-        const a = aSnap.data();
-        
-        if (a.status !== "active") throw new Error("هذا المزاد غير نشط حالياً");
-        if (new Date() > a.expiresAt.toDate()) throw new Error("انتهى وقت المزاد");
-        if (currentUser.uid === a.sellerUid) throw new Error("لا يمكنك المزايدة على مزادك الخاص");
-        if (newBid <= a.currentPrice) throw new Error(`يجب أن تكون المزايدة أعلى من السعر الحالي (${fmt(a.currentPrice)})`);
-        
-        const userData = uSnap.data() || {};
-        const userBalance = Number(userData.balance) || 0;
-        const isSelfOutbid = (a.lastBidderUid === currentUser.uid);
-        
-        // الرصيد المتاح فعلياً هو الرصيد الحالي + المبلغ المحجوز مسبقاً لهذا المستخدم (إن وجد)
-        const effectiveBalance = userBalance + (isSelfOutbid ? a.lastBidAmount : 0);
-        if (effectiveBalance < newBid) throw new Error("رصيدك غير كافٍ لتغطية هذه المزايدة");
-
-        // 1. إعادة المبلغ للمزايد السابق (فقط إذا لم يكن هو نفسه المزايد الحالي)
-        if (a.lastBidderUid && a.lastBidAmount && !isSelfOutbid) {
-          const lastBidderRef = doc(db, "users", a.lastBidderUid);
-          const lastBidderSnap = await transaction.get(lastBidderRef);
-          if (lastBidderSnap.exists()) {
-            const lastBidderBalance = Number(lastBidderSnap.data().balance) || 0;
-            transaction.update(lastBidderRef, { balance: lastBidderBalance + a.lastBidAmount });
-          }
-        }
-
-        // 2. حجز المبلغ من المزايد الحالي (تحديث واحد للرصيد الصافي النهائي)
-        const finalBalance = effectiveBalance - newBid;
-        transaction.update(userRef, { balance: finalBalance });
-
-        // 3. تحديث بيانات المزاد
-        transaction.update(auctionRef, {
-          currentPrice: newBid,
-          lastBidderUid: currentUser.uid,
-          lastBidAmount: newBid,
-          bidsCount: (a.bidsCount || 0) + 1,
-          updatedAt: serverTimestamp()
-        });
-      });
-
-      document.getElementById("auction-new-bid").value = "";
-      showToast(`✅ تمت المزايدة بنجاح! تم حجز ${fmt(newBid)} من رصيدك.`);
-    } catch (err) {
-      showToast(err.message, true);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = originalText;
-    }
-  });
-
-  window.listenPaidAd = function() {
-    onSnapshot(doc(db, "settings", "paidAd"), (snap) => {
-      const wrap = document.getElementById("paid-ad-wrap");
-      const tickerWrap = document.getElementById("paid-ad-ticker");
-      if (!snap.exists()) { wrap.style.display = "none"; tickerWrap.style.display = "none"; return; }
-      const d = snap.data();
-      if (d.imageData) {
-        document.getElementById("paid-ad-image").src = d.imageData;
-        document.getElementById("paid-ad-link").href = d.link || "#";
-        wrap.style.display = "block";
-      } else {
-        wrap.style.display = "none";
-      }
-      if (d.ticker) {
-        document.getElementById("paid-ad-ticker-track").innerHTML = `<span>${escapeHTML(d.ticker)}</span>`;
-        tickerWrap.style.display = "block";
-      } else {
-        tickerWrap.style.display = "none";
-      }
-    });
-  };
-
-  // تسجيل service worker لدعم PWA
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
-      console.log('✅ Service Worker registered');
-    }).catch(err => {
-      console.log('⚠️ Service Worker registration failed:', err);
-    });
-  }
-</script>
-</body>
-</html>
+    console.log("L
