@@ -455,7 +455,7 @@
     <a onclick="closeSidebarAndSwitch('view-wallet')">💰 محفظتي</a>
     <a onclick="closeSidebarAndSwitch('view-orders')">📦 طلباتي</a>
     <a onclick="closeSidebarAndSwitch('view-cart')">🛒 السلة</a>
-    <a onclick="closeSidebarAndSwitch('view-admin')" id="admin-nav-link" style="display:none; color:var(--gold); font-weight:800;">🛠️ لوحة تحكم الأدمن</a>
+    <a onclick="window.location.href='/admin.html'" id="admin-nav-link" style="display:none; color:var(--gold); font-weight:800;">🛠️ لوحة تحكم الأدمن</a>
     <a href="tournaments.html">🏆 البطولات</a>
     <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
     <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
@@ -557,14 +557,6 @@
       </div>
     </div>
 
-
-    <div class="view" id="view-admin" style="padding:0;">
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px;">
-        <div class="section-title" style="margin:0;">🛠️ لوحة تحكم الأدمن</div>
-        <button class="secondary-btn" style="margin:0; padding:8px 16px;" onclick="switchView('view-store')">رجوع للمتجر</button>
-      </div>
-      <iframe id="admin-iframe" src="" style="width:100%; height:82vh; border:0; border-radius:14px; display:block;"></iframe>
-    </div>
 
     <div class="view" id="view-store">
       <div class="store-hero">
@@ -1825,10 +1817,6 @@
     const target = document.getElementById(viewId);
     if (target) {
       target.classList.add("active");
-      if (viewId === 'view-admin') {
-        const iframe = document.getElementById('admin-iframe');
-        if (iframe && !iframe.src) iframe.src = '/admin.html';
-      }
       if (viewId === 'view-profile' && currentUser) {
         // تحديث بيانات الملف الشخصي عند الفتح
         getDoc(doc(db, "users", currentUser.uid)).then(snap => {
