@@ -448,19 +448,20 @@
   </div>
   
   <!-- تحديث نهائي: تم جعل المستودع عاماً وتفعيل جميع الميزات -->
-  <div class="nav-links">
-    <a onclick="closeSidebarAndSwitch('view-home')">🏠 الرئيسية</a>
-    <a onclick="closeSidebarAndSwitch('view-profile')">👤 ملفي الشخصي</a>
-    <a onclick="closeSidebarAndSwitch('view-store')">🛍️ متجر الألعاب</a>
-    <a onclick="closeSidebarAndSwitch('view-wallet')">💰 محفظتي</a>
-    <a onclick="closeSidebarAndSwitch('view-orders')">📦 طلباتي</a>
-    <a onclick="closeSidebarAndSwitch('view-cart')">🛒 السلة</a>
-    <a onclick="window.location.href='/admin.html'" id="admin-nav-link" style="display:none; color:var(--gold); font-weight:800;">🛠️ لوحة تحكم الأدمن</a>
-    <a href="tournaments.html">🏆 البطولات</a>
-    <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
-    <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
-    <a onclick="handleLogout()" style="color:var(--red); font-weight:700;">🚪 تسجيل الخروج</a>
-  </div>
+    <div class="nav-links">
+      <a onclick="closeSidebarAndSwitch('view-home')">🏠 الرئيسية</a>
+      <a href="movies.html" style="background: linear-gradient(90deg, rgba(0, 212, 255, 0.15), transparent); border-right: 3px solid var(--gold); font-weight: 800; color: var(--gold);">🎬 قسم الأفلام (جديد)</a>
+      <a onclick="closeSidebarAndSwitch('view-profile')">👤 ملفي الشخصي</a>
+      <a onclick="closeSidebarAndSwitch('view-store')">🛍️ متجر الألعاب</a>
+      <a onclick="closeSidebarAndSwitch('view-wallet')">💰 محفظتي</a>
+      <a onclick="closeSidebarAndSwitch('view-orders')">📦 طلباتي</a>
+      <a onclick="closeSidebarAndSwitch('view-cart')">🛒 السلة</a>
+      <a onclick="window.location.href='/admin.html'" id="admin-nav-link" style="display:none; color:var(--gold); font-weight:800;">🛠️ لوحة تحكم الأدمن</a>
+      <a href="tournaments.html">🏆 البطولات</a>
+      <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
+      <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
+      <a onclick="handleLogout()" style="color:var(--red); font-weight:700;">🚪 تسجيل الخروج</a>
+    </div>
 
   <!-- قسم الإحالة -->
   <div class="ref-section" id="referral-section">
@@ -515,6 +516,14 @@
 
     <div class="view active" id="view-home">
       <div class="section-title">الأقسام الرئيسية</div>
+      <div class="category-grid">
+        <div class="cat-box" onclick="window.location.href='movies.html'" style="border-color: var(--gold); background: linear-gradient(160deg, #1a1610, #0c0a07), repeating-linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0px, rgba(0, 212, 255, 0.1) 2px, transparent 2px, transparent 14px); box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);">
+          <div class="cat-icons">
+            <div class="cat-icon-circle" style="border-color: var(--gold); box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);"><span>🎬</span></div>
+          </div>
+          <p style="background: var(--gold-soft); color: var(--gold);">الأفلام</p>
+        </div>
+      </div>
       <div class="category-grid" id="category-grid"></div>
       <div class="section-title">التصنيفات الفرعية</div>
       <div class="cat-row" id="cat-row"></div>
@@ -1799,6 +1808,21 @@
       });
     });
   }
+
+  function closeSidebarAndSwitch(viewId) {
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar) sidebar.classList.remove("open");
+    const overlay = document.getElementById("sidebar-overlay");
+    if (overlay) overlay.style.display = "none";
+    
+    if (viewId === 'view-home') switchView('view-home');
+    else if (viewId === 'view-profile') switchView('view-profile');
+    else if (viewId === 'view-store') switchView('view-store');
+    else if (viewId === 'view-wallet') switchView('view-wallet');
+    else if (viewId === 'view-orders') switchView('view-orders');
+    else if (viewId === 'view-cart') switchView('view-cart');
+  }
+  window.closeSidebarAndSwitch = closeSidebarAndSwitch;
 
   function bindModal(openIds, backdropId, closeId) {
     openIds.forEach((id) => {
