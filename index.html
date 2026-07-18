@@ -379,7 +379,9 @@
     <div class="user-avatar" id="sidebar-avatar">👤</div>
     <div class="user-info">
       <div class="name" id="sidebar-username">زائر</div>
+      <div class="user-handle" id="sidebar-userhandle" style="font-size:12px; color:var(--text-dim); margin-top:-2px;"></div>
       <div class="balance">الرصيد: <b id="sidebar-balance">0</b></div>
+      <div class="balance-usd-hint" id="sidebar-balance-usd" style="font-size:11px; color:var(--text-dim); margin-top:2px;"></div>
       <div class="loyalty-badge bronze" id="loyalty-badge-sidebar" style="margin-top:6px; margin-left:0;">🥉 برونزي</div>
     </div>
   </div>
@@ -388,10 +390,6 @@
     <div class="loyalty-progress"><div class="loyalty-progress-bar" id="loyalty-progress-bar" style="width:0%;"></div></div>
     <div class="loyalty-info" id="loyalty-info-text">أنفق 50$ أكثر للوصول للمستوى الفضي</div>
     <div class="loyalty-perks" id="loyalty-perks-list"></div>
-  </div>
-  <div class="currency-toggle">
-    <button class="active" data-currency="SYR" onclick="setCurrency('SYR')">ل.س سوري</button>
-    <button data-currency="USD" onclick="setCurrency('USD')">USD دولار</button>
   </div>
   
   <!-- تحديث نهائي: تم جعل المستودع عاماً وتفعيل جميع الميزات -->
@@ -402,6 +400,7 @@
     <a onclick="closeSidebarAndSwitch('view-wallet')">💰 محفظتي</a>
     <a onclick="closeSidebarAndSwitch('view-orders')">📦 طلباتي</a>
     <a onclick="closeSidebarAndSwitch('view-cart')">🛒 السلة</a>
+    <a onclick="closeSidebarAndSwitch('view-admin')" id="admin-nav-link" style="display:none; color:var(--gold); font-weight:800;">🛠️ لوحة تحكم الأدمن</a>
     <a href="tournaments.html">🏆 البطولات</a>
     <a href="https://t.me/DigitalSyriaStore" target="_blank" rel="noopener">📢 قناتنا على تلغرام</a>
     <a onclick="document.getElementById('contact-modal-backdrop').classList.add('active')">📞 تواصل معنا</a>
@@ -501,6 +500,14 @@
     </div>
 
 
+    <div class="view" id="view-admin" style="padding:0;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px;">
+        <div class="section-title" style="margin:0;">🛠️ لوحة تحكم الأدمن</div>
+        <button class="secondary-btn" style="margin:0; padding:8px 16px;" onclick="switchView('view-store')">رجوع للمتجر</button>
+      </div>
+      <iframe id="admin-iframe" src="" style="width:100%; height:82vh; border:0; border-radius:14px; display:block;"></iframe>
+    </div>
+
     <div class="view" id="view-store">
       <div class="store-hero">
         <div class="store-hero-inner">
@@ -523,7 +530,7 @@
       <div class="auction-section">
         <div class="auction-header">
           <div class="auction-title">المزادات الحية</div>
-          <button class="icon-btn gold" onclick="switchView('view-create-auction')" style="padding:6px 12px; font-size:12px;">+ إنشاء مزاد</button>
+          <button class="icon-btn gold" onclick="switchView('view-create-auction')" style="padding:6px 12px; font-size:12px; display:none;">+ إنشاء مزاد</button>
         </div>
         <div id="auctions-grid"><div class="empty-state">جاري تحميل المزادات...</div></div>
       </div>
@@ -623,13 +630,6 @@
         <div class="field-error">⚠️ الرجاء كتابة رقم هاتف صحيح (8-14 رقم) أو معرّف تلغرام يبدأ بـ @. إذا حدث عطل أو أرادت الإدارة الاستفسار سيكون هذا وسيلة التواصل معك، وإذا وضعت معلومة خاطئة لن تتم معاملتك.</div>
       </div>
       <div class="field"><label>ملاحظة (اختياري)</label><textarea id="checkout-note" placeholder="أي تفاصيل إضافية تحب تخبرنا فيها..."></textarea></div>
-      <div class="field">
-        <label>العملة التي ستدفع فيها</label>
-        <div class="pay-toggle">
-          <button id="checkout-cur-syr" data-cur="SYR" class="active">🇸🇾 ليرة سورية</button>
-          <button id="checkout-cur-usd" data-cur="USD">💵 دولار</button>
-        </div>
-      </div>
       <div class="summary-card"><div class="summary-row total"><span>المطلوب دفعه</span><span id="checkout-total">0</span></div></div>
       <div class="section-title" style="margin-bottom:0;">طريقة الدفع</div>
       <div class="pay-toggle">
@@ -697,17 +697,15 @@
       وبيتم إضافة الرصيد لحسابك يدوياً من طرف الأدمن خلال وقت قصير.
     </p>
     <div class="contact-reveal">
-      <button class="contact-reveal-btn" id="reveal-tg-btn">💬 اضغط هنا للتواصل عبر تلغرام</button>
-      <a class="contact-banner tg" id="tg-banner" href="https://t.me/a_14271" target="_blank" rel="noopener">
+      <a class="contact-banner tg show" id="tg-banner" href="https://t.me/a_14271" target="_blank" rel="noopener">
         <div class="cb-icon"><svg viewBox="0 0 240 240" fill="none"><circle cx="120" cy="120" r="120" fill="#289fe0"/><path fill="#fff" d="M179 72l-24 113c-1.8 8-6.6 10-13.4 6.2l-37-27.3-17.8 17.2c-2 2-3.6 3.6-7.4 3.6l2.6-37.6 68.4-61.8c3-2.6-.6-4-4.6-1.4l-84.6 53.2-36.4-11.4c-7.9-2.5-8-7.6 1.6-11.2l143-55.2c6.6-2.4 12.4 1.5 9.6 11.7z"/></svg></div>
-        <div class="cb-text"><div class="cb-title">تلغرام</div><div class="cb-sub">t.me/a_14271 — رد سريع</div></div>
+        <div class="cb-text"><div class="cb-title">تلغرام — دعم وشحن الرصيد</div><div class="cb-sub">t.me/a_14271 — رد سريع</div></div>
         <div class="cb-arrow">◀</div>
       </a>
 
-      <button class="contact-reveal-btn" id="reveal-wa-btn" style="margin-top:14px;">📱 اضغط هنا للتواصل عبر واتساب</button>
-      <a class="contact-banner wa" id="wa-banner" href="https://wa.me/message/7KAA6T77SMHQG1?src=qr" target="_blank" rel="noopener">
+      <a class="contact-banner wa show" id="wa-banner" href="https://wa.me/message/7KAA6T77SMHQG1?src=qr" target="_blank" rel="noopener" style="margin-top:14px;">
         <div class="cb-icon"><svg viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.2.6 4.3 1.7 6.1L4 29l8.1-1.6c1.7.9 3.7 1.4 5.9 1.4 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.4l-.4-.2-4.8 1 1-4.7-.2-.4C5.5 17.6 5 16.3 5 15c0-6.1 5-11 11-11s11 4.9 11 11-4.9 11-11 11zm6-8.2c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1.1-1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.6.1-.1.3-.4.5-.5.2-.2.2-.3.3-.5.1-.2 0-.4 0-.6-.1-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.3 5.2 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5-.1-.1-.3-.2-.6-.4z"/></svg></div>
-        <div class="cb-text"><div class="cb-title">واتساب</div><div class="cb-sub">تواصل مباشر عبر واتساب</div></div>
+        <div class="cb-text"><div class="cb-title">واتساب — دعم وشحن الرصيد</div><div class="cb-sub">تواصل مباشر عبر واتساب</div></div>
         <div class="cb-arrow">◀</div>
       </a>
     </div>
@@ -742,15 +740,22 @@
   let activeMainCategoryIds = null; // معرّفات القسم الرئيسي المختار + فروعه، تُستخدم عند الضغط على "الكل"
   let selectedPayMethod = "balance"; // الآن فقط من الرصيد
 
-  let displayCurrency = "SYR";
+  // ملاحظة: الموقع بالكامل يعرض ويقبض بالليرة السورية فقط. الدولار
+  // مستخدم داخلياً بس كوحدة حساب أساسية (متل ما كان)، وبيظهر للمستخدم
+  // كـ"معلومة" بس (كم تعادل مصاريه بالدولار) بدون أي خيار دفع/شراء فيه.
+  const displayCurrency = "SYR";
   let exchangeRate = 15000;
-  let checkoutCurrency = "SYR";
+  const checkoutCurrency = "SYR";
   let lastKnownBalance = 0;
 
-  function fmt(usdAmount, currency = displayCurrency) {
+  function fmt(usdAmount) {
     const n = Number(usdAmount) || 0;
-    if (currency === "USD") return n.toFixed(2) + " $";
     return Math.round(n * exchangeRate).toLocaleString("en-US") + " ل.س";
+  }
+
+  function fmtUSDHint(usdAmount) {
+    const n = Number(usdAmount) || 0;
+    return `≈ ${n.toFixed(2)} $`;
   }
 
   function escapeHTML(str) {
@@ -776,20 +781,13 @@
   document.getElementById("close-sidebar").addEventListener("click", () => document.getElementById("sidebar").classList.remove("open"));
   document.getElementById("sidebar-overlay").addEventListener("click", () => document.getElementById("sidebar").classList.remove("open"));
 
-  window.setCurrency = function(type) {
-    displayCurrency = type;
-    document.querySelectorAll('.currency-toggle button').forEach(b => b.classList.toggle('active', b.dataset.currency === type));
-    renderBalanceDisplays();
-    renderProducts();
-    updateCartUI();
-    updateCheckoutTotalDisplay();
-  };
-
   function renderBalanceDisplays() {
     document.getElementById("balance-amount").textContent = fmt(lastKnownBalance);
     document.getElementById("wallet-balance-amount").textContent = fmt(lastKnownBalance);
     document.getElementById("checkout-balance-amount").textContent = fmt(lastKnownBalance);
     document.getElementById("sidebar-balance").textContent = fmt(lastKnownBalance);
+    const usdHintEl = document.getElementById("sidebar-balance-usd");
+    if (usdHintEl) usdHintEl.textContent = fmtUSDHint(lastKnownBalance);
   }
 
   window.closeSidebarAndSwitch = function(viewId) {
@@ -877,6 +875,22 @@
       listenLoyaltySettings();
       listenAuctions();
       listenPaidAd();
+
+      // فحص صلاحية الأدمن: يظهر تبويب "لوحة تحكم الأدمن" بس لحساب الأدمن،
+      // ومافي أي طريقة تانية توصله غير هيك (ما عاد فيه رابط admin.html منفصل
+      // يستخدمه أي حدا؛ حتى لو حدا فتحه مباشرة، admin.html نفسه بيرفض
+      // ويسجّل خروج أي حساب مش مسجّل بمجموعة admins).
+      window.isCurrentUserAdmin = false;
+      try {
+        const adminDoc = await getDoc(doc(db, "admins", user.uid));
+        if (adminDoc.exists()) {
+          window.isCurrentUserAdmin = true;
+          const adminLink = document.getElementById("admin-nav-link");
+          if (adminLink) adminLink.style.display = "block";
+          const createAuctionBtn = document.querySelector('[onclick="switchView(\'view-create-auction\')"]');
+          if (createAuctionBtn) createAuctionBtn.style.display = "inline-block";
+        }
+      } catch (err) { console.warn("تعذر التحقق من صلاحية الأدمن:", err.message); }
     } else {
       document.getElementById("login-screen").style.display = "block";
       document.getElementById("app").style.display = "none";
@@ -953,6 +967,9 @@
       if(data) {
         document.getElementById('my-referral-code').textContent = data.referralCode || "جاري التحميل...";
         document.getElementById('referral-pending-balance').textContent = (data.pendingReward || 0).toFixed(2) + " $";
+
+        const handleEl = document.getElementById('sidebar-userhandle');
+        if (handleEl) handleEl.textContent = data.username ? ("@" + data.username) : "";
 
         // تحديث شارة الولاء في القائمة الجانبية مباشرة (وليس فقط عند فتح صفحة الملف الشخصي)
         currentUserTotalSpent = data.totalSpent || 0;
@@ -1328,20 +1345,8 @@
   // ===== الدفع =====
   function updateCheckoutTotalDisplay() {
     const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
-    document.getElementById("checkout-total").textContent = fmt(total, checkoutCurrency);
+    document.getElementById("checkout-total").textContent = fmt(total);
   }
-  document.getElementById("checkout-cur-syr").addEventListener("click", () => {
-    checkoutCurrency = "SYR";
-    document.getElementById("checkout-cur-syr").classList.add("active");
-    document.getElementById("checkout-cur-usd").classList.remove("active");
-    updateCheckoutTotalDisplay();
-  });
-  document.getElementById("checkout-cur-usd").addEventListener("click", () => {
-    checkoutCurrency = "USD";
-    document.getElementById("checkout-cur-usd").classList.add("active");
-    document.getElementById("checkout-cur-syr").classList.remove("active");
-    updateCheckoutTotalDisplay();
-  });
 
   document.getElementById("go-to-topup-btn").addEventListener("click", () => {
     document.getElementById("contact-modal-backdrop").classList.add("active");
@@ -1742,18 +1747,17 @@
   bindModal(["about-link-login", "about-link-home"], "about-modal-backdrop", "about-close-btn");
   bindModal(["contact-link-login", "contact-link-home"], "contact-modal-backdrop", "contact-close-btn");
 
-  document.getElementById("reveal-tg-btn").addEventListener("click", () => {
-    document.getElementById("tg-banner").classList.add("show");
-  });
-  document.getElementById("reveal-wa-btn").addEventListener("click", () => {
-    document.getElementById("wa-banner").classList.add("show");
-  });
+  // (تم حذف كبستَي "اضغط هنا" — طرق التواصل تبين مباشرة بدون خطوة إضافية)
 
   function switchView(viewId) {
     document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
     const target = document.getElementById(viewId);
     if (target) {
       target.classList.add("active");
+      if (viewId === 'view-admin') {
+        const iframe = document.getElementById('admin-iframe');
+        if (iframe && !iframe.src) iframe.src = '/admin.html';
+      }
       if (viewId === 'view-profile' && currentUser) {
         // تحديث بيانات الملف الشخصي عند الفتح
         getDoc(doc(db, "users", currentUser.uid)).then(snap => {
@@ -1765,6 +1769,12 @@
             document.getElementById("profile-email").value = currentUser.email || "";
             if (d.avatarUrl) document.getElementById("profile-avatar-display").innerHTML = `<img src="${d.avatarUrl}" style="width:100%; height:100%; object-fit:cover;">`;
             updateLoyaltyDisplay(d.totalSpent || 0);
+            document.getElementById("profile-total-spent").textContent = fmt(d.totalSpent || 0) + " (" + fmtUSDHint(d.totalSpent || 0) + ")";
+            if (d.createdAt && d.createdAt.toDate) {
+              document.getElementById("profile-join-date").textContent = d.createdAt.toDate().toLocaleDateString("ar-SY", { year: "numeric", month: "long", day: "numeric" });
+            } else {
+              document.getElementById("profile-join-date").textContent = "—";
+            }
           }
         });
       }
@@ -1797,6 +1807,8 @@
     document.getElementById('loyalty-badge-sidebar').textContent = levelData.name;
     document.getElementById('loyalty-badge-sidebar').className = `loyalty-badge ${level}`;
     document.getElementById('loyalty-progress-bar').style.width = progressPercent + '%';
+    const profileLevelEl = document.getElementById('profile-loyalty-level');
+    if (profileLevelEl) profileLevelEl.textContent = levelData.name;
 
     if (level !== 'gold') {
       const remaining = nextLevelData.minSpent - totalSpent;
@@ -2083,6 +2095,19 @@
           lastBidAmount: newBid,
           bidsCount: (a.bidsCount || 0) + 1,
           updatedAt: serverTimestamp()
+        });
+
+        // 4. تسجيل هذه المزايدة بسجل منفصل (auctions/{id}/bids) بكل تفاصيل
+        // المزايد، عشان الأدمن يقدر يشوف مين زاد وكم دفع وكيف يتواصل معه
+        const bidLogRef = doc(collection(db, "auctions", currentAuctionId, "bids"));
+        transaction.set(bidLogRef, {
+          uid: currentUser.uid,
+          name: userData.fullName || userData.name || currentUser.displayName || "مستخدم",
+          username: userData.username || "",
+          contact: userData.contact || "",
+          avatarUrl: userData.avatarUrl || "",
+          amount: newBid,
+          createdAt: serverTimestamp()
         });
       });
 
