@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Digital Syria Store">
+  <defs>
+    <linearGradient id="dsBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#131019"/>
+      <stop offset="1" stop-color="#0B0A10"/>
+    </linearGradient>
+    <linearGradient id="dsStroke" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00D4FF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="dsFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5CE8FF"/>
+      <stop offset="1" stop-color="#00D4FF"/>
+    </linearGradient>
+    <filter id="dsGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#dsBg)"/>
+
+  <!-- Hex shield frame -->
+  <polygon points="256,70 400,150 400,330 256,442 112,330 112,150"
+           fill="none" stroke="url(#dsStroke)" stroke-width="14" stroke-linejoin="round" filter="url(#dsGlow)"/>
+
+  <!-- D monogram + controller notch -->
+  <g filter="url(#dsGlow)">
+    <path d="M188 168 h58 c56 0 96 40 96 88 s-40 88-96 88 h-58 z"
+          fill="none" stroke="url(#dsFill)" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+  </g>
+
+  <!-- pixel spark accent (digital motif) -->
+  <rect x="242" y="234" width="28" height="28" fill="#F2EFE9"/>
+
+  <!-- small orbiting node -->
+  <circle cx="256" cy="70" r="10" fill="#00D4FF"/>
+  <circle cx="112" cy="150" r="7" fill="#8B5CF6"/>
+  <circle cx="400" cy="330" r="7" fill="#8B5CF6"/>
+</svg>
