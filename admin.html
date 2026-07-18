@@ -1998,14 +1998,48 @@
             <div class="auc-price">السعر الحالي: ${(a.currentPrice || 0).toFixed(2)}$ • مزايدات: ${a.bidsCount || 0}</div>
           </div>
           <div class="auc-status ${isLive ? "live" : ""}">${isLive ? "نشط" : (a.status === "closed" ? "مغلق" : "منتهي")}</div>
+          <button class="icon-btn" data-action="bids">👥 المزايدون</button>
           ${isLive ? `<button class="icon-btn danger" data-action="close">إغلاق</button>` : ""}
           <button class="icon-btn danger" data-action="delete">🗑</button>
         </div>
+        <div class="auc-bids-panel" id="auc-bids-${a.id}" style="display:none; background:var(--card); border:1px solid var(--hairline); border-radius:12px; padding:10px; margin:-4px 0 8px;"></div>
       `;
     }).join("");
 
     list.querySelectorAll(".auction-item").forEach(el => {
       const id = el.dataset.id;
+      const bidsBtn = el.querySelector('[data-action="bids"]');
+      if (bidsBtn) bidsBtn.addEventListener("click", async () => {
+        const panel = document.getElementById(`auc-bids-${id}`);
+        if (panel.style.display === "block") { panel.style.display = "none"; return; }
+        panel.style.display = "block";
+        panel.innerHTML = `<div class="empty-state">جاري تحميل المزايدين…</div>`;
+        try {
+          const bidsSnap = await getDocs(collection(db, "auctions", id, "bids"));
+          const bids = [];
+          bidsSnap.forEach(d => bids.push({ id: d.id, ...d.data() }));
+          bids.sort((x, y) => (y.createdAt?.seconds || 0) - (x.createdAt?.seconds || 0));
+          if (bids.length === 0) { panel.innerHTML = `<div class="empty-state">لا توجد مزايدات بعد</div>`; return; }
+          panel.innerHTML = bids.map(b => {
+            const dt = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().toLocaleString("ar-SY") : "—";
+            const avatarHTML = b.avatarUrl
+              ? `<img src="${b.avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`
+              : `<div style="width:36px;height:36px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;">👤</div>`;
+            return `
+              <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--hairline);">
+                ${avatarHTML}
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:700; font-size:13px;">${escapeHTML(b.name || "مستخدم")} ${b.username ? `<span style="color:var(--text-dim); font-weight:400;">@${escapeHTML(b.username)}</span>` : ""}</div>
+                  <div style="font-size:11.5px; color:var(--text-dim);">📞 ${escapeHTML(b.contact || "—")} · ${dt}</div>
+                </div>
+                <div style="font-weight:800; color:var(--gold);">${(b.amount || 0).toFixed(2)}$</div>
+              </div>
+            `;
+          }).join("");
+        } catch (err) {
+          panel.innerHTML = `<div class="empty-state">تعذر تحميل المزايدين: ${escapeHTML(err.message)}</div>`;
+        }
+      });
       const closeBtn = el.querySelector('[data-action="close"]');
       if (closeBtn) closeBtn.addEventListener("click", async () => {
         await updateDoc(doc(db, "auctions", id), { status: "closed" });
@@ -2228,12 +2262,22 @@
 
     if (results.length === 0) { list.innerHTML = `<div class="empty-state">لا يوجد مستخدمون مطابقون</div>`; return; }
 
-    list.innerHTML = results.map(u => `
+    list.innerHTML = results.map(u => {
+      const userOrders = allOrders.filter(o => o.uid === u.id);
+      const confirmedOrders = userOrders.filter(o => o.status === "confirmed");
+      const lastOrder = userOrders.slice().sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
+      const joinDate = u.createdAt && u.createdAt.toDate ? u.createdAt.toDate().toLocaleDateString("ar-SY", { year: "numeric", month: "long", day: "numeric" }) : "—";
+      const lastOrderDate = lastOrder && lastOrder.createdAt && lastOrder.createdAt.toDate ? lastOrder.createdAt.toDate().toLocaleDateString("ar-SY", { year: "numeric", month: "long", day: "numeric" }) : "—";
+      const avatarHTML = u.avatarUrl
+        ? `<img src="${u.avatarUrl}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`
+        : `<div style="width:44px;height:44px;border-radius:50%;background:var(--gold-soft);display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>`;
+      return `
       <div class="user-item" data-uid="${u.id}">
-        <div class="user-header">
-          <div>
+        <div class="user-header" style="align-items:center; gap:10px;">
+          ${avatarHTML}
+          <div style="flex:1;">
             <div class="user-name">${escapeHTML(u.fullName || u.name || "مستخدم")}</div>
-            <div class="user-username">@${escapeHTML(u.username || "—")}</div>
+            <div class="user-username">@${escapeHTML(u.username || "—")} · ${escapeHTML(u.email || "—")}</div>
           </div>
           <div class="pill">${escapeHTML(u.loyaltyLevel || "bronze")}</div>
         </div>
@@ -2242,8 +2286,18 @@
           <div class="user-stat"><div class="val">${(u.totalSpent || 0).toFixed(2)}$</div><div class="lbl">إجمالي الإنفاق</div></div>
           <div class="user-stat"><div class="val">${escapeHTML(u.contact || "—")}</div><div class="lbl">التواصل</div></div>
         </div>
+        <div class="user-stats">
+          <div class="user-stat"><div class="val">${userOrders.length}</div><div class="lbl">عدد الطلبات</div></div>
+          <div class="user-stat"><div class="val">${confirmedOrders.length}</div><div class="lbl">طلبات مؤكدة</div></div>
+          <div class="user-stat"><div class="val">${lastOrderDate}</div><div class="lbl">آخر طلب</div></div>
+        </div>
+        <div class="user-stats">
+          <div class="user-stat"><div class="val">${u.totalReferrals || 0}</div><div class="lbl">عدد الإحالات</div></div>
+          <div class="user-stat"><div class="val">${(u.pendingReward || 0).toFixed(2)}$</div><div class="lbl">مكافآت معلّقة</div></div>
+          <div class="user-stat"><div class="val">${joinDate}</div><div class="lbl">تاريخ الانضمام</div></div>
+        </div>
       </div>
-    `).join("");
+    `;}).join("");
 
     list.querySelectorAll(".user-item").forEach(el => {
       el.addEventListener("click", () => {
