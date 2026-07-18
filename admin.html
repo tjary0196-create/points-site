@@ -284,6 +284,10 @@
           <label>رابط الإعلان (عند الضغط)</label>
           <input type="text" id="ad-link" placeholder="مثال: https://t.me/DigitalSyriaStore">
         </div>
+        <div class="field">
+          <label>نص إعلاني متحرك (يظهر بشريط متحرك تحت الصورة، اختياري)</label>
+          <input type="text" id="ad-caption" placeholder="مثال: ⚡ أسعار منافسة وشحن فوري لكل الألعاب">
+        </div>
         <div class="modal-btn-row">
           <button class="secondary-btn" id="ad-cancel-btn">إلغاء</button>
           <button class="primary-btn" id="ad-save-btn">حفظ الإعلان</button>
@@ -1554,6 +1558,7 @@
     document.getElementById("ad-image-preview").style.display = "none";
     document.getElementById("ad-image-input").value = "";
     document.getElementById("ad-link").value = "";
+    document.getElementById("ad-caption").value = "";
   });
 
   document.getElementById("ad-image-drop").addEventListener("click", () => document.getElementById("ad-image-input").click());
@@ -1580,6 +1585,7 @@
       await addDoc(collection(db, "ads"), {
         imageData: adImageData,
         link: link || "#",
+        caption: document.getElementById("ad-caption").value.trim(),
         createdAt: serverTimestamp()
       });
       document.getElementById("ad-upload-form").style.display = "none";
@@ -1587,6 +1593,7 @@
       document.getElementById("ad-image-preview").style.display = "none";
       document.getElementById("ad-image-input").value = "";
       document.getElementById("ad-link").value = "";
+      document.getElementById("ad-caption").value = "";
       showToast("تم إضافة الإعلان بنجاح!");
     } catch (err) {
       showToast("خطأ في الرفع: " + err.message, true);
