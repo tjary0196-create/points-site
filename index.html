@@ -816,8 +816,21 @@
     }
   }, 6000);
 
+  // على متصفحات الموبايل، النافذة المنبثقة (signInWithPopup) غير موثوقة إطلاقاً:
+  // تسجيل الدخول بجوجل بيكتمل فعلياً، بس النافذة بتفشل ترجع النتيجة للصفحة
+  // الأساسية بسبب قيود الكوكيز على الموبايل — فيظهر كأن المستخدم "أغلق النافذة"
+  // (وهو ما لم يفعل)، ويرجع بصمت لصفحة تسجيل الدخول بدون أي رسالة خطأ.
+  // الحل: نستخدم signInWithRedirect مباشرة على الموبايل، وهي الطريقة الموصى
+  // بها رسمياً من Firebase لأي متصفح موبايل.
+  const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile|Silk/i.test(navigator.userAgent);
+
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    // signInWithPopup أساسي (يعمل بالمتصفح العادي وPWA standalone)
+    if (isMobileDevice) {
+      try { await signInWithRedirect(auth, provider); }
+      catch (err) { showToast("تعذر تسجيل الدخول: " + err.message, true); }
+      return;
+    }
+    // signInWithPopup أساسي على سطح المكتب (يعمل بالمتصفح العادي وPWA standalone)
     try {
       await signInWithPopup(auth, provider);
     } catch (err) {
