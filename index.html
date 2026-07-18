@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Digital Syria Store — متجر الألعاب والاشتراكات</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#D4A24C">
+<meta name="theme-color" content="#0B0A10">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Digital Syria">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230E0D0F' width='192' height='192'/><circle fill='%23D4A24C' cx='96' cy='96' r='80'/><text x='96' y='115' text-anchor='middle' font-family='Arial' font-size='80' font-weight='bold' fill='%230E0D0F'>₪</text></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/logo-icon.svg">
+<link rel="apple-touch-icon" href="assets/logo-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="store-neon.css">
@@ -17,7 +18,7 @@
 <style>
   :root{
     --bg: #0E0D0F; --bg-soft: #171517; --card: #1C1A1D;
-    --gold: #D4A24C; --gold-soft: rgba(212,162,76,0.14);
+    --gold: #00D4FF; --gold-soft: rgba(0,212,255,0.14);
     --text: #F2EFE9; --text-dim: #ADA9A4;
     --green: #3FA66A; --red: #B4543A; --hairline: rgba(242,239,233,0.08);
   }
@@ -31,12 +32,13 @@
   .container{ max-width: 480px; margin: 0 auto; padding: 0 18px 100px; }
 
   #splash{ position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; }
-  #splash .coin{ width:50px; height:50px; border-radius:50%; background: conic-gradient(from 180deg, var(--neon-blue), #80eaff, var(--neon-blue)); box-shadow:0 0 25px rgba(0, 212, 255, 0.7); animation: spin 1s linear infinite; }
+  #splash .brand-logo{ width:56px; height:56px; filter: drop-shadow(0 0 18px rgba(0,212,255,0.65)); animation: logo-pulse 1.1s ease-in-out infinite; }
+  @keyframes logo-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.08); } }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
   .topbar{ display:flex; align-items:center; justify-content:space-between; padding: 18px 18px 0; max-width: 480px; margin: 0 auto; gap:8px; }
   .brand{ display:flex; align-items:center; gap:8px; font-family:'Cairo'; font-weight:900; font-size:17px; flex-shrink:0; }
-  .brand .coin{ width:22px; height:22px; border-radius:50%; background: conic-gradient(from 180deg, var(--neon-blue), #80eaff, var(--neon-blue)); box-shadow: 0 0 12px rgba(0, 212, 255, 0.6); }
+  .brand-logo{ width:26px; height:26px; flex-shrink:0; filter: drop-shadow(0 0 8px rgba(0,212,255,0.5)); }
   .topbar-actions{ display:flex; gap:8px; align-items:center; }
   .balance-pill{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:800; color:var(--neon-blue); border:1px solid var(--neon-blue); background:rgba(0, 212, 255, 0.1); padding:6px 12px; border-radius:999px; display:none; box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
   .menu-btn{ background:var(--card); border:1px solid var(--hairline); border-radius:10px; padding:6px 10px; cursor:pointer; font-size:18px; color:var(--text); display:none; }
@@ -68,7 +70,7 @@
   .ref-balance-row{ display:flex; justify-content:space-between; padding:10px 0; border-top:1px solid var(--hairline); }
   .ref-balance-row span{ font-size:13px; color:var(--text-dim); }
   .ref-balance-row b{ color:var(--gold); }
-  .withdraw-btn{ width:100%; padding:10px; background:linear-gradient(135deg, var(--gold), #b9883e); color:#1A140A; border:none; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; margin-top:5px; }
+  .withdraw-btn{ width:100%; padding:10px; background:linear-gradient(135deg, var(--gold), #5CE8FF); color:#1A140A; border:none; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; margin-top:5px; }
   #referral-error-msg{ display:none; color:var(--red); font-size:13px; margin-top:8px; font-weight:bold; text-align:center; }
 
   /* AD SLIDER */
@@ -106,7 +108,7 @@
   .hero-title{ font-size: 28px; font-weight:900; line-height:1.35; margin-bottom:10px; }
   .hero-title span{ color: var(--gold); }
   .hero-sub{ color: var(--text-dim); font-size:14.5px; line-height:1.7; margin-bottom:28px; }
-  .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; background:#D4A24C; color:#fff; font-weight:700; font-size:15px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; margin: 0 auto; width:100%; max-width:300px; animation: btn-enter 0.45s cubic-bezier(0.34,1.56,0.64,1) both; transition: box-shadow 0.25s ease, transform 0.2s ease; }
+  .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#1A140A; font-weight:700; font-size:15px; padding:13px 22px; border-radius:12px; border:none; cursor:pointer; margin: 0 auto; width:100%; max-width:300px; animation: btn-enter 0.45s cubic-bezier(0.34,1.56,0.64,1) both; transition: box-shadow 0.25s ease, transform 0.2s ease; }
   .google-btn:hover{ box-shadow: 0 0 22px rgba(212,162,76,0.55), 0 4px 14px rgba(212,162,76,0.3); transform: translateY(-2px); }
   .google-btn:active{ transform: translateY(0); box-shadow: none; }
   .google-btn svg{ width:20px; height:20px; animation: icon-pulse 0.7s ease 0.45s both; }
@@ -148,8 +150,7 @@
   @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
   
   .empty-state{ text-align:center; padding:30px 20px; color:var(--text-dim); font-size:14px; }
-  .primary-btn{ background:linear-gradient(135deg, #D4A24C, #b9883e); color:#1A140A; border:none; border-radius:12px; padding:12px 20px; font-weight:800; font-size:14px; cursor:pointer; width:100%; margin-top:12px; }
-  .primary-btn:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(212,162,76,0.3); }
+  .primary-btn:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,212,255,0.3); }
   .secondary-btn{ background:var(--card); border:1px solid var(--hairline); color:var(--text); border-radius:12px; padding:12px 20px; font-weight:700; font-size:14px; cursor:pointer; width:100%; margin-top:8px; }
   .secondary-btn:hover{ border-color:var(--gold); color:var(--gold); }
   .icon-btn{ background:var(--card); border:1px solid var(--hairline); color:var(--text); border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; }
@@ -186,7 +187,7 @@
   .file-status{ display:none; color:var(--green); font-size:13px; margin-top:6px; }
   .file-remove-btn{ background:var(--red); color:#fff; border:none; border-radius:6px; padding:4px 10px; font-size:12px; cursor:pointer; margin-top:6px; display:none; }
 
-  .primary-btn{ width:100%; background: linear-gradient(135deg, var(--gold), #b9883e); color:#1A140A; font-weight:800; font-size:15px; padding:14px; border:none; border-radius:14px; cursor:pointer; margin-top:18px; }
+  .primary-btn{ width:100%; background: linear-gradient(135deg, var(--gold), #5CE8FF); color:#1A140A; font-weight:800; font-size:15px; padding:14px; border:none; border-radius:14px; cursor:pointer; margin-top:18px; }
   .primary-btn:disabled{ opacity:0.5; }
   .secondary-btn{ width:100%; background:var(--card); border:1px solid var(--hairline); color:var(--text); font-weight:700; font-size:14px; padding:12px; border-radius:14px; cursor:pointer; margin-top:10px; }
 
@@ -338,13 +339,29 @@
   /* === Glassmorphism === */
   .glass-card{ background:rgba(28,26,29,0.4); backdrop-filter:blur(10px); border:1px solid rgba(242,239,233,0.1); }
 
+  /* ===== سطح المكتب: تخطيط عريض حقيقي بدل عمود الجوال الضيق ===== */
+  @media (min-width: 900px){
+    body{ background: radial-gradient(circle at 50% -10%, #1a1420 0%, var(--bg) 60%); }
+    .topbar{ max-width: 1180px; padding: 22px 32px 0; }
+    .container{ max-width: 1180px; padding: 0 32px 100px; }
+    #login-screen.container{ max-width: 420px; }
+    .category-grid{ grid-template-columns:repeat(6, 1fr); }
+    .product-grid{ grid-template-columns:repeat(4, 1fr); gap:16px; }
+    #auctions-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+    #sidebar{ width:320px; }
+    .brand{ font-size:19px; }
+    .brand-logo{ width:30px; height:30px; }
+  }
+  @media (min-width: 1280px){
+    .product-grid{ grid-template-columns:repeat(5, 1fr); }
+  }
 </style>
 </head>
 <body>
-<div id="splash"><div class="coin"></div></div>
+<div id="splash"><img src="assets/logo-icon.svg" class="brand-logo" alt="Digital Syria Store"></div>
 
 <div class="topbar">
-  <div class="brand"><span class="coin"></span> Digital Syria Store</div>
+  <div class="brand"><img src="assets/logo-icon.svg" class="brand-logo" alt="Digital Syria Store"> Digital Syria Store</div>
   <div class="topbar-actions">
     <div class="balance-pill" id="balance-pill">💰 <span id="balance-amount">0</span></div>
     <button class="cart-btn" id="cart-trigger">🛒 <span class="cart-badge" id="cart-count">0</span></button>
@@ -355,7 +372,7 @@
 <div id="sidebar-overlay"></div>
 <aside id="sidebar">
   <div class="sidebar-header">
-    <span class="brand" style="font-size:15px;">🪙 المتجر</span>
+    <span class="brand" style="font-size:15px;"><img src="assets/logo-icon.svg" class="brand-logo" style="width:20px;height:20px;" alt="Digital Syria Store"> المتجر</span>
     <button class="sidebar-close" id="close-sidebar">✕</button>
   </div>
   <div class="sidebar-user">
@@ -416,11 +433,7 @@
 
 <section id="login-screen" class="container" style="margin-top:70px;">
   <div class="hero-coin">
-    <svg viewBox="0 0 120 120">
-      <circle cx="60" cy="60" r="56" fill="none" stroke="#D4A24C" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
-      <circle cx="60" cy="60" r="42" fill="#1C1A1D" stroke="#D4A24C" stroke-width="2"/>
-      <text x="60" y="70" text-anchor="middle" font-family="Cairo" font-size="30" font-weight="900" fill="#D4A24C">₪</text>
-    </svg>
+    <img src="assets/logo-icon.svg" alt="Digital Syria Store" style="width:120px; height:120px; filter: drop-shadow(0 0 24px rgba(0,212,255,0.5));">
   </div>
   <h1 class="hero-title">شحن ألعابك<br><span>وكل اشتراكاتك بمكان واحد</span></h1>
   <p class="hero-sub">سجّل دخولك بحساب جوجل بثانية، تصفح المنتجات، وأكمل طلبك بسهولة وأمان.</p>
@@ -625,7 +638,7 @@
       </div>
       <div id="balance-pay-box" class="payment-box">رصيدك الحالي: <b id="checkout-balance-amount">0</b><br>سيتم خصم المبلغ مباشرة من رصيدك، ويبقى الطلب قيد المراجعة لحين تأكيد الأدمن.</div>
       <button class="primary-btn" id="confirm-order-btn">تأكيد الطلب</button>
-      <button class="secondary-btn" id="go-to-topup-btn">شحن الرصيد (إذا كان رصيدك غير كافٍ)</button>
+      <button class="secondary-btn" id="go-to-topup-btn">📞 تواصل مع الأدمن لشحن رصيدك</button>
     </div>
 
     <div class="view" id="view-orders">
@@ -636,8 +649,8 @@
     <div class="view" id="view-wallet">
       <div class="section-title">💰 محفظتي</div>
       <div class="summary-card"><div class="summary-row total"><span>رصيدك الحالي</span><span id="wallet-balance-amount">0</span></div></div>
-      <button class="primary-btn" id="open-topup-btn">طلب شحن رصيد</button>
-      
+      <button class="primary-btn" id="open-topup-btn">📞 شحن الرصيد (تواصل مع الأدمن)</button>
+
       <div class="summary-card" style="margin-top:16px;">
         <div class="section-title" style="font-size:14px; margin-bottom:12px;">🔑 شحن كود رصيد</div>
         <div class="field">
@@ -645,9 +658,6 @@
         </div>
         <button class="primary-btn" id="redeem-code-btn" style="width:100%;">✅ تفعيل الكود</button>
       </div>
-
-      <div class="section-title">طلبات الشحن السابقة</div>
-      <div id="topups-list"><div class="empty-state">ما عندك طلبات شحن بعد</div></div>
     </div>
   </div>
 </div>
@@ -674,33 +684,6 @@
 
 
 
-<div class="modal-backdrop" id="topup-modal-backdrop">
-  <div class="modal"><button class="modal-close" id="topup-close-btn">إغلاق ✕</button>
-    <h3>طلب شحن رصيد</h3>
-    <div id="topup-payment-box" class="payment-box">جاري تحميل بيانات الدفع…</div>
-    <div class="field">
-      <label>العملة التي حوّلت فيها</label>
-      <div class="pay-toggle">
-        <button id="topup-cur-syr" data-cur="SYR" class="active">🇸🇾 ليرة سورية</button>
-        <button id="topup-cur-usd" data-cur="USD">💵 دولار</button>
-      </div>
-    </div>
-    <div class="field" id="field-topup-amount">
-      <label>المبلغ الذي حوّلته</label><input type="number" id="topup-amount" step="0.01" placeholder="مثال: 10">
-      <div class="field-error">الرجاء كتابة المبلغ</div>
-    </div>
-    <div class="field"><label>ملاحظة (اختياري)</label><textarea id="topup-note" placeholder="مثال: حولت عبر شام كاش الساعة 5..."></textarea></div>
-    <div class="field">
-      <label>إرفاق صورة إيصال الدفع (اختياري)</label>
-      <div class="file-upload-area" id="topup-receipt-drop">📎 اضغط لإرفاق صورة الإيصال</div>
-      <input type="file" id="topup-receipt-input" accept="image/*">
-      <div class="file-status" id="topup-receipt-status">✅ تم رفع الصورة بنجاح</div>
-      <button class="file-remove-btn" id="topup-receipt-remove">إزالة الصورة</button>
-    </div>
-    <button class="primary-btn" id="submit-topup-btn">إرسال طلب الشحن</button>
-  </div>
-</div>
-
 <div class="modal-backdrop" id="about-modal-backdrop">
   <div class="modal"><button class="modal-close" id="about-close-btn">إغلاق ✕</button><h3>من نحن</h3><p>Digital Syria Store هو متجرك الموثوق لشحن الألعاب والاشتراكات الرقمية بأسرع وقت وأفضل سعر.</p></div>
 </div>
@@ -709,6 +692,10 @@
   <div class="modal">
     <button class="modal-close" id="contact-close-btn">إغلاق ✕</button>
     <h3>تواصل مع الأدمن</h3>
+    <p style="color:var(--text-dim); font-size:13px; line-height:1.8; margin-bottom:14px;">
+      لشحن رصيدك: تواصل معنا عبر تلغرام أو واتساب، حوّل المبلغ حسب الطريقة المتفق عليها،
+      وبيتم إضافة الرصيد لحسابك يدوياً من طرف الأدمن خلال وقت قصير.
+    </p>
     <div class="contact-reveal">
       <button class="contact-reveal-btn" id="reveal-tg-btn">💬 اضغط هنا للتواصل عبر تلغرام</button>
       <a class="contact-banner tg" id="tg-banner" href="https://t.me/a_14271" target="_blank" rel="noopener">
@@ -747,18 +734,17 @@
   const provider = new GoogleAuthProvider();
 
   let currentUser = null;
+  let currentUserTotalSpent = 0;
   let cart = [];
   let allProducts = [];
   let allCategories = [];
   let activeCategory = null; // null يعني الكل
   let activeMainCategoryIds = null; // معرّفات القسم الرئيسي المختار + فروعه، تُستخدم عند الضغط على "الكل"
   let selectedPayMethod = "balance"; // الآن فقط من الرصيد
-  let topupReceiptDataUrl = "";
 
   let displayCurrency = "SYR";
   let exchangeRate = 15000;
   let checkoutCurrency = "SYR";
-  let topupCurrency = "SYR";
   let lastKnownBalance = 0;
 
   function fmt(usdAmount, currency = displayCurrency) {
@@ -861,7 +847,6 @@
       loadProducts();
       loadCategories();
       listenOrders();
-      listenTopups();
       listenAdsSlider();
 
       listenReferralStatus();
@@ -945,7 +930,11 @@
       if(data) {
         document.getElementById('my-referral-code').textContent = data.referralCode || "جاري التحميل...";
         document.getElementById('referral-pending-balance').textContent = (data.pendingReward || 0).toFixed(2) + " $";
-        
+
+        // تحديث شارة الولاء في القائمة الجانبية مباشرة (وليس فقط عند فتح صفحة الملف الشخصي)
+        currentUserTotalSpent = data.totalSpent || 0;
+        updateLoyaltyDisplay(currentUserTotalSpent);
+
         // عرض صورة المستخدم في القائمة الجانبية والملف الشخصي تلقائياً
         if (data.avatarUrl) {
           const imgHTML = `<img src="${data.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
@@ -1332,21 +1321,7 @@
   });
 
   document.getElementById("go-to-topup-btn").addEventListener("click", () => {
-    // فتح مودال الشحن
-    document.getElementById("open-topup-btn").click();
-  });
-
-  // زرّي عملة مودال شحن الرصيد كانوا بدون أي مستمع نقر، فالمبلغ كان يُحسب دايمًا
-  // كليرة سورية حتى لو المستخدم ضغط "دولار" — بق مالي خطير تم إصلاحه هون.
-  document.getElementById("topup-cur-syr").addEventListener("click", () => {
-    topupCurrency = "SYR";
-    document.getElementById("topup-cur-syr").classList.add("active");
-    document.getElementById("topup-cur-usd").classList.remove("active");
-  });
-  document.getElementById("topup-cur-usd").addEventListener("click", () => {
-    topupCurrency = "USD";
-    document.getElementById("topup-cur-usd").classList.add("active");
-    document.getElementById("topup-cur-syr").classList.remove("active");
+    document.getElementById("contact-modal-backdrop").classList.add("active");
   });
 
   // سعر الصرف كان يُقرأ مرة وحدة فقط (getDoc) وبس لما تفتح صفحة الدفع أو الشحن —
@@ -1548,72 +1523,17 @@
     });
   }
 
-  // تم حذف استدعاء receipt-drop/receipt-input/... لأن هذه العناصر غير موجودة بالـ HTML
-  // (كانت متبقية من نسخة قديمة فيها رفع إيصال للطلب نفسه). كان هذا السطر يرمي خطأ
-  // ويوقف تنفيذ كل الكود التالي بالسكربت (فتح/إغلاق/إرسال طلب الشحن، مودالات "من نحن"
-  // و"تواصل معنا"، وأزرار تلغرام/واتساب). أبقينا فقط رفع إيصال طلب شحن الرصيد.
-  setupFileUpload("topup-receipt-drop", "topup-receipt-input", "topup-receipt-status", "topup-receipt-remove", (val) => { topupReceiptDataUrl = val; });
-
   function validateField(fieldId, isValid) {
     const field = document.getElementById(fieldId);
     field.classList.toggle("invalid", !isValid);
     return isValid;
   }
 
-  // ===== طلبات الشحن =====
-  document.getElementById("open-topup-btn").addEventListener("click", async () => {
-    await loadPaymentBox("topup-payment-box");
-    topupCurrency = "SYR";
-    document.getElementById("topup-cur-syr").classList.add("active");
-    document.getElementById("topup-cur-usd").classList.remove("active");
-    document.getElementById("topup-modal-backdrop").classList.add("active");
-  });
-  document.getElementById("topup-close-btn").addEventListener("click", () => {
-    document.getElementById("topup-modal-backdrop").classList.remove("active");
-  });
-
-  document.getElementById("submit-topup-btn").addEventListener("click", async () => {
-    const amount = parseFloat(document.getElementById("topup-amount").value);
-    const note = document.getElementById("topup-note").value.trim();
-    const amountOk = validateField("field-topup-amount", amount > 0 && amount <= 100000000);
-    if (!amountOk) return;
-    if (note.length > 500) { showToast("الملاحظة طويلة جداً", true); return; }
-
-    const btn = document.getElementById("submit-topup-btn");
-    if (btn.disabled) return;
-    btn.disabled = true;
-    btn.textContent = "جاري الإرسال…";
-
-    const usdAmount = topupCurrency === "SYR" ? (amount / exchangeRate) : amount;
-
-    try {
-      await addDoc(collection(db, "topups"), {
-        uid: currentUser.uid,
-        userName: currentUser.displayName,
-        userEmail: currentUser.email,
-        amount: usdAmount,
-        originalAmount: amount,
-        currency: topupCurrency,
-        exchangeRateAtOrder: exchangeRate,
-        note: note,
-        receiptImage: topupReceiptDataUrl,
-        status: "pending",
-        createdAt: serverTimestamp(),
-      });
-      document.getElementById("topup-amount").value = "";
-      document.getElementById("topup-note").value = "";
-      topupReceiptDataUrl = "";
-      document.getElementById("topup-receipt-status").style.display = "none";
-      document.getElementById("topup-receipt-remove").style.display = "none";
-      document.getElementById("topup-receipt-drop").style.display = "block";
-      document.getElementById("topup-modal-backdrop").classList.remove("active");
-      showToast("تم إرسال طلب الشحن، رح يتم تأكيده يدوياً بعد استلام التحويل.");
-    } catch (err) {
-      showToast("حدث خطأ: " + err.message, true);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "إرسال طلب الشحن";
-    }
+  // ===== شحن الرصيد: تحويل يدوي عبر الأدمن (تلغرام/واتساب) =====
+  // تم استبدال نظام "طلب شحن + إيصال + موافقة الأدمن" بالكامل: الأدمن يستقبل
+  // التحويل مباشرة عبر تلغرام/واتساب ويضيف الرصيد يدوياً من لوحة التحكم (تعديل الرصيد).
+  document.getElementById("open-topup-btn").addEventListener("click", () => {
+    document.getElementById("contact-modal-backdrop").classList.add("active");
   });
 
   // ===== حفظ الملف الشخصي =====
@@ -1789,26 +1709,6 @@
     });
   }
 
-  function listenTopups() {
-    const q = query(collection(db, "topups"), where("uid", "==", currentUser.uid));
-    onSnapshot(q, (snap) => {
-      const list = document.getElementById("topups-list");
-      if (snap.empty) { list.innerHTML = `<div class="empty-state">ما عندك طلبات شحن بعد</div>`; return; }
-      const items = [];
-      snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
-      items.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      list.innerHTML = "";
-      items.forEach((t) => {
-        const statusText = { pending: "قيد المراجعة", confirmed: "تم الشحن ✓", rejected: "مرفوض" }[t.status] || "قيد المراجعة";
-        const statusClass = { pending: "status-pending", confirmed: "status-confirmed", rejected: "status-rejected" }[t.status] || "status-pending";
-        const card = document.createElement("div");
-        card.className = "order-card";
-        card.innerHTML = `<div class="order-row"><span style="font-weight:700; font-size:13.5px;">طلب شحن #${escapeHTML(t.id.slice(0, 8).toUpperCase())}</span><span class="status-badge ${statusClass}">${statusText}</span></div><div style="color:var(--gold); font-weight:700; font-size:14px;">${fmt(t.amount)}</div>`;
-        list.appendChild(card);
-      });
-    });
-  }
-
   function bindModal(openIds, backdropId, closeId) {
     openIds.forEach((id) => {
       const el = document.getElementById(id);
@@ -1841,7 +1741,7 @@
             document.getElementById("profile-contact").value = d.contact || "";
             document.getElementById("profile-email").value = currentUser.email || "";
             if (d.avatarUrl) document.getElementById("profile-avatar-display").innerHTML = `<img src="${d.avatarUrl}" style="width:100%; height:100%; object-fit:cover;">`;
-            updateLoyaltyDisplay(d);
+            updateLoyaltyDisplay(d.totalSpent || 0);
           }
         });
       }
@@ -1909,8 +1809,17 @@
   };
 
   window.listenLoyaltySettings = function() {
-    console.log("Loyalty settings listener placeholder");
-    // هنا يمكن إضافة منطق جلب إعدادات الولاء من Firestore إذا لزم الأمر
+    onSnapshot(doc(db, "loyaltySettings", "config"), (snap) => {
+      if (snap.exists()) {
+        const s = snap.data();
+        if (typeof s.silverMin === "number") LOYALTY_LEVELS.silver.minSpent = s.silverMin;
+        if (typeof s.goldMin === "number") LOYALTY_LEVELS.gold.minSpent = s.goldMin;
+      }
+      // أعد رسم مستوى الولاء الحالي بالحدود المحدّثة إن كان هناك مستخدم مسجّل دخوله
+      if (currentUser && typeof currentUserTotalSpent === "number") {
+        updateLoyaltyDisplay(currentUserTotalSpent);
+      }
+    });
   };
 
   // ===== نظام المزادات (إنشاء وعرض) =====
@@ -1922,4 +1831,278 @@
   const auctionPreview = document.getElementById("auction-images-preview");
 
   if (auctionDrop) {
-    auctionDrop.addEventListener("click", ()
+    auctionDrop.addEventListener("click", () => auctionInput.click());
+    auctionInput.addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files);
+      if (auctionImages.length + files.length > 5) {
+        showToast("الحد الأقصى هو 5 صور فقط", true);
+        return;
+      }
+
+      for (const file of files) {
+        if (!file.type.startsWith("image/")) continue;
+        const dataUrl = await compressImageToDataUrl(file, 600, 0.4); // ضغط أكبر لضمان عدم تجاوز حد 1MB للوثيقة (5 صور)
+        auctionImages.push(dataUrl);
+      }
+      renderAuctionImagesPreview();
+      auctionInput.value = "";
+    });
+  }
+
+  function renderAuctionImagesPreview() {
+    auctionPreview.innerHTML = auctionImages.map((img, idx) => `
+      <div style="position:relative; width:80px; height:80px; border-radius:8px; overflow:hidden; border:1px solid var(--hairline);">
+        <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
+        <button onclick="removeAuctionImage(${idx})" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:12px;">✕</button>
+      </div>
+    `).join("");
+  }
+
+  window.removeAuctionImage = function(idx) {
+    auctionImages.splice(idx, 1);
+    renderAuctionImagesPreview();
+  };
+
+  // إنشاء مزاد جديد
+  document.getElementById("create-auction-btn").addEventListener("click", async () => {
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+    
+    const name = document.getElementById("auction-name").value.trim();
+    const game = document.getElementById("auction-game").value.trim();
+    const startPrice = parseFloat(document.getElementById("auction-start-price").value);
+    const minPrice = parseFloat(document.getElementById("auction-min-price").value);
+    const duration = parseInt(document.getElementById("auction-duration").value);
+    const description = document.getElementById("auction-description").value.trim();
+
+    if (!name || !game || isNaN(startPrice) || isNaN(duration)) {
+      showToast("يرجى ملء جميع الحقول المطلوبة", true);
+      return;
+    }
+
+    const btn = document.getElementById("create-auction-btn");
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري إنشاء المزاد…";
+
+    try {
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + duration);
+
+      const auctionData = {
+        name,
+        game,
+        description,
+        startPrice,
+        minPrice: isNaN(minPrice) ? startPrice : minPrice,
+        currentPrice: startPrice,
+        durationHours: duration,
+        images: auctionImages,
+        sellerUid: currentUser.uid,
+        sellerName: currentUser.displayName || "مستخدم",
+        status: "active",
+        bidsCount: 0,
+        createdAt: serverTimestamp(),
+        expiresAt: Timestamp.fromDate(expiresAt)
+      };
+
+      await addDoc(collection(db, "auctions"), auctionData);
+      
+      // إعادة تعيين النموذج
+      document.getElementById("auction-name").value = "";
+      document.getElementById("auction-game").value = "";
+      document.getElementById("auction-start-price").value = "";
+      document.getElementById("auction-min-price").value = "";
+      document.getElementById("auction-duration").value = "";
+      document.getElementById("auction-description").value = "";
+      auctionImages = [];
+      renderAuctionImagesPreview();
+
+      showToast("✅ تم إنشاء المزاد بنجاح!");
+      switchView("view-store");
+    } catch (err) {
+      showToast("خطأ أثناء الإنشاء: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
+  let currentAuctionId = null;
+  let auctionDetailUnsub = null;
+
+  window.listenAuctions = function() {
+    onSnapshot(query(collection(db, "auctions"), where("status", "==", "active")), (snap) => {
+      const grid = document.getElementById("auctions-grid");
+      if (snap.empty) {
+        grid.innerHTML = `<div class="empty-state">لا توجد مزادات حية حالياً.</div>`;
+        return;
+      }
+
+      const auctions = [];
+      snap.forEach(d => auctions.push({ id: d.id, ...d.data() }));
+      
+      grid.innerHTML = auctions.map(a => `
+        <div class="product-card" onclick="openAuctionDetail('${a.id}')">
+          <div class="badge" style="background:var(--neon-pink);">🔥 مزاد حامي</div>
+          <img src="${a.images[0] || 'https://via.placeholder.com/150?text=No+Image'}" alt="${a.name}">
+          <div class="p-info">
+            <div class="p-name">${escapeHTML(a.name)}</div>
+            <div class="p-category">${escapeHTML(a.game)}</div>
+            <div class="p-price" style="color:var(--neon-pink);">${fmt(a.currentPrice)}</div>
+            <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">⏱ ينتهي: ${new Date(a.expiresAt.toDate()).toLocaleString('ar-EG')}</div>
+          </div>
+        </div>
+      `).join("");
+    });
+  };
+
+  window.openAuctionDetail = function(id) {
+    currentAuctionId = id;
+    switchView('view-auction-detail');
+    
+    if (auctionDetailUnsub) auctionDetailUnsub();
+    
+    auctionDetailUnsub = onSnapshot(doc(db, "auctions", id), (snap) => {
+      if (!snap.exists()) { switchView('view-store'); return; }
+      const a = snap.data();
+      
+      document.getElementById("auction-detail-name").textContent = a.name;
+      document.getElementById("auction-detail-game").textContent = a.game;
+      document.getElementById("auction-detail-current-price").textContent = fmt(a.currentPrice);
+      document.getElementById("auction-detail-min-price").textContent = fmt(a.minPrice);
+      document.getElementById("auction-detail-bids-count").textContent = a.bidsCount || 0;
+      document.getElementById("auction-detail-seller").textContent = a.sellerName;
+      document.getElementById("auction-detail-description").textContent = a.description;
+      
+      // عرض الصور
+      const imgContainer = document.getElementById("auction-detail-images");
+      imgContainer.innerHTML = a.images.map(img => `
+        <img src="${img}" style="width:100%; border-radius:12px; margin-bottom:8px; border:1px solid var(--hairline);">
+      `).join("");
+
+      // تحديث الوقت المتبقي
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const end = a.expiresAt.toDate().getTime();
+        const diff = end - now;
+        if (diff <= 0) {
+          document.getElementById("auction-detail-time-left").textContent = "انتهى الوقت";
+          document.getElementById("place-bid-btn").disabled = true;
+          return;
+        }
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById("auction-detail-time-left").textContent = `${h}س ${m}د ${s}ث`;
+      };
+      updateTimer();
+      const timerInterval = setInterval(updateTimer, 1000);
+      
+      // تنظيف الـ interval عند إغلاق التفاصيل أو تحديثها
+      window.currentAuctionTimer = timerInterval;
+    });
+  };
+
+  // وضع مزايدة جديدة مع نظام الحجز (Escrow)
+  document.getElementById("place-bid-btn").addEventListener("click", async () => {
+    if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
+    
+    const newBid = parseFloat(document.getElementById("auction-new-bid").value);
+    if (isNaN(newBid) || newBid <= 0) { showToast("يرجى إدخال مبلغ صحيح", true); return; }
+
+    const btn = document.getElementById("place-bid-btn");
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري المزايدة…";
+
+    try {
+      const auctionRef = doc(db, "auctions", currentAuctionId);
+      const userRef = doc(db, "users", currentUser.uid);
+
+      await runTransaction(db, async (transaction) => {
+        const aSnap = await transaction.get(auctionRef);
+        const uSnap = await transaction.get(userRef);
+        
+        if (!aSnap.exists()) throw new Error("المزاد غير موجود");
+        const a = aSnap.data();
+        
+        if (a.status !== "active") throw new Error("هذا المزاد غير نشط حالياً");
+        if (new Date() > a.expiresAt.toDate()) throw new Error("انتهى وقت المزاد");
+        if (currentUser.uid === a.sellerUid) throw new Error("لا يمكنك المزايدة على مزادك الخاص");
+        if (newBid <= a.currentPrice) throw new Error(`يجب أن تكون المزايدة أعلى من السعر الحالي (${fmt(a.currentPrice)})`);
+        
+        const userData = uSnap.data() || {};
+        const userBalance = Number(userData.balance) || 0;
+        const isSelfOutbid = (a.lastBidderUid === currentUser.uid);
+        
+        // الرصيد المتاح فعلياً هو الرصيد الحالي + المبلغ المحجوز مسبقاً لهذا المستخدم (إن وجد)
+        const effectiveBalance = userBalance + (isSelfOutbid ? a.lastBidAmount : 0);
+        if (effectiveBalance < newBid) throw new Error("رصيدك غير كافٍ لتغطية هذه المزايدة");
+
+        // 1. إعادة المبلغ للمزايد السابق (فقط إذا لم يكن هو نفسه المزايد الحالي)
+        if (a.lastBidderUid && a.lastBidAmount && !isSelfOutbid) {
+          const lastBidderRef = doc(db, "users", a.lastBidderUid);
+          const lastBidderSnap = await transaction.get(lastBidderRef);
+          if (lastBidderSnap.exists()) {
+            const lastBidderBalance = Number(lastBidderSnap.data().balance) || 0;
+            transaction.update(lastBidderRef, { balance: lastBidderBalance + a.lastBidAmount });
+          }
+        }
+
+        // 2. حجز المبلغ من المزايد الحالي (تحديث واحد للرصيد الصافي النهائي)
+        const finalBalance = effectiveBalance - newBid;
+        transaction.update(userRef, { balance: finalBalance });
+
+        // 3. تحديث بيانات المزاد
+        transaction.update(auctionRef, {
+          currentPrice: newBid,
+          lastBidderUid: currentUser.uid,
+          lastBidAmount: newBid,
+          bidsCount: (a.bidsCount || 0) + 1,
+          updatedAt: serverTimestamp()
+        });
+      });
+
+      document.getElementById("auction-new-bid").value = "";
+      showToast(`✅ تمت المزايدة بنجاح! تم حجز ${fmt(newBid)} من رصيدك.`);
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
+  window.listenPaidAd = function() {
+    onSnapshot(doc(db, "settings", "paidAd"), (snap) => {
+      const wrap = document.getElementById("paid-ad-wrap");
+      const tickerWrap = document.getElementById("paid-ad-ticker");
+      if (!snap.exists()) { wrap.style.display = "none"; tickerWrap.style.display = "none"; return; }
+      const d = snap.data();
+      if (d.imageData) {
+        document.getElementById("paid-ad-image").src = d.imageData;
+        document.getElementById("paid-ad-link").href = d.link || "#";
+        wrap.style.display = "block";
+      } else {
+        wrap.style.display = "none";
+      }
+      if (d.ticker) {
+        document.getElementById("paid-ad-ticker-track").innerHTML = `<span>${escapeHTML(d.ticker)}</span>`;
+        tickerWrap.style.display = "block";
+      } else {
+        tickerWrap.style.display = "none";
+      }
+    });
+  };
+
+  // تسجيل service worker لدعم PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      console.log('✅ Service Worker registered');
+    }).catch(err => {
+      console.log('⚠️ Service Worker registration failed:', err);
+    });
+  }
+</script>
+</body>
+</html>
