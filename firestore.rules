@@ -14,18 +14,52 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['username', 'fullName', 'contact', 'avatarUrl', 'referredBy']) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasAny(['balance', 'totalSpent', 'pendingReward', 'claimedReward']))
         )
+      ) || (
+        // يسمح لأي مستخدم مسجّل بزيادة رصيد مستخدم آخر فقط (ولا يسمح بإنقاصه أبداً) —
+        // ضروري لأن معاملة المزايدة بالمزادات (index.html) تُرجع المبلغ المحجوز
+        // تلقائياً لآخر مزايد يتم تجاوزه ضمن نفس العملية، وبدون هذا الاستثناء كانت
+        // العملية بأكملها سترفضها Firestore (permission-denied) حتى لو كل شيء صحيح.
+        // ⚠️ ملاحظة أمان: هذا يسمح تقنياً بزيادة رصيد أي مستخدم بأي مبلغ من طرف أي
+        // مستخدم آخر مسجّل دخوله (تضخيم أرصدة وهمي)، وإن كان لا يسمح بالسرقة (الإنقاص).
+        // الحل الأدق طويل المدى هو نقل منطق استرجاع مبلغ المزايدة إلى Cloud Function
+        // بدل تنفيذه من طرف العميل مباشرة.
+        isSignedIn() &&
+        userId != request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance']) &&
+        request.resource.data.balance > resource.data.balance
       );
     }
 
-    match /rechargeCodes/{code} { allow read, write: if isAdmin(); }
+    // ===== أكواد الشحن =====
+    // الأدمن ينشئ/يحذف الأكواد. المستخدم المسجّل يقدر يقرأ الكود ويعلّمه "مستخدم" فقط
+    // (لا يقدر يغيّر قيمته amount ولا يعيد فتحه بعد استخدامه).
+    match /rechargeCodes/{code} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        resource.data.used == false &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used','usedBy','usedAt']) &&
+        request.resource.data.used == true &&
+        request.resource.data.usedBy == request.auth.uid
+      );
+      allow delete: if isAdmin();
+    }
+
     match /admins/{admin} { allow read, write: if isAdmin(); }
     match /apiSources/{source} { allow read, write: if isAdmin(); }
     match /orders/{order} { allow read, write: if isAdmin(); }
-    match /topups/{topup} { allow read, write: if isAdmin(); }
     match /settings/{docId} { allow read: if true; allow write: if isAdmin(); }
     match /categories/{catId} { allow read: if true; allow write: if isAdmin(); }
     match /products/{prodId} { allow read: if true; allow write: if isAdmin(); }
     match /ads/{adId} { allow read: if true; allow write: if isAdmin(); }
+
+    // ===== إعدادات مستويات الولاء (برونزي/فضي/ذهبي) =====
+    // كل زائر يقدر يقرأها عشان تحديد مستواه، والكتابة/التعديل حصراً للأدمن.
+    match /loyaltySettings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
 
     match /auctions/{auctionId} {
       allow read: if true;
