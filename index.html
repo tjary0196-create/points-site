@@ -822,7 +822,14 @@
   // (وهو ما لم يفعل)، ويرجع بصمت لصفحة تسجيل الدخول بدون أي رسالة خطأ.
   // الحل: نستخدم signInWithRedirect مباشرة على الموبايل، وهي الطريقة الموصى
   // بها رسمياً من Firebase لأي متصفح موبايل.
-  const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile|Silk/i.test(navigator.userAgent);
+  // نعتمد على User-Agent **و** حجم الشاشة الفعلي معاً، مو على User-Agent لحاله:
+  // لو المستخدم مفعّل عنده "طلب موقع سطح المكتب" (Desktop site) بـChrome،
+  // الـUser-Agent بيتغيّر ويوحي إنه على كمبيوتر رغم إنه فعلياً على موبايل —
+  // فكان الكود بيختار popup الفاشل بالغلط. عرض الشاشة الفعلي ما بيتغيّر
+  // بهاد الوضع، فبيبقى مؤشر موثوق حتى لو الـUser-Agent متلاعب فيه.
+  const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile|Silk/i.test(navigator.userAgent)
+    || Math.min(window.screen.width, window.screen.height) <= 480
+    || ('ontouchstart' in window && window.matchMedia("(pointer: coarse)").matches);
 
   document.getElementById("google-login-btn").addEventListener("click", async () => {
     if (isMobileDevice) {
