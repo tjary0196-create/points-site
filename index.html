@@ -103,6 +103,34 @@
   .slider-dots span{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.4); transition:0.3s; }
   .slider-dots span.active{ background:var(--gold); width:16px; border-radius:4px; }
 
+  /* شريط نص متحرك تحت الإعلانات، بنفس عرض السلايدر تماماً */
+  .ads-marquee-wrapper {
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(90deg, rgba(212,175,55,0.14), rgba(212,175,55,0.06));
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    margin: -8px 0 16px;
+    padding: 8px 0;
+  }
+  .ads-marquee-track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: marqueeScroll 22s linear infinite;
+    will-change: transform;
+  }
+  .ads-marquee-track span {
+    display: inline-block;
+    padding: 0 28px;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--gold);
+  }
+  @keyframes marqueeScroll {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+
   #login-screen{ padding: 50px 18px 40px; text-align:center; display:none; }
   .hero-coin{ width:110px; height:110px; margin:0 auto 22px; }
   .hero-title{ font-size: 28px; font-weight:900; line-height:1.35; margin-bottom:10px; }
@@ -125,25 +153,81 @@
   .section-title{ font-family:'Cairo'; font-weight:800; font-size:16px; margin: 22px 0 12px; display:flex; align-items:center; justify-content:space-between; }
   .section-title small{ font-family:'Tajawal'; font-weight:400; color:var(--text-dim); font-size:12.5px; }
 
-  .category-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px; }
-  .cat-box{ background:var(--card); border:1px solid var(--hairline); border-radius:16px; padding:16px; text-align:center; cursor:pointer; transition:0.2s; }
-  .cat-box.active{ border-color:var(--gold); background:var(--gold-soft); }
-  .cat-box img{ width:100%; height:80px; object-fit:cover; border-radius:8px; }
-  .cat-box span{ display:block; font-size:28px; margin-top:4px; }
-  .cat-box p{ font-weight:700; font-size:13px; margin-top:6px; }
+  .category-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; margin-bottom:20px; }
+  .cat-box{
+    position:relative;
+    background:
+      repeating-linear-gradient(135deg, rgba(212,175,55,0.10) 0px, rgba(212,175,55,0.10) 2px, transparent 2px, transparent 14px),
+      linear-gradient(160deg, #1a1610, #0c0a07);
+    border:1px solid rgba(212,175,55,0.35);
+    border-radius:16px;
+    padding:20px 12px 14px;
+    text-align:center;
+    cursor:pointer;
+    transition:0.2s;
+    overflow:hidden;
+    aspect-ratio: 1.6 / 1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .cat-box.active{ border-color:var(--gold); box-shadow:0 0 0 1px var(--gold), 0 0 20px rgba(212,175,55,0.25); }
+  .cat-box .cat-icons{ display:flex; align-items:center; justify-content:center; gap:10px; }
+  .cat-box .cat-icon-circle{
+    width:52px; height:52px; border-radius:50%;
+    border:2px solid var(--gold);
+    box-shadow:0 0 10px rgba(212,175,55,0.5), inset 0 0 8px rgba(212,175,55,0.2);
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:#0c0a07;
+    flex-shrink:0;
+  }
+  .cat-box .cat-icon-circle img{ width:100%; height:100%; object-fit:cover; }
+  .cat-box .cat-icon-circle span{ font-size:22px; }
+  .cat-box p{
+    font-weight:800; font-size:12.5px; margin-top:2px;
+    background:var(--gold-soft); color:var(--gold);
+    padding:4px 14px; border-radius:999px; display:inline-block;
+  }
 
   .cat-row{ display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; margin-bottom:6px; }
   .cat-chip{ flex-shrink:0; background:var(--card); border:1px solid var(--hairline); color:var(--text-dim); padding:8px 16px; border-radius:999px; font-size:13px; cursor:pointer; white-space:nowrap; }
   .cat-chip.active{ background:var(--gold); color:#1A140A; border-color:var(--gold); font-weight:700; }
 
-  .product-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
-  .product-card{ position:relative; background:var(--card); border:1px solid var(--hairline); border-radius:16px; overflow:hidden; padding-bottom:10px; display:flex; flex-direction:column; cursor:pointer; transition:transform 0.2s; }
+  .product-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px; }
+  .product-card{
+    position:relative;
+    background:
+      repeating-linear-gradient(135deg, rgba(212,175,55,0.10) 0px, rgba(212,175,55,0.10) 2px, transparent 2px, transparent 14px),
+      linear-gradient(160deg, #1a1610, #0c0a07);
+    border:1px solid rgba(212,175,55,0.35);
+    border-radius:16px;
+    overflow:visible;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    cursor:pointer;
+    transition:0.2s;
+    padding:18px 10px 12px;
+  }
   .product-card:hover{ transform:translateY(-3px); border-color:var(--gold); }
-  .product-card .product-icon{ width:100%; height:150px; background:var(--bg-soft); overflow:hidden; }
+  .product-card .product-icon{
+    width:76px; height:76px; border-radius:50%;
+    border:2px solid var(--gold);
+    box-shadow:0 0 10px rgba(212,175,55,0.5), inset 0 0 8px rgba(212,175,55,0.2);
+    overflow:hidden;
+    background:#0c0a07;
+    display:flex; align-items:center; justify-content:center;
+    font-size:30px;
+    flex-shrink:0;
+  }
   .product-card .product-icon img{ width:100%; height:100%; object-fit:cover; }
-  .product-card .product-name{ font-weight:700; font-size:13.5px; padding:10px 12px 0; line-height:1.4; }
-  .product-card .product-price-badge{ position:absolute; top:10px; right:10px; background:var(--gold); color:#1A140A; padding:4px 12px; border-radius:20px; font-weight:900; font-size:14px; box-shadow:0 2px 8px rgba(0,0,0,0.5); z-index:10; }
-  .product-card .product-btn{ background:var(--gold-soft); color:var(--gold); border:none; border-radius:10px; padding:8px; font-weight:800; font-size:13px; cursor:pointer; margin:6px 12px 8px; }
+  .product-card .product-name{ font-weight:800; font-size:13px; padding:10px 6px 0; line-height:1.4; text-align:center; }
+  .product-card .product-price-badge{ position:absolute; top:8px; inset-inline-start:8px; background:var(--gold); color:#1A140A; padding:4px 12px; border-radius:20px; font-weight:900; font-size:12.5px; box-shadow:0 2px 8px rgba(0,0,0,0.5); z-index:10; }
+  .product-card .product-btn{ background:var(--gold-soft); color:var(--gold); border:1px solid rgba(212,175,55,0.4); border-radius:10px; padding:8px; font-weight:800; font-size:12.5px; cursor:pointer; margin:10px 6px 0; width:calc(100% - 12px); }
+  .product-card .product-btn:hover{ background:var(--gold); color:#1A140A; }
 
   .view{ display:none; }
   .view.active{ display:block; animation: fadeIn .25s ease; }
@@ -283,47 +367,18 @@
   .product-card.sponsored{ border:2px solid rgba(255,180,80,0.6); background:linear-gradient(135deg, rgba(255,180,80,0.08), rgba(255,140,60,0.05)); position:relative; }
   .product-card.sponsored::before{ content:'🔥 مميز'; position:absolute; top:6px; left:6px; background:linear-gradient(135deg, #ff9d5c, #ffa500); color:#1A140A; padding:4px 10px; border-radius:999px; font-size:10px; font-weight:800; z-index:15; }
 
-  /* === أنيميشن محسّن للمنتجات === */
-  .product-card{ 
-    transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
-    background: rgba(30, 27, 31, 0.7) !important;
-    border: 1px solid rgba(192, 132, 252, 0.2) !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    overflow: hidden;
-  }
-  .product-card:hover{ 
-    transform:translateY(-8px) scale(1.03); 
-    border-color: rgba(192, 132, 252, 0.8) !important;
-    box-shadow: 0 0 25px rgba(192, 132, 252, 0.4);
-  }
-  .product-card .product-price-badge {
-    background: linear-gradient(135deg, #c084fc, #ffd76a) !important;
-    box-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
-    color: #1A140A !important;
-    font-weight: 900 !important;
-  }
-  .product-btn {
-    background: linear-gradient(90deg, rgba(192, 132, 252, 0.1), rgba(192, 132, 252, 0.2)) !important;
-    border: 1px solid rgba(192, 132, 252, 0.5) !important;
-    color: #c084fc !important;
-    text-shadow: 0 0 5px rgba(192, 132, 252, 0.5);
-    transition: all 0.3s;
-  }
-  .product-btn:hover {
-    background: #c084fc !important;
-    color: #fff !important;
-    box-shadow: 0 0 15px #c084fc;
+  /* === أنيميشن محسّن للمنتجات (متناسق مع الثيم الذهبي) === */
+  .product-card:hover{
+    transform:translateY(-6px) scale(1.02);
+    box-shadow: 0 0 20px rgba(212,175,55,0.35);
   }
   body {
     background-image: radial-gradient(circle at 50% 50%, #1c1a1d 0%, #131114 100%) !important;
   }
   .section-title {
-    background: linear-gradient(90deg, #fff, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--gold);
     font-weight: 900;
-    letter-spacing: 1px;
-    text-shadow: 0 0 30px rgba(192, 132, 252, 0.2);
+    letter-spacing: 0.5px;
   }
 
   /* === Card Deck Animation === */
@@ -453,6 +508,9 @@
         <div class="empty-state" style="padding:20px;">جاري تحميل الإعلانات...</div>
       </div>
       <div class="slider-dots" id="ads-slider-dots"></div>
+    </div>
+    <div class="ads-marquee-wrapper" id="ads-marquee-wrapper" style="display:none;">
+      <div class="ads-marquee-track" id="ads-marquee-track"></div>
     </div>
 
     <div class="view active" id="view-home">
@@ -1062,10 +1120,21 @@
           console.warn('إعلان بدون صورة صالحة تم تجاهله، معرّف الوثيقة:', d.id);
           return;
         }
-        ads.push({ img: data.imageData, link: data.link || '#' });
+        ads.push({ img: data.imageData, link: data.link || '#', caption: data.caption || '' });
       });
       const track = document.getElementById('ads-slider-track');
       const dotsWrap = document.getElementById('ads-slider-dots');
+      const marqueeWrapper = document.getElementById('ads-marquee-wrapper');
+      const marqueeTrack = document.getElementById('ads-marquee-track');
+      const captions = ads.map(a => a.caption).filter(Boolean);
+      if (captions.length > 0) {
+        // نكرر النص مرتين متتاليتين عشان الحركة تبين متواصلة بدون فراغ
+        const captionsHTML = captions.map(c => `<span>✨ ${escapeHTML(c)}</span>`).join("");
+        marqueeTrack.innerHTML = captionsHTML + captionsHTML;
+        marqueeWrapper.style.display = "block";
+      } else {
+        marqueeWrapper.style.display = "none";
+      }
       if (adsIntervalId) { clearInterval(adsIntervalId); adsIntervalId = null; }
       adsCurrentIndex = 0;
       if (ads.length === 0) {
@@ -1128,7 +1197,9 @@
     } else {
       grid.innerHTML = mainCategories.map(c => `
         <div class="cat-box" data-id="${c.id}">
-          ${c.imageData ? `<img src="${c.imageData}" alt="${escapeHTML(c.name)}">` : `<span>📁</span>`}
+          <div class="cat-icons">
+            <div class="cat-icon-circle">${c.imageData ? `<img src="${c.imageData}" alt="${escapeHTML(c.name)}">` : `<span>📁</span>`}</div>
+          </div>
           <p>${escapeHTML(c.name)}</p>
         </div>
       `).join("");
