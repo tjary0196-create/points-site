@@ -520,7 +520,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
     onSnapshot, query, where, runTransaction, serverTimestamp, writeBatch, Timestamp
@@ -590,9 +590,37 @@
     setTimeout(() => t.classList.remove('show'), 4000);
   }
 
+  // معالجة نتيجة الـ redirect عند العودة من صفحة جوجل (كانت غائبة بالكامل هون
+  // رغم إنه بدون هذا المعالج، أي إعادة توجيه لتسجيل الدخول ما رح تُكمل أبداً).
+  getRedirectResult(auth).catch(err => {
+    if (err && err.code) {
+      showToast("خطأ تسجيل الدخول (redirect): " + err.code + " — " + err.message, true);
+      console.error("getRedirectResult error:", err);
+    }
+  });
+
+  // على متصفحات الموبايل، النافذة المنبثقة (signInWithPopup) غير موثوقة إطلاقاً:
+  // تسجيل الدخول بجوجل بيكتمل فعلياً، بس النافذة بتفشل ترجع النتيجة للصفحة
+  // الأساسية بسبب قيود الكوكيز على الموبايل — فتظهر شاشة سوداء لثوانٍ وترجع
+  // لصفحة تسجيل الدخول بصمت. الحل: signInWithRedirect مباشرة على الموبايل.
+  const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile|Silk/i.test(navigator.userAgent);
+
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    try { await signInWithPopup(auth, provider); }
-    catch (err) { showToast("تعذر تسجيل الدخول: " + err.message, true); }
+    if (isMobileDevice) {
+      try { await signInWithRedirect(auth, provider); }
+      catch (err) { showToast("تعذر تسجيل الدخول: " + err.message, true); }
+      return;
+    }
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+        try { await signInWithRedirect(auth, provider); }
+        catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
+      } else if (err.code !== "auth/popup-closed-by-user") {
+        showToast("تعذر تسجيل الدخول: " + err.message, true);
+      }
+    }
   });
 
   onAuthStateChanged(auth, async (user) => {
