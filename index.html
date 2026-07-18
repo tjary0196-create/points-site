@@ -831,18 +831,21 @@
     || Math.min(window.screen.width, window.screen.height) <= 480
     || ('ontouchstart' in window && window.matchMedia("(pointer: coarse)").matches);
 
+  // ملاحظة مهمة (توثيق Firebase الرسمي، تحديث يوليو ٢٠٢٦):
+  // بما إنه موقعنا مستضاف على Vercel (points-site.vercel.app) وليس على
+  // Firebase Hosting، فـauthDomain (my-websit-2e275.firebaseapp.com) بيبقى
+  // نطاق مختلف عن نطاق الموقع. المتصفحات الحديثة (Chrome وغيره) بتحظر
+  // الوصول للتخزين بين نطاقات مختلفة أثناء signInWithRedirect، فيكتمل تسجيل
+  // الدخول عند جوجل لكن التطبيق ما بيقدر يقرأ النتيجة لما يرجع — فيبين وكأنه
+  // رجّعك عالصفحة الرئيسية بدون أي خطأ. الحل الموصى به رسمياً بهاي الحالة:
+  // استخدام signInWithPopup دايماً (مش بس على الديسكتوب)، لأنه ما بيتأثر
+  // بنفس مشكلة التخزين عبر النطاقات.
   document.getElementById("google-login-btn").addEventListener("click", async () => {
-    if (isMobileDevice) {
-      try { await signInWithRedirect(auth, provider); }
-      catch (err) { showToast("تعذر تسجيل الدخول: " + err.message, true); }
-      return;
-    }
-    // signInWithPopup أساسي على سطح المكتب (يعمل بالمتصفح العادي وPWA standalone)
     try {
       await signInWithPopup(auth, provider);
     } catch (err) {
-      // إذا حُظر الـ popup، نلجأ للـ redirect كاحتياطي
       if (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request") {
+        // احتياطي أخير فقط إذا المتصفح حظر الـpopup فعلياً
         try { await signInWithRedirect(auth, provider); }
         catch (err2) { showToast("تعذر تسجيل الدخول: " + err2.message, true); }
       } else if (err.code !== "auth/popup-closed-by-user") {
