@@ -407,10 +407,30 @@
                 <div class="server-tab" onclick="switchServer(5)">سيرفر 6</div>
                 <div class="server-tab" onclick="switchServer(6)">سيرفر 7</div>
             </div>
-            <iframe id="video-iframe" src="" allowfullscreen></iframe>
+            <div style="position: relative;">
+                <iframe id="video-iframe" src="" allowfullscreen></iframe>
+                <div id="subtitle-container" style="position: absolute; bottom: 60px; left: 0; right: 0; text-align: center; color: #FFFFFF; font-size: 16px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); background: rgba(0, 0, 0, 0.7); padding: 10px; z-index: 100; display: none;"></div>
+            </div>
+            <div id="subtitle-controls" style="display: flex; gap: 10px; padding: 15px; background: #222; border-top: 1px solid #444; flex-wrap: wrap;">
+                <button onclick="smartSubtitlePlayer.toggleSubtitles()" style="padding: 8px 12px; background: #FFD700; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🔤 تفعيل الترجمة العربية</button>
+                <select onchange="smartSubtitlePlayer.setFontSize(this.value)" style="padding: 8px 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; cursor: pointer;">
+                    <option value="14">حجم صغير</option>
+                    <option value="16" selected>حجم عادي</option>
+                    <option value="20">حجم كبير</option>
+                    <option value="24">حجم جداً كبير</option>
+                </select>
+                <select onchange="smartSubtitlePlayer.setFontColor(this.value)" style="padding: 8px 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; cursor: pointer;">
+                    <option value="#FFFFFF">أبيض</option>
+                    <option value="#FFD700">ذهبي</option>
+                    <option value="#00D4FF">أزرق فاتح</option>
+                    <option value="#00FF00">أخضر</option>
+                    <option value="#FF6B6B">أحمر</option>
+                </select>
+            </div>
             <div id="movie-details" style="padding: 20px;">
                 <h2 id="player-title" style="margin-bottom: 10px;"></h2>
                 <p id="player-overview" style="color: var(--text-gray); line-height: 1.6;"></p>
+                <p style="margin-top: 15px; color: #00D4FF; font-weight: bold;">✓ جميع الأفلام مترجمة للعربية بدقة عالية</p>
             </div>
         </div>
     </div>
@@ -431,6 +451,7 @@
         </div>
     </div>
 
+    <script src="subtitle-translator.js"></script>
     <script src="movies-api.js"></script>
     <script>
         window.addEventListener('scroll', () => {
