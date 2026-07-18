@@ -1,9 +1,18 @@
-const CACHE_NAME = 'digital-syria-v3';
+const CACHE_NAME = 'digital-syria-v4'; // تم رفعه من v3 إلى v4 عمداً: يجبر كل من فتح
+// الموقع قبل هذا التحديث على تفريغ الكاش القديم وتحميل الملفات الجديدة تلقائياً،
+// بدل ما يضل عالق يشوف نسخة قديمة (ثيم ذهبي / لوحات أدمن ميتة) لأن الكاش القديم
+// كان أقوى من إعدادات Cache-Control بملف vercel.json.
+
 const urlsToCache = [
   '/',
   '/index.html',
   '/admin.html',
-  '/manifest.json'
+  '/tournaments.html',
+  '/404.html',
+  '/manifest.json',
+  '/store-neon.css',
+  '/animations.css',
+  '/assets/logo-icon.svg'
 ];
 
 self.addEventListener('install', event => {
