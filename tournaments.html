@@ -693,8 +693,7 @@ a { color: inherit; text-decoration: none; }
     <span>بطولات Digital Syria</span>
   </div>
   <div class="topbar-right">
-    <div class="balance-pill" id="balance-pill">💰 <span id="balance-amount">0</span></div>
-    <a href="index.html" class="home-btn">🏠 المتجر</a>
+    <a href="index.html" class="home-btn">🏠</a>
   </div>
 </div>
 
@@ -782,7 +781,7 @@ a { color: inherit; text-decoration: none; }
   </button>
   <button class="nav-item" onclick="window.location.href='index.html'">
     <span class="nav-icon">🏠</span>
-    <span>المتجر</span>
+    <span>الرئيسية</span>
   </button>
   <button class="nav-item" onclick="document.getElementById('my-tournaments-list').scrollIntoView({behavior:'smooth'})">
     <span class="nav-icon">🎮</span>
@@ -838,8 +837,8 @@ a { color: inherit; text-decoration: none; }
     <!-- ملاحظة الرسوم والتوزيع -->
     <div class="fee-note" id="dm-fee-note">
       <b>💡 كيف تعمل الرسوم؟</b><br>
-      رسم الدخول يُخصم مباشرة من رصيدك بالدولار. الجوائز تُضاف لرصيدك فور إعلان النتائج.
-      <div class="fee-breakdown">
+      رسم الدخول يُخصم مباشرة من رصيدك. الجوائز تُضاف لرصيدك فور إعلان النتائج.
+      <div class="fee-breakdown" style="display:none;">
         <span>رصيدك الحالي:</span>
         <span id="dm-balance">0 $</span>
       </div>
@@ -1000,7 +999,6 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("app").style.display = "block";
     document.getElementById("bottom-nav").style.display = "flex";
-    document.getElementById("balance-pill").classList.add("show");
     listenUserBalance(user.uid);
     listenTournamentAd();
     listenTournamentsPublic();
@@ -1011,7 +1009,6 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("login-screen").style.display = "block";
     document.getElementById("app").style.display = "none";
     document.getElementById("bottom-nav").style.display = "none";
-    document.getElementById("balance-pill").classList.remove("show");
   }
 });
 
@@ -1020,8 +1017,8 @@ function listenUserBalance(uid) {
   onSnapshot(doc(db, "users", uid), (snap) => {
     const data = snap.data();
     lastKnownBalance = data ? (Number(data.balance) || 0) : 0;
-    document.getElementById("balance-amount").textContent = lastKnownBalance.toFixed(2) + " $";
-    document.getElementById("dm-balance").textContent = lastKnownBalance.toFixed(2) + " $";
+    const dmBalanceEl = document.getElementById("dm-balance");
+    if (dmBalanceEl) dmBalanceEl.textContent = lastKnownBalance.toFixed(2) + " $";
   });
 }
 
