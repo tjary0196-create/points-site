@@ -1,0 +1,596 @@
+/**
+ * أنماط متقدمة لمشغل الفيديو ونظام الرصيد
+ */
+
+/* ===== مشغل الفيديو المتقدم ===== */
+.advanced-player {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  position: relative;
+  font-family: 'Tajawal', sans-serif;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.player-video-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #000;
+}
+
+.player-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.player-loading,
+.player-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  gap: 20px;
+  z-index: 100;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #00d4ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-icon {
+  font-size: 48px;
+}
+
+.error-message {
+  text-align: center;
+  font-size: 16px;
+  max-width: 300px;
+}
+
+.retry-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #00d4ff, #0099cc);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+}
+
+/* ===== التحكم ===== */
+.player-controls {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  padding: 40px 20px 20px;
+  transition: opacity 0.3s ease;
+  z-index: 200;
+}
+
+.progress-bar-container {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  transition: height 0.2s ease;
+}
+
+.progress-bar:hover {
+  height: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff, #0099cc);
+  border-radius: 3px;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.progress-handle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: #00d4ff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.8);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progress-bar:hover .progress-handle {
+  opacity: 1;
+}
+
+.time-display {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  font-size: 12px;
+  color: #b3b3b3;
+  margin-top: 5px;
+}
+
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.left-controls,
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== الأزرار ===== */
+.control-btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.control-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* ===== التحكم بالصوت ===== */
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.volume-slider {
+  width: 80px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #00d4ff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(0, 212, 255, 0.6);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #00d4ff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 6px rgba(0, 212, 255, 0.6);
+}
+
+/* ===== عنوان الفيلم ===== */
+.movie-title {
+  color: #b3b3b3;
+  font-size: 14px;
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  margin-left: 10px;
+}
+
+/* ===== محدد الجودة ===== */
+.quality-selector {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quality-selector:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.quality-selector option {
+  background: #141414;
+  color: white;
+}
+
+/* ===== نظام الرصيد ===== */
+.credit-display {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.credit-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 153, 204, 0.2));
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.credit-icon {
+  font-size: 18px;
+}
+
+.credit-amount {
+  font-size: 16px;
+  font-weight: bold;
+  min-width: 30px;
+  text-align: center;
+}
+
+.credit-label {
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+.credit-menu-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+.credit-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.credit-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  min-width: 200px;
+  margin-top: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1001;
+}
+
+.menu-item {
+  padding: 12px 15px;
+  color: #b3b3b3;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: right;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover:not(.subscription-info) {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+}
+
+.subscription-info {
+  cursor: default;
+  color: #00d4ff;
+}
+
+.subscription-info span {
+  display: block;
+  color: #b3b3b3;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* ===== الإشعارات ===== */
+.smooth-notification {
+  animation: slideInRight 0.4s ease-out;
+}
+
+.floating-credit-text {
+  font-family: 'Tajawal', sans-serif;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-60px);
+    opacity: 0;
+  }
+}
+
+@keyframes creditPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== نافذة الترقية ===== */
+.upgrade-modal .modal-content {
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 900px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.upgrade-modal .close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #b3b3b3;
+  font-size: 28px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.upgrade-modal .close-btn:hover {
+  color: #00d4ff;
+}
+
+.upgrade-modal h2 {
+  color: #00d4ff;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.plan-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  color: #b3b3b3;
+}
+
+.plan-card:hover {
+  border-color: #00d4ff;
+  background: rgba(0, 212, 255, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+}
+
+.plan-card h3 {
+  color: #00d4ff;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.plan-card .price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.plan-card .credits {
+  font-size: 14px;
+  color: #00d4ff;
+  margin-bottom: 15px;
+}
+
+.plan-card .features {
+  list-style: none;
+  margin-bottom: 20px;
+  text-align: right;
+}
+
+.plan-card .features li {
+  padding: 6px 0;
+  font-size: 13px;
+  color: #b3b3b3;
+}
+
+.select-plan-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #00d4ff, #0099cc);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.select-plan-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+}
+
+/* ===== الاستجابة ===== */
+@media (max-width: 768px) {
+  .credit-display {
+    top: 10px;
+    right: 10px;
+  }
+
+  .credit-info {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .credit-amount {
+    font-size: 14px;
+  }
+
+  .controls-row {
+    gap: 8px;
+  }
+
+  .control-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .control-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .volume-slider {
+    width: 60px;
+  }
+
+  .movie-title {
+    display: none;
+  }
+
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upgrade-modal .modal-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .credit-display {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .credit-menu-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .left-controls {
+    gap: 5px;
+  }
+
+  .volume-control {
+    display: none;
+  }
+
+  .quality-selector {
+    display: none;
+  }
+}
