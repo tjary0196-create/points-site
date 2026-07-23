@@ -4,12 +4,7 @@
   },
   "hosting": {
     "public": ".",
-    ...
-  }
-}
-{
-  "hosting": {
-    "public": ".",
+    "cleanUrls": true,
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -17,7 +12,7 @@
     ],
     "headers": [
       {
-        "source": "/(index.html|tournaments.html|admin.html)",
+        "source": "/(index.html|tournaments.html|admin.html|movies.html)",
         "headers": [
           {
             "key": "Cache-Control",
@@ -46,7 +41,7 @@
     ],
     "rewrites": [
       {
-        "source": "/((?!tournaments.html|admin.html|sw.js|manifest.json|.*\\.(css|js|png|jpe?g|gif|svg|ico|json)$).*)",
+        "source": "/((?!tournaments.html|admin.html|movies.html|404.html|sw.js|manifest.json|.*\\.(css|js|png|jpe?g|gif|svg|ico|json)$).*)",
         "destination": "/index.html"
       }
     ]
