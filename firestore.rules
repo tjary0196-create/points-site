@@ -2,24 +2,145 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ═══════════════════════════════════════════════════════════════
+    // ⚠️ ملاحظة معمارية مهمة: هذا المشروع يعمل على خطة Firebase Spark
+    // (مجانية بالكامل، بدون بطاقة ائتمان، وبدون Cloud Functions).
+    // كل حماية الرصيد هون منفّذة بقواعد Firestore فقط.
+    //
+    // المبدأ الأساسي: المستخدم يقدر ينقّص رصيده الخاص بحرية (دفع)، بس أي
+    // زيادة للرصيد لازم تكون "مربوطة" (get()) بقيمة حقيقية محفوظة بقاعدة
+    // البيانات مسبقاً — أبداً برقم قادم من المتصفح مباشرة.
+    //
+    // ⚠️ حدود معروفة (موثّقة بالتقرير النهائي، بدون Cloud Functions ما
+    // في طريقة نغلقها 100%):
+    // 1) مجموع السلة بالدفع (checkout) يُحسب من المتصفح بناءً على أسعار
+    //    حقيقية مقروءة من products، بس ما في تحقق مستقل ثاني بعد الحساب.
+    //    الحماية الفعلية: مراجعة الأدمن اليدوية لكل طلب قبل التسليم.
+    // 2) كود شحن معين ممكن نظرياً يُستخدم أكتر من مرة عبر حسابات وهمية
+    //    متعددة لو حدا تقني قرر يتجاوز واجهة الموقع ويكتب مباشرة لقاعدة
+    //    البيانات. التخفيف: وزّع الأكواد لعملاء موثوقين مباشرة بدل نشرها
+    //    عامة، وفعّل Firebase App Check (مجاني، بدون بطاقة) لمنع الوصول
+    //    غير المصرح من خارج تطبيق الموقع نفسه.
+    // ═══════════════════════════════════════════════════════════════
+
     function isSignedIn() { return request.auth != null; }
     function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
     function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
 
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow create: if isOwner(userId);
-      allow update: if isAdmin() || (
-        isOwner(userId) && (
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['username', 'fullName', 'contact', 'avatarUrl', 'referredBy', 'updatedAt']) ||
-          (request.resource.data.diff(resource.data).affectedKeys().hasAny(['balance', 'totalSpent', 'pendingReward', 'claimedReward']))
-        )
-      ) || (
-        isSignedIn() &&
-        userId != request.auth.uid &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance']) &&
-        request.resource.data.balance > resource.data.balance
-      );
+
+      allow create: if isOwner(userId) &&
+        request.resource.data.balance == 0 &&
+        (!('totalSpent' in request.resource.data) || request.resource.data.totalSpent == 0) &&
+        (!('pendingReward' in request.resource.data) || request.resource.data.pendingReward == 0) &&
+        (!('claimedReward' in request.resource.data) || request.resource.data.claimedReward == 0);
+
+      allow update: if isAdmin() || (isOwner(userId) && (
+        isProfileFieldsUpdate() ||
+        isBalanceDecrease() ||
+        isValidRechargeCodeCredit() ||
+        isValidTournamentEntryPayment() ||
+        isValidReferralClaim() ||
+        isValidMoviesSubscriptionPurchase()
+      ));
+
+      // ── تعديل الحقول الشخصية العادية فقط ──
+      function isProfileFieldsUpdate() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['username', 'fullName', 'contact', 'avatarUrl', 'referredBy', 'updatedAt']) &&
+        (
+          !('avatarUrl' in request.resource.data.diff(resource.data).affectedKeys()) ||
+          request.resource.data.avatarUrl == '' ||
+          request.resource.data.avatarUrl.matches('^(data:image/|https://).*')
+        );
+      }
+
+      // ── دفع (شراء / رسم دخول مبسّط): إنقاص الرصيد الذاتي بحرية، أبداً
+      // زيادة. totalSpent بتنعتبر "شبه موثوقة" فقط (تستخدم لمستوى الولاء،
+      // مو للأمان المالي المباشر) — حد أقصى معقول لمنع تضخيمها بلا حدود.
+      function isBalanceDecrease() {
+        let keys = request.resource.data.diff(resource.data).affectedKeys();
+        let decreaseAmount = resource.data.balance - request.resource.data.balance;
+        return keys.hasOnly(['balance', 'totalSpent']) &&
+          decreaseAmount > 0 &&
+          request.resource.data.balance >= 0 &&
+          (!('totalSpent' in keys) ||
+            (request.resource.data.totalSpent >= resource.data.totalSpent &&
+             request.resource.data.totalSpent <= resource.data.totalSpent + (decreaseAmount * 2)));
+      }
+
+      // ── تفعيل كود شحن: زيادة مربوطة بقيمة الكود الحقيقية من قاعدة
+      // البيانات (get)، ومحمية من إعادة الاستخدام لنفس المستخدم عبر
+      // مصفوفة redeemedCodes ذاتية التوثيق.
+      function isValidRechargeCodeCredit() {
+        let codeId = request.resource.data.lastRedeemedCode;
+        let codeDoc = get(/databases/$(database)/documents/rechargeCodes/$(codeId));
+        let oldRedeemed = resource.data.get('redeemedCodes', []);
+        return request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['balance', 'redeemedCodes', 'lastRedeemedCode']) &&
+          codeDoc.data.used == false &&
+          !(codeId in oldRedeemed) &&
+          request.resource.data.redeemedCodes == oldRedeemed.concat([codeId]) &&
+          request.resource.data.balance == resource.data.balance + codeDoc.data.amount;
+      }
+
+      // ── رسم دخول بطولة: إنقاص مربوط بقيمة entryFee الحقيقية من مستند
+      // البطولة نفسه (get) — مو رقم قادم من المتصفح.
+      function isValidTournamentEntryPayment() {
+        let tid = request.resource.data.lastTournamentEntryId;
+        let tourDoc = get(/databases/$(database)/documents/tournaments/$(tid));
+        let decreaseAmount = resource.data.balance - request.resource.data.balance;
+        return request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['balance', 'lastTournamentEntryId']) &&
+          decreaseAmount == tourDoc.data.entryFee &&
+          request.resource.data.balance >= 0;
+      }
+
+      // ── سحب مكافأة إحالة معلّقة: نقل pendingReward بالكامل لـ balance
+      // وتصفيرها — تحويل ذاتي داخل نفس المستند، بدون حاجة لقراءة أي مستند
+      // خارجي، فمحمي بالكامل من التلاعب.
+      function isValidReferralClaim() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['balance', 'pendingReward', 'claimedReward']) &&
+          resource.data.pendingReward > 0 &&
+          request.resource.data.pendingReward == 0 &&
+          request.resource.data.balance == resource.data.balance + resource.data.pendingReward &&
+          request.resource.data.claimedReward == resource.data.claimedReward + resource.data.pendingReward;
+      }
+      // ── اشتراك أفلام "بلس": الخصم مربوط بالسعر الحقيقي المخزّن بمستند
+      // الإعدادات (get)، وتاريخ الانتهاء الجديد محسوب بالكامل داخل القاعدة
+      // نفسها اعتماداً على request.time (وقت السيرفر الحقيقي، مش وقت جهاز
+      // المستخدم) — المستخدم ما بقدر يمدد اشتراكه أكتر من المدة الحقيقية
+      // ولا يدفع أقل من السعر الحقيقي، حتى لو عدّل كود الموقع بمتصفحه.
+      function isValidMoviesSubscriptionPurchase() {
+        let sub = get(/databases/$(database)/documents/settings/moviesSubscription).data;
+        let decreaseAmount = resource.data.balance - request.resource.data.balance;
+        let currentExpiry = resource.data.get('moviesPremiumExpiresAt', request.time);
+        let base = currentExpiry > request.time ? currentExpiry : request.time;
+        let expectedExpiry = base + duration.value(sub.durationDays, 'd');
+        // ⚠️ مقارنة == الدقيقة بين وقت محسوب بالسيرفر (request.time) ووقت
+        // محسوب بمتصفح المستخدم مستحيلة تتطابق حرفياً (فرق شبكة/ساعة جهاز)،
+        // فبنسمح بهامش تفاوت ±3 دقائق — كافي لتحمّل فروقات الساعة الطبيعية،
+        // وضئيل جداً مقارنة بمدة الاشتراك (أيام) فما بيسمح بأي استغلال حقيقي.
+        let tolerance = duration.value(3, 'm');
+        return request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['balance', 'moviesPremium', 'moviesPremiumExpiresAt']) &&
+          sub.isActive == true &&
+          decreaseAmount == sub.price &&
+          request.resource.data.balance >= 0 &&
+          request.resource.data.moviesPremium == true &&
+          request.resource.data.moviesPremiumExpiresAt >= expectedExpiry - tolerance &&
+          request.resource.data.moviesPremiumExpiresAt <= expectedExpiry + tolerance;
+      }
+    }
+
+    // سجلّ استرشادي (غير موثّق تشفيرياً) لعمليات الرصيد — يفيد الأدمن
+    // للمراقبة اليدوية، وليس مصدر الحقيقة الوحيد (ده users/{uid}.balance)
+    match /balanceTransactions/{txId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() || (isSignedIn() && request.resource.data.uid == request.auth.uid);
+      allow update, delete: if isAdmin();
     }
 
     match /rechargeCodes/{code} {
@@ -28,7 +149,10 @@ service cloud.firestore {
         && resource.data.used == false
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used', 'usedBy', 'usedAt'])
         && request.resource.data.usedBy == request.auth.uid
-        && request.resource.data.used == true;
+        && request.resource.data.used == true
+        && (!('expiresAt' in resource.data)
+            || resource.data.expiresAt == null
+            || resource.data.expiresAt > request.time);
       allow create, delete: if isAdmin();
     }
 
@@ -37,7 +161,12 @@ service cloud.firestore {
 
     match /orders/{order} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
-      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      // ⚠️ مجموع الطلب (total) محسوب من المتصفح (من أسعار منتجات حقيقية
+      // مقروءة وقت الطلب)، بدون تحقق مستقل إضافي — قرار متعمّد بسبب عدم
+      // توفر Cloud Functions. الحماية الفعلية: كل طلب يبقى "pending" ولازم
+      // مراجعة الأدمن اليدوية قبل التسليم.
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == "pending";
       allow update, delete: if isAdmin();
     }
 
@@ -51,10 +180,18 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // مزادات مبسّطة (بدون حجز/استرجاع فوري للرصيد): المزايدة بس تحدّث
+    // السعر الحالي، وما بتحرّك أي رصيد. الأدمن يخصم رصيد الفائز الفعلي
+    // يدوياً لما يقفل المزاد (نفس آلية adjustBalance بلوحة التحكم).
     match /auctions/{auctionId} {
       allow read: if true;
       allow create: if isAdmin();
-      allow update: if isAdmin() || isOwner(resource.data.sellerUid) || isSignedIn();
+      allow update: if isAdmin() || isOwner(resource.data.sellerUid) || (
+        isSignedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['currentPrice', 'lastBidderUid', 'lastBidAmount', 'bidsCount']) &&
+        request.resource.data.currentPrice > resource.data.currentPrice
+      );
       allow delete: if isAdmin();
 
       match /bids/{bidId} {
@@ -73,7 +210,14 @@ service cloud.firestore {
     match /tournaments/{tId} { allow read: if true; allow write: if isAdmin(); }
     match /tournamentRegistrations/{regId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
-      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      // entryFeePaid مربوط إلزامياً بالرسم الحقيقي المخزّن بمستند البطولة
+      // نفسه (get) — نفس القيمة اللي لازم تنطرح من رصيد المستخدم بنفس
+      // المعاملة (isValidTournamentEntryPayment أعلاه). لو القيمتين ما
+      // تطابقتا مع entryFee الحقيقي، الطلب كامل بيفشل (Firestore بيرفض كل
+      // الكتابات بالمعاملة لو أي وحدة منها خالفت القواعد).
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid &&
+        request.resource.data.entryFeePaid ==
+          get(/databases/$(database)/documents/tournaments/$(request.resource.data.tournamentId)).data.entryFee;
       allow update, delete: if isAdmin();
     }
   }
