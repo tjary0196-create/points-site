@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينما ديجيتال سوريا - تجربة Netflix الاحترافية</title>
+    <title>سينما ديجيتال سوريا - أفلام Public Domain قانونية ومجانية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <!--
+      ⚠️ عدّل معرّف الناشر تبعك هون بس (ca-pub-XXXXXXXXXXXXXXXX من لوحة تحكم
+      AdSense)، وبعرّفات الوحدات الإعلانية (data-ad-slot) بعناصر top-ad
+      وmid-ad بالأسفل. السكربت ما يتحمّل إطلاقاً للمشتركين بـ"بلس" — منطق
+      ذلك موجود بالسكربت بآخر الصفحة (loadAdSenseIfNeeded).
+    -->
+    <script>window.ADSENSE_PUBLISHER_ID = "ca-pub-XXXXXXXXXXXXXXXX";</script>
     <style>
         :root {
             --netflix-red: #E50914;
@@ -329,9 +336,18 @@
         .ad-banner {
             width: 100%;
             max-width: 728px;
+            min-height: 90px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .ad-placeholder {
+            width: 100%;
             height: 90px;
             background-color: #222;
-            margin: 20px auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -359,7 +375,8 @@
     <header id="header">
         <div class="logo">DIGITAL SYRIA CINEMA</div>
         <div class="nav-actions">
-            <a href="#" class="premium-btn" onclick="openPremium()">👑 اشترك بلس</a>
+            <span id="premium-badge" style="display:none; background:linear-gradient(45deg,var(--gold),#FFA500); color:#000; padding:6px 14px; border-radius:20px; font-weight:900; font-size:13px;">👑 بلس</span>
+            <a href="#" class="premium-btn" id="premium-nav-btn" onclick="openPremium(); return false;">👑 بلس</a>
             <a href="index.html" style="color: white; text-decoration: none; font-weight: bold;">الرجوع للمتجر</a>
         </div>
     </header>
@@ -375,7 +392,7 @@
         </div>
     </div>
 
-    <div class="ad-banner" id="top-ad">إعلان جوجل AdSense (مساحة مخصصة)</div>
+    <div class="ad-banner" id="top-ad" data-ad-slot="1111111111"><div class="ad-placeholder">مساحة إعلانية</div></div>
 
     <div class="row">
         <h2 class="row-title">الأفلام الرائجة الآن 🔥</h2>
@@ -387,7 +404,7 @@
         <div class="movie-list" id="action-movies"></div>
     </div>
 
-    <div class="ad-banner" id="mid-ad">إعلان مدفوع (تواصل معنا للإعلان هنا)</div>
+    <div class="ad-banner" id="mid-ad" data-ad-slot="2222222222"><div class="ad-placeholder">مساحة إعلانية</div></div>
 
     <div class="row">
         <h2 class="row-title">أفلام الرعب والغموض 👻</h2>
@@ -399,38 +416,16 @@
         <span class="close-player" onclick="closePlayer()">✕</span>
         <div class="player-container">
             <div class="server-tabs" id="server-tabs">
-                <div class="server-tab active" onclick="switchServer(0)">سيرفر 1</div>
-                <div class="server-tab" onclick="switchServer(1)">سيرفر 2</div>
-                <div class="server-tab" onclick="switchServer(2)">سيرفر 3</div>
-                <div class="server-tab" onclick="switchServer(3)">سيرفر 4</div>
-                <div class="server-tab" onclick="switchServer(4)">سيرفر 5</div>
-                <div class="server-tab" onclick="switchServer(5)">سيرفر 6</div>
-                <div class="server-tab" onclick="switchServer(6)">سيرفر 7</div>
+                <div class="server-tab active" style="cursor:default;">🏛️ Internet Archive — Public Domain (قانوني ومجاني)</div>
             </div>
             <div style="position: relative;">
                 <iframe id="video-iframe" src="" allowfullscreen></iframe>
-                <div id="subtitle-container" style="position: absolute; bottom: 60px; left: 0; right: 0; text-align: center; color: #FFFFFF; font-size: 16px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); background: rgba(0, 0, 0, 0.7); padding: 10px; z-index: 100; display: none;"></div>
-            </div>
-            <div id="subtitle-controls" style="display: flex; gap: 10px; padding: 15px; background: #222; border-top: 1px solid #444; flex-wrap: wrap;">
-                <button onclick="smartSubtitlePlayer.toggleSubtitles()" style="padding: 8px 12px; background: #FFD700; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🔤 تفعيل الترجمة العربية</button>
-                <select onchange="smartSubtitlePlayer.setFontSize(this.value)" style="padding: 8px 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; cursor: pointer;">
-                    <option value="14">حجم صغير</option>
-                    <option value="16" selected>حجم عادي</option>
-                    <option value="20">حجم كبير</option>
-                    <option value="24">حجم جداً كبير</option>
-                </select>
-                <select onchange="smartSubtitlePlayer.setFontColor(this.value)" style="padding: 8px 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; cursor: pointer;">
-                    <option value="#FFFFFF">أبيض</option>
-                    <option value="#FFD700">ذهبي</option>
-                    <option value="#00D4FF">أزرق فاتح</option>
-                    <option value="#00FF00">أخضر</option>
-                    <option value="#FF6B6B">أحمر</option>
-                </select>
             </div>
             <div id="movie-details" style="padding: 20px;">
                 <h2 id="player-title" style="margin-bottom: 10px;"></h2>
                 <p id="player-overview" style="color: var(--text-gray); line-height: 1.6;"></p>
-                <p style="margin-top: 15px; color: #00D4FF; font-weight: bold;">✓ جميع الأفلام مترجمة للعربية بدقة عالية</p>
+                <button id="translate-desc-btn" onclick="translateDescription()" style="margin-top:10px; padding:8px 14px; background:#333; color:#00D4FF; border:1px solid #00D4FF; border-radius:6px; cursor:pointer; font-size:13px;">🔤 ترجم الوصف للعربية</button>
+                <p style="margin-top: 15px; color: #00D4FF; font-weight: bold;">🏛️ فيلم من مجموعة Public Domain — قانوني ومجاني بالكامل (Internet Archive)</p>
             </div>
         </div>
     </div>
@@ -439,28 +434,37 @@
     <div id="premium-modal">
         <div class="premium-card">
             <h2>باقة DIGITAL PREMIUM</h2>
-            <div class="premium-price">5,000 ل.س <small>/ شهرياً</small></div>
-            <ul class="premium-features">
-                <li>إزالة جميع الإعلانات نهائياً</li>
-                <li>سيرفرات مشاهدة خاصة وسريعة</li>
-                <li>جودة 4K حقيقية بدون تقطيع</li>
-                <li>دعم فني مباشر على مدار الساعة</li>
-            </ul>
-            <button class="subscribe-btn" onclick="subscribe()">اشترك الآن</button>
+            <div class="premium-price" id="premium-price-display">جاري التحميل…</div>
+            <ul class="premium-features" id="premium-features-list"></ul>
+            <p id="premium-status-msg" style="color: var(--text-gray); margin-bottom: 15px; font-size: 14px;"></p>
+            <button class="subscribe-btn" id="premium-subscribe-btn" onclick="subscribeToPremium()">اشترك الآن</button>
             <button class="info-btn" style="margin-top: 10px; width: 100%;" onclick="closePremium()">إغلاق</button>
         </div>
     </div>
 
-    <script src="subtitle-translator.js"></script>
     <script src="movies-api.js"></script>
-    <!-- Advanced Movie Player System -->
-    <link rel="stylesheet" href="advanced-styles.css">
-    <link rel="stylesheet" href="admin-styles.css">
-    <script src="advanced-player.js"></script>
-    <script src="credit-system.js"></script>
-    <script src="admin-dashboard.js"></script>
-    <script src="movies-integration.js"></script>
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithPopup, signInWithRedirect, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIMijrndvBPvX6y8xSxEZDrXBmURezxUY",
+            authDomain: location.hostname === "points-site.vercel.app" ? "points-site.vercel.app" : "my-websit-2e275.firebaseapp.com",
+            projectId: "my-websit-2e275",
+            storageBucket: "my-websit-2e275.firebasestorage.app",
+            messagingSenderId: "1079052257822",
+            appId: "1:1079052257822:web:d3ef2e2d59d9ba40fc3c0f",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        let currentUser = null;
+        let currentSubSettings = null; // آخر نسخة محمّلة من settings/moviesSubscription
+
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
             if (window.scrollY > 100) {
@@ -470,16 +474,218 @@
             }
         });
 
-        function openPremium() {
-            document.getElementById('premium-modal').style.display = 'flex';
+        // ===== تتبع حالة تسجيل الدخول وحالة الاشتراك الفعلية =====
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (!user) {
+                applyPremiumUI(false);
+                return;
+            }
+            try {
+                const userSnap = await getDoc(doc(db, "users", user.uid));
+                const data = userSnap.exists() ? userSnap.data() : {};
+                const expiresMs = data.moviesPremiumExpiresAt?.toDate ? data.moviesPremiumExpiresAt.toDate().getTime() : 0;
+                const isPremiumActive = data.moviesPremium === true && expiresMs > Date.now();
+                applyPremiumUI(isPremiumActive);
+            } catch (err) {
+                console.error("تعذّر التحقق من حالة الاشتراك:", err);
+                applyPremiumUI(false);
+            }
+        });
+
+        function applyPremiumUI(isPremiumActive) {
+            document.body.classList.toggle('premium-user', isPremiumActive);
+            document.getElementById('premium-badge').style.display = isPremiumActive ? 'inline-block' : 'none';
+            document.getElementById('premium-nav-btn').textContent = isPremiumActive ? '👑 اشتراكك فعّال' : '👑 بلس';
+            if (!isPremiumActive) {
+                loadAdSenseIfNeeded();
+            }
         }
 
-        function closePremium() {
+        // ===== تحميل إعلانات Google AdSense — فقط لغير المشترك، وفقط مرة
+        // وحدة (ما نعيد التحميل لو تكرر استدعاء applyPremiumUI) =====
+        let adsenseLoaded = false;
+        function loadAdSenseIfNeeded() {
+            if (adsenseLoaded) return;
+            const pubId = window.ADSENSE_PUBLISHER_ID;
+            if (!pubId || pubId.includes('XXXXXXXXXXXXXXXX')) {
+                // لسا ما ضيف صاحب الموقع معرّف الناشر الحقيقي — نسيب مساحة
+                // الإعلان الفارغة (placeholder) بدل ما نحاول تحميل سكربت
+                // بمعرّف وهمي (يرفضه AdSense أصلاً)
+                return;
+            }
+            adsenseLoaded = true;
+
+            // 1) حقن وحدات <ins class="adsbygoogle"> الحقيقية مكان الـ placeholder
+            document.querySelectorAll('.ad-banner').forEach((banner) => {
+                banner.innerHTML = `
+                    <ins class="adsbygoogle"
+                         style="display:block; width:100%; min-height:90px;"
+                         data-ad-client="${pubId}"
+                         data-ad-slot="${banner.dataset.adSlot || ''}"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                `;
+            });
+
+            // 2) تحميل سكربت AdSense الرسمي ديناميكياً (مو بالـ<head> ثابت)،
+            // حتى ما يتحمّل إطلاقاً قبل ما نتأكد إن المستخدم مو مشترك
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${pubId}`;
+            script.crossOrigin = 'anonymous';
+            script.onload = () => {
+                document.querySelectorAll('.ad-banner ins.adsbygoogle').forEach(() => {
+                    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { console.error(e); }
+                });
+            };
+            document.head.appendChild(script);
+        }
+
+        // ===== مودال الاشتراك: تحميل السعر والميزات الحقيقية من الأدمن =====
+        window.openPremium = async function () {
+            const modal = document.getElementById('premium-modal');
+            modal.style.display = 'flex';
+            const priceDisplay = document.getElementById('premium-price-display');
+            const featuresList = document.getElementById('premium-features-list');
+            const statusMsg = document.getElementById('premium-status-msg');
+            const subscribeBtn = document.getElementById('premium-subscribe-btn');
+            priceDisplay.textContent = 'جاري التحميل…';
+            featuresList.innerHTML = '';
+            statusMsg.textContent = '';
+            subscribeBtn.style.display = 'block';
+            subscribeBtn.disabled = true;
+
+            const snap = await getDoc(doc(db, "settings", "moviesSubscription"));
+            if (!snap.exists() || snap.data().isActive !== true) {
+                currentSubSettings = null;
+                priceDisplay.textContent = '—';
+                statusMsg.textContent = 'نظام الاشتراك غير مفعّل حالياً، رجاع لاحقاً 🙏';
+                subscribeBtn.style.display = 'none';
+                return;
+            }
+
+            const sub = snap.data();
+            currentSubSettings = sub;
+            const currencyLabel = sub.currency === 'SYR' ? 'ل.س' : '$';
+            priceDisplay.textContent = `${sub.price} ${currencyLabel} / ${sub.durationDays} يوم`;
+            featuresList.innerHTML = (sub.features || []).map(f => `<li>${escapeHTML(f)}</li>`).join('') ||
+                '<li>إزالة الإعلانات طوال مدة الاشتراك</li>';
+
+            if (!currentUser) {
+                statusMsg.textContent = 'سجّل الدخول أول من صفحة المتجر عشان تقدر تشترك';
+                subscribeBtn.disabled = true;
+            } else {
+                subscribeBtn.disabled = false;
+            }
+        };
+
+        window.closePremium = function () {
             document.getElementById('premium-modal').style.display = 'none';
-        }
+        };
 
-        function subscribe() {
-            alert('سيتم تحويلك لخصم المبلغ من رصيدك في المتجر...');
+        // ===== عملية الاشتراك الفعلية: خصم حقيقي من الرصيد مربوط بالسعر
+        // الحقيقي المخزّن بقاعدة البيانات (isValidMoviesSubscriptionPurchase
+        // بـ firestore.rules) =====
+        window.subscribeToPremium = async function () {
+            if (!currentUser) {
+                document.getElementById('premium-status-msg').textContent = 'سجّل الدخول أول من صفحة المتجر';
+                return;
+            }
+            if (!currentSubSettings) return;
+
+            const btn = document.getElementById('premium-subscribe-btn');
+            const statusMsg = document.getElementById('premium-status-msg');
+            btn.disabled = true;
+            btn.textContent = 'جاري التنفيذ…';
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+                await runTransaction(db, async (transaction) => {
+                    const userSnap = await transaction.get(userRef);
+                    if (!userSnap.exists()) {
+                        throw new Error('زور صفحة المتجر الرئيسية أول مرة (index.html) بعد تسجيل الدخول، وبعدين ارجع اشترك من هون');
+                    }
+                    const userData = userSnap.data() || {};
+                    const currentBalance = Number(userData.balance) || 0;
+                    if (currentBalance < currentSubSettings.price) {
+                        throw new Error(`رصيدك غير كافٍ — السعر ${currentSubSettings.price}، رصيدك ${currentBalance.toFixed(2)}`);
+                    }
+                    const now = Date.now();
+                    const currentExpiryMs = userData.moviesPremiumExpiresAt?.toDate ? userData.moviesPremiumExpiresAt.toDate().getTime() : 0;
+                    const baseMs = currentExpiryMs > now ? currentExpiryMs : now;
+                    const newExpiry = new Date(baseMs + currentSubSettings.durationDays * 24 * 60 * 60 * 1000);
+
+                    transaction.update(userRef, {
+                        balance: currentBalance - currentSubSettings.price,
+                        moviesPremium: true,
+                        moviesPremiumExpiresAt: newExpiry,
+                    });
+                });
+
+                statusMsg.style.color = '#4ade80';
+                statusMsg.textContent = '🎉 تم الاشتراك بنجاح! رح تختفي الإعلانات فوراً.';
+                applyPremiumUI(true);
+                setTimeout(() => window.closePremium(), 1800);
+            } catch (err) {
+                statusMsg.style.color = '#f87171';
+                statusMsg.textContent = 'خطأ: ' + err.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'اشترك الآن';
+            }
+        };
+
+        // ===== ترجمة وصف الفيلم (نص قصير فقط) عبر MyMemory API المجانية =====
+        // ملاحظة صريحة: هذا يترجم وصف الفيلم فقط (نص قصير)، مش الحوار/الترجمة
+        // الكاملة للفيلم — لأن الـ API المجانية محدودة بـ500 حرف بالطلب و5000
+        // حرف باليوم، ما تكفي لترجمة فيلم كامل بشكل موثوق.
+        window.translateDescription = async function () {
+            const btn = document.getElementById('translate-desc-btn');
+            const overviewEl = document.getElementById('player-overview');
+            const original = window.currentMovieOriginalOverview || overviewEl.textContent;
+
+            if (!original || original.trim() === '') return;
+
+            btn.disabled = true;
+            btn.textContent = 'جاري الترجمة…';
+            try {
+                // حد أقصى 480 حرف بالطلب الواحد (حد الـ API الفعلي 500 حرف)
+                const textToTranslate = original.length > 480 ? original.slice(0, 480) + '…' : original;
+                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=en|ar`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.responseData && data.responseData.translatedText) {
+                    overviewEl.textContent = data.responseData.translatedText;
+                    btn.textContent = '🔤 عرض الأصل بالإنجليزي';
+                    btn.onclick = () => {
+                        overviewEl.textContent = original;
+                        btn.textContent = '🔤 ترجم الوصف للعربية';
+                        btn.onclick = window.translateDescription;
+                        btn.disabled = false;
+                    };
+                } else {
+                    throw new Error('تعذّرت الترجمة حالياً');
+                }
+            } catch (err) {
+                btn.textContent = '⚠️ تعذّرت الترجمة، حاول لاحقاً';
+                setTimeout(() => {
+                    btn.textContent = '🔤 ترجم الوصف للعربية';
+                    btn.disabled = false;
+                }, 2500);
+                return;
+            }
+            btn.disabled = false;
+        };
+
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
     </script>
 </body>
