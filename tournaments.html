@@ -1104,7 +1104,7 @@ function renderTournamentsGrid() {
       <!-- صورة البطولة 16:9 -->
       <div class="tourn-img-wrap">
         ${t.imageData
-          ? `<img src="${t.imageData}" alt="${escapeHTML(t.name)}" loading="lazy">`
+          ? `<img src="${escapeHTML(t.imageData)}" alt="${escapeHTML(t.name)}" loading="lazy">`
           : `<div class="tourn-img-placeholder">🏆</div>`
         }
         <div class="tourn-img-overlay"></div>
@@ -1410,7 +1410,18 @@ document.getElementById("dm-register-btn").addEventListener("click", async () =>
       const currentBalance = userSnap.exists() ? (Number(userSnap.data().balance) || 0) : 0;
       if (currentBalance < entryFee) throw new Error(`رصيدك غير كافٍ — تحتاج ${entryFee.toFixed(2)}$ ورصيدك ${currentBalance.toFixed(2)}$`);
 
-      if (entryFee > 0) transaction.update(userRef, { balance: currentBalance - entryFee });
+      // ⚠️ لازم القيمتين هون يطابقوا بالضبط entryFee الحقيقي المخزّن
+      // بمستند البطولة (get) — هذا أساس الحماية بدون Cloud Function: كل
+      // كتابة من الاثنين مربوطة بشكل مستقل بنفس القيمة الحقيقية، فلو ما
+      // تطابقتا القيمتين المكتوبتين مع entryFee الحقيقي، القواعد برفضهم
+      // (وبالتالي كل المعاملة كاملة بتفشل، Firestore ما بيسمح بتنفيذ جزء
+      // وحده من معاملة رفضتها القواعد)
+      if (entryFee > 0) {
+        transaction.update(userRef, {
+          balance: currentBalance - entryFee,
+          lastTournamentEntryId: tournamentId,
+        });
+      }
       transaction.update(tournamentRef, { currentParticipants: currentCount + 1 });
       transaction.set(regRef, {
         tournamentId,
@@ -1418,7 +1429,7 @@ document.getElementById("dm-register-btn").addEventListener("click", async () =>
         userName: currentUser.displayName || "",
         userEmail: currentUser.email || "",
         gameId,
-        contact,           // ← رقم الهاتف/تلغرام المطلوب
+        contact,
         entryFeePaid: entryFee,
         rank: null,
         prizeAwarded: false,
@@ -1458,7 +1469,7 @@ function listenMyTournaments() {
       return `
         <div class="my-tourn-card">
           <div class="my-tourn-icon">
-            ${tImg ? `<img src="${tImg}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">` : "🏆"}
+            ${tImg ? `<img src="${escapeHTML(tImg)}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">` : "🏆"}
           </div>
           <div class="my-tourn-info">
             <div class="my-tourn-name">${escapeHTML(tName)}</div>
