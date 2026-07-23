@@ -203,6 +203,7 @@
     <button class="tab" data-panel="panel-paid-ads">الإعلانات المدفوعة</button>
     <button class="tab" data-panel="panel-recharge-codes">أكواد الشحن</button>
     <button class="tab" data-panel="panel-loyalty">نظام المستويات</button>
+    <button class="tab" data-panel="panel-movies">الأفلام</button>
     <button class="tab" data-panel="panel-users">المستخدمون</button>
   </div>
 
@@ -454,6 +455,10 @@
       <label>المبلغ ($)</label>
       <input type="number" id="wallet-amount" step="0.01" placeholder="مثال: 10">
     </div>
+    <div class="field" style="margin-top:12px;">
+      <label>سبب التعديل (يُحفظ بسجل التدقيق)</label>
+      <input type="text" id="wallet-reason" placeholder="مثال: تعويض عن مشكلة بالطلب #123">
+    </div>
     <div class="modal-btn-row">
       <button class="secondary-btn" id="wallet-deduct-btn" style="color:var(--red);">خصم −</button>
       <button class="primary-btn" id="wallet-add-btn">إضافة +</button>
@@ -672,6 +677,7 @@
     loadPaidAdAdmin();
     listenRechargeCodes();
     loadLoyaltySettingsAdmin();
+    loadMoviesSubscriptionAdmin();
   });
 
   document.querySelectorAll(".tab").forEach((tab) => {
@@ -1485,6 +1491,7 @@
     document.getElementById("wallet-modal-user").textContent = user.name || user.email || "";
     document.getElementById("wallet-current-balance").textContent = (user.balance || 0).toFixed(2) + " $";
     document.getElementById("wallet-amount").value = "";
+    document.getElementById("wallet-reason").value = "";
     document.getElementById("wallet-modal-backdrop").classList.add("active");
   }
 
@@ -1495,7 +1502,9 @@
 
     const uid = document.getElementById("wallet-edit-uid").value;
     const amount = parseFloat(document.getElementById("wallet-amount").value);
+    const reason = document.getElementById("wallet-reason").value.trim();
     if (!amount || amount <= 0) { showToast("اكتب مبلغ صحيح", true); return; }
+    if (!reason) { showToast("الرجاء كتابة سبب التعديل", true); return; }
 
     addBtn.disabled = true;
     deductBtn.disabled = true;
@@ -1504,8 +1513,21 @@
       await runTransaction(db, async (transaction) => {
         const snap = await transaction.get(userRef);
         const current = snap.exists() ? (snap.data().balance || 0) : 0;
-        const updated = current + delta * amount;
+        const changeAmount = delta * amount;
+        const updated = current + changeAmount;
         transaction.update(userRef, { balance: updated < 0 ? 0 : updated });
+
+        const txRef = doc(collection(db, "balanceTransactions"));
+        transaction.set(txRef, {
+          uid,
+          type: "admin_adjustment",
+          amount: changeAmount,
+          reason,
+          adjustedByAdminUid: currentUser.uid,
+          balanceBefore: current,
+          balanceAfter: updated < 0 ? 0 : updated,
+          createdAt: serverTimestamp(),
+        });
       });
       document.getElementById("wallet-modal-backdrop").classList.remove("active");
       showToast("تم تعديل الرصيد بنجاح!");
@@ -1996,7 +2018,7 @@
     list.innerHTML = items.map(a => {
       const expiresMs = a.expiresAt?.toDate ? a.expiresAt.toDate().getTime() : 0;
       const isLive = a.status === "active" && expiresMs > now;
-      const thumb = (a.images && a.images[0]) ? `<img src="${a.images[0]}">` : `<div style="width:44px;height:44px;border-radius:10px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;">🔨</div>`;
+      const thumb = (a.images && a.images[0]) ? `<img src="${escapeHTML(a.images[0])}">` : `<div style="width:44px;height:44px;border-radius:10px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;">🔨</div>`;
       return `
         <div class="auction-item" data-id="${a.id}">
           ${thumb}
@@ -2030,7 +2052,7 @@
           panel.innerHTML = bids.map(b => {
             const dt = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().toLocaleString("ar-SY") : "—";
             const avatarHTML = b.avatarUrl
-              ? `<img src="${b.avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`
+              ? `<img src="${escapeHTML(b.avatarUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`
               : `<div style="width:36px;height:36px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;">👤</div>`;
             return `
               <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--hairline);">
@@ -2049,8 +2071,45 @@
       });
       const closeBtn = el.querySelector('[data-action="close"]');
       if (closeBtn) closeBtn.addEventListener("click", async () => {
+        const auction = allAuctions.find(x => x.id === id);
+        const winnerUid = auction?.lastBidderUid;
+        const winAmount = Number(auction?.lastBidAmount) || 0;
+
+        if (winnerUid && winAmount > 0) {
+          const confirmMsg = `هذا المزاد رح يقفل، والفائز آخر مزايد بمبلغ ${winAmount.toFixed(2)}$.\nبتحب تخصم هالمبلغ من رصيده الآن؟\n(اضغط "إلغاء" لو بدك تتواصل معه يدوياً أول قبل الخصم)`;
+          if (confirm(confirmMsg)) {
+            const winnerRef = doc(db, "users", winnerUid);
+            try {
+              await runTransaction(db, async (transaction) => {
+                const wSnap = await transaction.get(winnerRef);
+                const wBalance = wSnap.exists() ? (Number(wSnap.data().balance) || 0) : 0;
+                if (wBalance < winAmount) {
+                  throw new Error(`رصيد الفائز الحالي (${wBalance.toFixed(2)}$) أقل من مبلغ المزايدة — تواصل معه أول قبل الإغلاق`);
+                }
+                transaction.update(winnerRef, { balance: wBalance - winAmount });
+                transaction.update(doc(db, "auctions", id), { status: "closed" });
+                const txRef = doc(collection(db, "balanceTransactions"));
+                transaction.set(txRef, {
+                  uid: winnerUid,
+                  type: "auction_win_charge",
+                  amount: -winAmount,
+                  auctionId: id,
+                  adjustedByAdminUid: currentUser.uid,
+                  balanceBefore: wBalance,
+                  balanceAfter: wBalance - winAmount,
+                  createdAt: serverTimestamp(),
+                });
+              });
+              showToast("تم إغلاق المزاد وخصم رصيد الفائز ✅");
+            } catch (err) {
+              showToast("تعذّر الخصم: " + err.message, true);
+            }
+            return;
+          }
+        }
+
         await updateDoc(doc(db, "auctions", id), { status: "closed" });
-        showToast("تم إغلاق المزاد");
+        showToast("تم إغلاق المزاد (بدون خصم رصيد)");
       });
       el.querySelector('[data-action="delete"]').addEventListener("click", async () => {
         if (confirm("متأكد من حذف هذا المزاد نهائياً؟")) {
@@ -2071,8 +2130,9 @@
     renderAuctions();
   });
 
-  // زر "+ مزاد جديد" في لوحة الأدمن: المزادات ينشئها المستخدمون من المتجر مباشرة،
-  // لذا هذا الزر يقوم بإجراء إداري مفيد: إغلاق كل المزادات المنتهية صلاحيتها تلقائياً دفعة واحدة.
+  // إنشاء المزادات صلاحية أدمن حصراً (firestore.rules: allow create: if isAdmin())
+  // — المستخدمون العاديون لا يقدرون ينشئوا مزاد إطلاقاً. النموذج تحت هو المكان
+  // الرسمي الوحيد لنشر مزاد جديد من هون فصاعداً.
   document.getElementById("add-auction-btn").addEventListener("click", async () => {
     const now = Date.now();
     const expired = allAuctions.filter(a => {
@@ -2080,10 +2140,152 @@
       return a.status === "active" && expiresMs > 0 && expiresMs <= now;
     });
     if (expired.length === 0) { showToast("لا توجد مزادات منتهية بحاجة للإغلاق"); return; }
+
     const batch = writeBatch(db);
-    expired.forEach(a => batch.update(doc(db, "auctions", a.id), { status: "closed" }));
+    let chargedCount = 0;
+    const needsManualFollowUp = [];
+
+    for (const a of expired) {
+      batch.update(doc(db, "auctions", a.id), { status: "closed" });
+      const winnerUid = a.lastBidderUid;
+      const winAmount = Number(a.lastBidAmount) || 0;
+      if (!winnerUid || winAmount <= 0) continue;
+
+      const winnerSnap = await getDoc(doc(db, "users", winnerUid));
+      const winnerBalance = winnerSnap.exists() ? (Number(winnerSnap.data().balance) || 0) : 0;
+      if (winnerBalance >= winAmount) {
+        batch.update(doc(db, "users", winnerUid), { balance: winnerBalance - winAmount });
+        const txRef = doc(collection(db, "balanceTransactions"));
+        batch.set(txRef, {
+          uid: winnerUid, type: "auction_win_charge", amount: -winAmount, auctionId: a.id,
+          adjustedByAdminUid: currentUser.uid, balanceBefore: winnerBalance,
+          balanceAfter: winnerBalance - winAmount, createdAt: serverTimestamp(),
+        });
+        chargedCount++;
+      } else {
+        needsManualFollowUp.push(`${a.name || a.id} (رصيد الفائز غير كافٍ)`);
+      }
+    }
+
     await batch.commit();
-    showToast(`تم إغلاق ${expired.length} مزاد منتهي تلقائياً ✅`);
+    let msg = `تم إغلاق ${expired.length} مزاد، وخصم رصيد ${chargedCount} فائز تلقائياً ✅`;
+    if (needsManualFollowUp.length > 0) {
+      msg += `\n⚠️ يحتاج متابعة يدوية: ${needsManualFollowUp.join('، ')}`;
+    }
+    showToast(msg);
+  });
+
+  // ===== نموذج نشر مزاد جديد =====
+  let adminAuctionImages = [];
+
+  document.getElementById("open-create-auction-btn").addEventListener("click", () => {
+    document.getElementById("create-auction-panel").style.display = "block";
+  });
+  document.getElementById("cancel-create-auction-btn").addEventListener("click", () => {
+    document.getElementById("create-auction-panel").style.display = "none";
+    resetAdminAuctionForm();
+  });
+
+  function resetAdminAuctionForm() {
+    document.getElementById("admin-auction-name").value = "";
+    document.getElementById("admin-auction-game").value = "";
+    document.getElementById("admin-auction-seller").value = "";
+    document.getElementById("admin-auction-start-price").value = "";
+    document.getElementById("admin-auction-min-price").value = "";
+    document.getElementById("admin-auction-duration").value = "";
+    document.getElementById("admin-auction-description").value = "";
+    adminAuctionImages = [];
+    renderAdminAuctionImagesPreview();
+  }
+
+  const adminAuctionDrop = document.getElementById("admin-auction-images-drop");
+  const adminAuctionInput = document.getElementById("admin-auction-images-input");
+  adminAuctionDrop.addEventListener("click", () => adminAuctionInput.click());
+  adminAuctionInput.addEventListener("change", async (e) => {
+    const files = Array.from(e.target.files);
+    if (adminAuctionImages.length + files.length > 5) {
+      showToast("الحد الأقصى هو 5 صور فقط", true);
+      return;
+    }
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) continue;
+      const dataUrl = await compressImageToDataUrl(file, 600, 0.4);
+      adminAuctionImages.push(dataUrl);
+    }
+    renderAdminAuctionImagesPreview();
+    adminAuctionInput.value = "";
+  });
+
+  function renderAdminAuctionImagesPreview() {
+    document.getElementById("admin-auction-images-preview").innerHTML = adminAuctionImages.map((img, idx) => `
+      <div style="position:relative; width:80px; height:80px; border-radius:8px; overflow:hidden; border:1px solid var(--hairline);">
+        <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
+        <button onclick="removeAdminAuctionImage(${idx})" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:12px;">✕</button>
+      </div>
+    `).join("");
+  }
+  window.removeAdminAuctionImage = function (idx) {
+    adminAuctionImages.splice(idx, 1);
+    renderAdminAuctionImagesPreview();
+  };
+
+  document.getElementById("admin-create-auction-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("admin-create-auction-btn");
+    if (btn.disabled) return;
+
+    const name = document.getElementById("admin-auction-name").value.trim();
+    const game = document.getElementById("admin-auction-game").value.trim();
+    const sellerName = document.getElementById("admin-auction-seller").value.trim();
+    const startPrice = parseFloat(document.getElementById("admin-auction-start-price").value);
+    const minPrice = parseFloat(document.getElementById("admin-auction-min-price").value);
+    const duration = parseInt(document.getElementById("admin-auction-duration").value);
+    const description = document.getElementById("admin-auction-description").value.trim();
+
+    if (!name || !game || !sellerName || isNaN(startPrice) || isNaN(duration)) {
+      showToast("يرجى ملء جميع الحقول المطلوبة (بما فيها اسم البائع)", true);
+      return;
+    }
+
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري النشر…";
+
+    try {
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + duration);
+
+      // نفس بنية البيانات المستخدمة بالضبط بـ index.html حتى ما تنكسر بطاقات
+      // عرض المزاد بواجهة المتجر
+      const auctionData = {
+        name,
+        game,
+        description,
+        startPrice,
+        minPrice: isNaN(minPrice) ? startPrice : minPrice,
+        currentPrice: startPrice,
+        durationHours: duration,
+        images: adminAuctionImages,
+        sellerUid: currentUser.uid,
+        sellerName,
+        status: "active",
+        bidsCount: 0,
+        lastBidderUid: null,
+        lastBidAmount: 0,
+        createdAt: serverTimestamp(),
+        expiresAt: Timestamp.fromDate(expiresAt)
+      };
+
+      await addDoc(collection(db, "auctions"), auctionData);
+
+      resetAdminAuctionForm();
+      document.getElementById("create-auction-panel").style.display = "none";
+      showToast("✅ تم نشر المزاد بنجاح!");
+    } catch (err) {
+      showToast("حدث خطأ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
   });
 
   // ══════════════════════════════════════════════
@@ -2253,6 +2455,93 @@
   });
 
   // ══════════════════════════════════════════════
+  // ===== لوحة اشتراك الأفلام "بلس" =====
+  // ══════════════════════════════════════════════
+  let moviesSubFeatures = [];
+
+  async function loadMoviesSubscriptionAdmin() {
+    const snap = await getDoc(doc(db, "settings", "moviesSubscription"));
+    const data = snap.exists() ? snap.data() : {};
+    document.getElementById("movies-sub-active").checked = data.isActive === true;
+    document.getElementById("movies-sub-price").value = typeof data.price === "number" ? data.price : "";
+    document.getElementById("movies-sub-currency").value = data.currency || "USD";
+    document.getElementById("movies-sub-duration").value = data.durationDays || 30;
+    moviesSubFeatures = Array.isArray(data.features) ? [...data.features] : [];
+    renderMoviesSubFeatures();
+
+    // إحصائيات المشتركين الحاليين
+    try {
+      const q = query(collection(db, "users"), where("moviesPremium", "==", true));
+      const subsSnap = await getDocs(q);
+      const now = Date.now();
+      let activeCount = 0;
+      subsSnap.forEach(d => {
+        const exp = d.data().moviesPremiumExpiresAt;
+        const expMs = exp?.toDate ? exp.toDate().getTime() : 0;
+        if (expMs > now) activeCount++;
+      });
+      document.getElementById("movies-sub-count").textContent = activeCount;
+      const price = typeof data.price === "number" ? data.price : 0;
+      document.getElementById("movies-sub-revenue").textContent =
+        "≈ " + (activeCount * price).toFixed(2);
+    } catch {
+      document.getElementById("movies-sub-count").textContent = "0";
+      document.getElementById("movies-sub-revenue").textContent = "0";
+    }
+  }
+
+  function renderMoviesSubFeatures() {
+    document.getElementById("movies-sub-features-list").innerHTML = moviesSubFeatures.map((f, idx) => `
+      <div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--hairline);">
+        <span style="flex:1;">✓ ${escapeHTML(f)}</span>
+        <button data-idx="${idx}" class="icon-btn danger movies-sub-remove-feature">✕</button>
+      </div>
+    `).join("") || `<div class="hint">ما في ميزات مضافة بعد</div>`;
+
+    document.querySelectorAll(".movies-sub-remove-feature").forEach(btn => {
+      btn.addEventListener("click", () => {
+        moviesSubFeatures.splice(Number(btn.dataset.idx), 1);
+        renderMoviesSubFeatures();
+      });
+    });
+  }
+
+  document.getElementById("movies-sub-add-feature-btn").addEventListener("click", () => {
+    const input = document.getElementById("movies-sub-new-feature");
+    const val = input.value.trim();
+    if (!val) return;
+    moviesSubFeatures.push(val);
+    input.value = "";
+    renderMoviesSubFeatures();
+  });
+
+  document.getElementById("save-movies-sub-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("save-movies-sub-btn");
+    const price = parseFloat(document.getElementById("movies-sub-price").value);
+    const durationDays = parseInt(document.getElementById("movies-sub-duration").value);
+    const currency = document.getElementById("movies-sub-currency").value;
+    const isActive = document.getElementById("movies-sub-active").checked;
+
+    if (isNaN(price) || price < 0) { showToast("اكتب سعر صحيح", true); return; }
+    if (isNaN(durationDays) || durationDays < 1) { showToast("اكتب مدة صحيحة (يوم واحد على الأقل)", true); return; }
+
+    btn.disabled = true;
+    try {
+      await setDoc(doc(db, "settings", "moviesSubscription"), {
+        price, currency, durationDays, isActive,
+        features: moviesSubFeatures,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+      showToast("✅ تم حفظ إعدادات الاشتراك! ستنعكس فوراً على صفحة الأفلام لكل الزوار.");
+      loadMoviesSubscriptionAdmin();
+    } catch (err) {
+      showToast("خطأ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ══════════════════════════════════════════════
   // ===== 5) لوحة بحث المستخدمين =====
   // ══════════════════════════════════════════════
   function renderUsersSearch() {
@@ -2276,7 +2565,7 @@
       const joinDate = u.createdAt && u.createdAt.toDate ? u.createdAt.toDate().toLocaleDateString("ar-SY", { year: "numeric", month: "long", day: "numeric" }) : "—";
       const lastOrderDate = lastOrder && lastOrder.createdAt && lastOrder.createdAt.toDate ? lastOrder.createdAt.toDate().toLocaleDateString("ar-SY", { year: "numeric", month: "long", day: "numeric" }) : "—";
       const avatarHTML = u.avatarUrl
-        ? `<img src="${u.avatarUrl}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`
+        ? `<img src="${escapeHTML(u.avatarUrl)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">`
         : `<div style="width:44px;height:44px;border-radius:50%;background:var(--gold-soft);display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>`;
       return `
       <div class="user-item" data-uid="${u.id}">
@@ -2328,8 +2617,54 @@
 <!-- ===== لوحة المزادات ===== -->
 <div class="panel" id="panel-auctions">
   <div class="section-title">إدارة المزادات
-    <button class="add-btn" id="add-auction-btn">🔄 إغلاق المزادات المنتهية</button>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="add-btn" id="open-create-auction-btn" style="background:var(--gold);">🔨 نشر مزاد جديد</button>
+      <button class="add-btn" id="add-auction-btn">🔄 إغلاق المزادات المنتهية تلقائياً</button>
+    </div>
   </div>
+
+  <!-- نموذج نشر مزاد جديد (كان سابقاً مقتصراً على واجهة المتجر index.html فقط) -->
+  <div class="summary-card" id="create-auction-panel" style="display:none; margin-bottom:16px;">
+    <div class="field">
+      <label>اسم الحساب / المنتج</label>
+      <input type="text" id="admin-auction-name" placeholder="مثال: حساب Fortnite">
+    </div>
+    <div class="field">
+      <label>اللعبة / الخدمة</label>
+      <input type="text" id="admin-auction-game" placeholder="مثال: Fortnite">
+    </div>
+    <div class="field">
+      <label>اسم البائع المعروض</label>
+      <input type="text" id="admin-auction-seller" placeholder="مثال: اسم صاحب الحساب الحقيقي">
+    </div>
+    <div class="field">
+      <label>السعر الابتدائي ($)</label>
+      <input type="number" id="admin-auction-start-price" placeholder="10" step="0.01" min="0">
+    </div>
+    <div class="field">
+      <label>السعر الأدنى المقبول ($)</label>
+      <input type="number" id="admin-auction-min-price" placeholder="15" step="0.01" min="0">
+    </div>
+    <div class="field">
+      <label>مدة المزاد (ساعات)</label>
+      <input type="number" id="admin-auction-duration" placeholder="24" step="1" min="1" max="168">
+    </div>
+    <div class="field">
+      <label>وصف الحساب / المنتج</label>
+      <textarea id="admin-auction-description" placeholder="اكتب تفاصيل الحساب والمميزات..."></textarea>
+    </div>
+    <div class="field">
+      <label>رفع صور (حتى 5 صور)</label>
+      <div id="admin-auction-images-drop" class="file-drop">📸 اضغط أو اسحب الصور هنا</div>
+      <input type="file" id="admin-auction-images-input" accept="image/*" multiple style="display:none;">
+      <div id="admin-auction-images-preview" style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;"></div>
+    </div>
+    <div class="modal-btn-row">
+      <button class="secondary-btn" id="cancel-create-auction-btn">إلغاء</button>
+      <button class="primary-btn" id="admin-create-auction-btn">🔨 نشر المزاد</button>
+    </div>
+  </div>
+
   <div class="search-box">
     <input type="text" id="auctions-search" placeholder="ابحث برقم المزاد أو اسم الحساب...">
     <button id="auctions-search-clear">مسح</button>
@@ -2416,6 +2751,56 @@
       <input type="number" id="gold-min" value="150" step="0.01">
     </div>
     <button class="primary-btn" id="save-loyalty-btn">💾 حفظ الإعدادات</button>
+  </div>
+</div>
+
+<!-- ===== لوحة اشتراك الأفلام ===== -->
+<div class="panel" id="panel-movies">
+  <div class="section-title">اشتراك الأفلام "بلس"</div>
+
+  <div class="card" style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px;">
+    <div>
+      <div style="font-size:24px; font-weight:800; color:var(--gold);" id="movies-sub-count">—</div>
+      <div class="hint">مشترك حالياً</div>
+    </div>
+    <div>
+      <div style="font-size:24px; font-weight:800; color:var(--gold);" id="movies-sub-revenue">—</div>
+      <div class="hint">تقدير الإيراد الشهري ($)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>تفعيل نظام الاشتراك بالكامل</label>
+      <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+        <input type="checkbox" id="movies-sub-active" style="width:20px; height:20px;">
+        <span>مفعّل (يظهر زر الاشتراك للمستخدمين)</span>
+      </label>
+    </div>
+    <div class="field">
+      <label>السعر</label>
+      <input type="number" id="movies-sub-price" step="0.01" min="0" placeholder="مثال: 2">
+    </div>
+    <div class="field">
+      <label>العملة</label>
+      <select id="movies-sub-currency">
+        <option value="USD">USD ($)</option>
+        <option value="SYR">SYR (ل.س)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>مدة الاشتراك (أيام)</label>
+      <input type="number" id="movies-sub-duration" step="1" min="1" placeholder="مثال: 30">
+    </div>
+    <div class="field">
+      <label>الميزات (تظهر بصفحة الاشتراك)</label>
+      <div id="movies-sub-features-list"></div>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <input type="text" id="movies-sub-new-feature" placeholder="مثال: بدون إعلانات نهائياً" style="flex:1;">
+        <button class="secondary-btn" id="movies-sub-add-feature-btn">➕ إضافة</button>
+      </div>
+    </div>
+    <button class="primary-btn" id="save-movies-sub-btn" style="margin-top:12px;">💾 حفظ إعدادات الاشتراك</button>
   </div>
 </div>
 
