@@ -1028,7 +1028,7 @@
 
         // عرض صورة المستخدم في القائمة الجانبية والملف الشخصي تلقائياً
         if (data.avatarUrl) {
-          const imgHTML = `<img src="${data.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+          const imgHTML = `<img src="${escapeHTML(data.avatarUrl)}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
           const sidebarAvatar = document.getElementById("sidebar-avatar");
           if (sidebarAvatar) sidebarAvatar.innerHTML = imgHTML;
           
@@ -1058,11 +1058,9 @@
     });
   }
 
-  // ما في خطة Blaze حاليًا، فما نقدر نستخدم Cloud Function. السحب هون معاملة
-  // Firestore مباشرة من المتصفح، ومحميّة بقاعدة أمان دقيقة بجانب السيرفر
-  // (شوف شرط "سحب المكافأة المعلّقة" بقواعد Firestore) بحيث الشرط الوحيد المسموح
-  // فيه تعديل balance/pendingReward/claimedReward ذاتيًا هو نقل كل pendingReward
-  // بالضبط لـ balance وتصفيرها — أي تلاعب بالأرقام برفضه Firestore نفسه.
+  // سحب مكافأة إحالة معلّقة: تحويل ذاتي كامل داخل مستند المستخدم نفسه
+  // (pendingReward → balance، وتصفير pendingReward) — محمي بالكامل بقاعدة
+  // isValidReferralClaim بـ firestore.rules، وما بيحتاج أي سيرفر خارجي.
   document.getElementById('withdraw-referral-btn').addEventListener('click', async () => {
     const errorEl = document.getElementById('referral-error-msg');
     const btn = document.getElementById('withdraw-referral-btn');
@@ -1473,7 +1471,8 @@
     btn.textContent = "جاري إرسال الطلب…";
 
     try {
-      // التحقق من المنتجات
+      // نتحقق من كل منتج بالسلة فعلياً من قاعدة البيانات (وليس من أي سعر
+      // مخزّن بذاكرة المتصفح فقط) لتقليل احتمال التلاعب قدر الإمكان
       const verifiedItems = [];
       for (const cartItem of cart) {
         const prodSnap = await getDoc(doc(db, "products", cartItem.id));
@@ -1490,7 +1489,6 @@
       }
       const total = verifiedItems.reduce((sum, c) => sum + c.price * c.qty, 0);
 
-      // حساب الخصم والـ Cashback بناءً على مستوى الولاء
       const userDocSnap = await getDoc(doc(db, "users", currentUser.uid));
       const userData = userDocSnap.exists() ? userDocSnap.data() : {};
       const totalSpent = userData.totalSpent || 0;
@@ -1499,6 +1497,7 @@
       const discount = (total * levelData.discount) / 100;
       const finalTotal = total - discount;
       const cashbackAmount = (total * levelData.cashback) / 100;
+      const netDeduction = finalTotal - cashbackAmount;
 
       const orderData = {
         uid: currentUser.uid,
@@ -1526,13 +1525,15 @@
       await runTransaction(db, async (transaction) => {
         const userSnap = await transaction.get(userRef);
         const currentBalance = userSnap.exists() ? (userSnap.data().balance || 0) : 0;
-        if (currentBalance < finalTotal) throw new Error("رصيدك غير كافِ لإتمام هذا الطلب");
-        const newBalance = currentBalance - finalTotal + cashbackAmount;
-        const newTotalSpent = (userData.totalSpent || 0) + finalTotal;
-        transaction.update(userRef, { 
+        if (currentBalance < netDeduction) throw new Error("رصيدك غير كافِ لإتمام هذا الطلب");
+        const newBalance = currentBalance - netDeduction;
+        const newTotalSpent = (userSnap.data().totalSpent || 0) + finalTotal;
+        // بنية الكتابة هون لازم تطابق بالضبط قاعدة isBalanceDecrease
+        // بـ firestore.rules (نقصان فقط، بدون Cloud Function للتحقق المستقل
+        // من مجموع السلة — الحماية الفعلية: مراجعة الأدمن اليدوية لكل طلب)
+        transaction.update(userRef, {
           balance: newBalance,
           totalSpent: newTotalSpent,
-          lastOrderAt: serverTimestamp()
         });
         const newOrderRef = doc(collection(db, "orders"));
         transaction.set(newOrderRef, orderData);
@@ -1697,7 +1698,7 @@
 
       // تحديث العرض في الصفحة
       if (updates.avatarUrl) {
-        const imgHTML = `<img src="${updates.avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        const imgHTML = `<img src="${escapeHTML(updates.avatarUrl)}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
         document.getElementById("profile-avatar-display").innerHTML = imgHTML;
         // تحديث صورة القائمة الجانبية إذا كانت موجودة
         const sidebarAvatar = document.getElementById("sidebar-avatar");
@@ -1730,13 +1731,12 @@
       const codeRef = doc(db, "rechargeCodes", code);
       const userRef = doc(db, "users", currentUser.uid);
 
-      await runTransaction(db, async (transaction) => {
+      const addedValue = await runTransaction(db, async (transaction) => {
         const codeSnap = await transaction.get(codeRef);
         if (!codeSnap.exists()) throw new Error("كود غير صحيح");
 
         const codeData = codeSnap.data();
         if (codeData.used === true) throw new Error("هذا الكود مستخدم مسبقاً");
-
         if (codeData.expiresAt) {
           const expiry = codeData.expiresAt.toDate ? codeData.expiresAt.toDate() : new Date(codeData.expiresAt);
           if (expiry < new Date()) throw new Error("انتهت صلاحية هذا الكود");
@@ -1744,28 +1744,32 @@
 
         const userSnap = await transaction.get(userRef);
         if (!userSnap.exists()) throw new Error("بيانات المستخدم غير موجودة");
-
+        const userData = userSnap.data();
         const codeValue = Number(codeData.amount) || 0;
-        const currentBalance = Number(userSnap.data().balance) || 0;
+        const currentBalance = Number(userData.balance) || 0;
+        const redeemedCodes = Array.isArray(userData.redeemedCodes) ? userData.redeemedCodes : [];
+        if (redeemedCodes.includes(code)) throw new Error("أنت فعّلت هذا الكود مسبقاً");
 
-        // 1. تحديث رصيد المستخدم
+        // بنية الكتابة هون لازم تطابق بالضبط قاعدة isValidRechargeCodeCredit
+        // بـ firestore.rules، وبنفس الوقت نعلّم الكود نفسه "مستخدم" حتى ما
+        // يقدر حدا تاني يفعّله (المعاملتين محميّتين بشكل مستقل، وربطهم
+        // بنفس القيمة الحقيقية amount هو أساس الحماية بدون Cloud Function)
         transaction.update(userRef, {
-          balance: currentBalance + codeValue
+          balance: currentBalance + codeValue,
+          redeemedCodes: redeemedCodes.concat([code]),
+          lastRedeemedCode: code,
         });
-
-        // 2. تحديث حالة الكود
         transaction.update(codeRef, {
           used: true,
           usedBy: currentUser.uid,
-          usedAt: serverTimestamp()
+          usedAt: serverTimestamp(),
         });
 
         return codeValue;
-      }).then((addedValue) => {
-        codeInput.value = "";
-        showToast(`✅ تم تفعيل الكود بنجاح! تم إضافة ${fmt(addedValue)} لرصيدك.`);
       });
 
+      codeInput.value = "";
+      showToast(`✅ تم تفعيل الكود بنجاح! تم إضافة ${fmt(addedValue)} لرصيدك.`);
     } catch (err) {
       showToast(err.message, true);
     } finally {
@@ -1842,7 +1846,7 @@
             document.getElementById("profile-fullname").value = d.fullName || "";
             document.getElementById("profile-contact").value = d.contact || "";
             document.getElementById("profile-email").value = currentUser.email || "";
-            if (d.avatarUrl) document.getElementById("profile-avatar-display").innerHTML = `<img src="${d.avatarUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+            if (d.avatarUrl) document.getElementById("profile-avatar-display").innerHTML = `<img src="${escapeHTML(d.avatarUrl)}" style="width:100%; height:100%; object-fit:cover;">`;
             updateLoyaltyDisplay(d.totalSpent || 0);
             document.getElementById("profile-total-spent").textContent = fmt(d.totalSpent || 0) + " (" + fmtUSDHint(d.totalSpent || 0) + ")";
             if (d.createdAt && d.createdAt.toDate) {
@@ -2054,7 +2058,7 @@
       grid.innerHTML = auctions.map(a => `
         <div class="product-card" onclick="openAuctionDetail('${a.id}')">
           <div class="badge" style="background:var(--neon-pink);">🔥 مزاد حامي</div>
-          <img src="${a.images[0] || 'https://via.placeholder.com/150?text=No+Image'}" alt="${a.name}">
+          <img src="${escapeHTML(a.images[0] || 'https://via.placeholder.com/150?text=No+Image')}" alt="${escapeHTML(a.name)}">
           <div class="p-info">
             <div class="p-name">${escapeHTML(a.name)}</div>
             <div class="p-category">${escapeHTML(a.game)}</div>
@@ -2087,7 +2091,7 @@
       // عرض الصور
       const imgContainer = document.getElementById("auction-detail-images");
       imgContainer.innerHTML = a.images.map(img => `
-        <img src="${img}" style="width:100%; border-radius:12px; margin-bottom:8px; border:1px solid var(--hairline);">
+        <img src="${escapeHTML(img)}" style="width:100%; border-radius:12px; margin-bottom:8px; border:1px solid var(--hairline);">
       `).join("");
 
       // تحديث الوقت المتبقي
@@ -2113,10 +2117,14 @@
     });
   };
 
-  // وضع مزايدة جديدة مع نظام الحجز (Escrow)
+  // وضع مزايدة جديدة (نموذج مبسّط بدون خطة Blaze/Cloud Functions):
+  // المزايدة هون بس بتسجّل "نية شراء" بأعلى سعر — ما في حجز فوري للرصيد.
+  // الأدمن هو يلي بيخصم رصيد الفائز الفعلي يدوياً لما يقفل المزاد (بنفس
+  // شاشة "تعديل الرصيد" الموجودة أصلاً بلوحة التحكم)، وبيتأكد وقتها إن
+  // رصيد الفائز كافي فعلاً قبل تسليم الحساب.
   document.getElementById("place-bid-btn").addEventListener("click", async () => {
     if (!currentUser) { showToast("يجب تسجيل الدخول أولاً", true); return; }
-    
+
     const newBid = parseFloat(document.getElementById("auction-new-bid").value);
     if (isNaN(newBid) || newBid <= 0) { showToast("يرجى إدخال مبلغ صحيح", true); return; }
 
@@ -2132,38 +2140,21 @@
       await runTransaction(db, async (transaction) => {
         const aSnap = await transaction.get(auctionRef);
         const uSnap = await transaction.get(userRef);
-        
+
         if (!aSnap.exists()) throw new Error("المزاد غير موجود");
         const a = aSnap.data();
-        
+
         if (a.status !== "active") throw new Error("هذا المزاد غير نشط حالياً");
         if (new Date() > a.expiresAt.toDate()) throw new Error("انتهى وقت المزاد");
         if (currentUser.uid === a.sellerUid) throw new Error("لا يمكنك المزايدة على مزادك الخاص");
         if (newBid <= a.currentPrice) throw new Error(`يجب أن تكون المزايدة أعلى من السعر الحالي (${fmt(a.currentPrice)})`);
-        
+
         const userData = uSnap.data() || {};
         const userBalance = Number(userData.balance) || 0;
-        const isSelfOutbid = (a.lastBidderUid === currentUser.uid);
-        
-        // الرصيد المتاح فعلياً هو الرصيد الحالي + المبلغ المحجوز مسبقاً لهذا المستخدم (إن وجد)
-        const effectiveBalance = userBalance + (isSelfOutbid ? a.lastBidAmount : 0);
-        if (effectiveBalance < newBid) throw new Error("رصيدك غير كافٍ لتغطية هذه المزايدة");
+        // تحقق إرشادي بس (مو ملزم أمنياً بدون سيرفر): نتأكد إنه عندك رصيد
+        // كافي وقت المزايدة، والأدمن رح يعيد التأكد الفعلي وقت إغلاق المزاد
+        if (userBalance < newBid) throw new Error("رصيدك الحالي أقل من مبلغ المزايدة — تأكد قبل ما تكمل");
 
-        // 1. إعادة المبلغ للمزايد السابق (فقط إذا لم يكن هو نفسه المزايد الحالي)
-        if (a.lastBidderUid && a.lastBidAmount && !isSelfOutbid) {
-          const lastBidderRef = doc(db, "users", a.lastBidderUid);
-          const lastBidderSnap = await transaction.get(lastBidderRef);
-          if (lastBidderSnap.exists()) {
-            const lastBidderBalance = Number(lastBidderSnap.data().balance) || 0;
-            transaction.update(lastBidderRef, { balance: lastBidderBalance + a.lastBidAmount });
-          }
-        }
-
-        // 2. حجز المبلغ من المزايد الحالي (تحديث واحد للرصيد الصافي النهائي)
-        const finalBalance = effectiveBalance - newBid;
-        transaction.update(userRef, { balance: finalBalance });
-
-        // 3. تحديث بيانات المزاد
         transaction.update(auctionRef, {
           currentPrice: newBid,
           lastBidderUid: currentUser.uid,
@@ -2172,8 +2163,6 @@
           updatedAt: serverTimestamp()
         });
 
-        // 4. تسجيل هذه المزايدة بسجل منفصل (auctions/{id}/bids) بكل تفاصيل
-        // المزايد، عشان الأدمن يقدر يشوف مين زاد وكم دفع وكيف يتواصل معه
         const bidLogRef = doc(collection(db, "auctions", currentAuctionId, "bids"));
         transaction.set(bidLogRef, {
           uid: currentUser.uid,
@@ -2187,7 +2176,7 @@
       });
 
       document.getElementById("auction-new-bid").value = "";
-      showToast(`✅ تمت المزايدة بنجاح! تم حجز ${fmt(newBid)} من رصيدك.`);
+      showToast(`✅ تمت المزايدة بنجاح! لو ربحت المزاد رح يتواصل معك الأدمن لإتمام الدفع.`);
     } catch (err) {
       showToast(err.message, true);
     } finally {
