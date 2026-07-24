@@ -38,7 +38,11 @@ async function fetchMovies(searchQuery, containerId) {
     });
     ["identifier", "title", "description", "year"].forEach((f) => params.append("fl[]", f));
 
-    const res = await fetch(`${ARCHIVE_SEARCH_URL}?${params.toString()}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 ثانية كحد أقصى
+
+    const res = await fetch(`${ARCHIVE_SEARCH_URL}?${params.toString()}`, { signal: controller.signal });
+    clearTimeout(timeoutId);
     const data = await res.json();
     const docs = (data.response && data.response.docs) || [];
 
@@ -74,7 +78,12 @@ async function fetchMovies(searchQuery, containerId) {
   } catch (error) {
     console.error("Error fetching movies from Internet Archive:", error);
     if (container) {
-      container.innerHTML = '<div style="color:#999;padding:20px;">تعذّر تحميل الأفلام حالياً، حاول لاحقاً</div>';
+      const isTimeout = error.name === "AbortError";
+      container.innerHTML = `<div style="color:#999;padding:20px;">${
+        isTimeout
+          ? "الاتصال بـ Internet Archive بطيء جداً أو محجوب من شبكتك — جرّب VPN أو شبكة تانية"
+          : "تعذّر تحميل الأفلام حالياً، حاول لاحقاً"
+      }</div>`;
     }
     return [];
   }
