@@ -115,7 +115,11 @@ function stripHtml(html) {
   if (!html) return "";
   const tmp = document.createElement("div");
   tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText || "";
+  let text = tmp.textContent || tmp.innerText || "";
+  // أرشيف الأفلام كتير مرات بيحط رابط IMDb خام بأول الوصف — نشيله
+  // ونشيل أي روابط تانية جوا النص، ونرتب المسافات الفايضة
+  text = text.replace(/https?:\/\/\S+/g, "").replace(/\s{2,}/g, " ").trim();
+  return text;
 }
 
 function playHeroMovie() {
